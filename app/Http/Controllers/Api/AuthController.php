@@ -8,8 +8,11 @@ use App\Notifications\SendOtp;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends BaseController
 {
@@ -22,7 +25,7 @@ class AuthController extends BaseController
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'email' => 'required|email|unique'
+            'email' => 'required|email|unique:users,email'
         ]);
         
         if($validator->fails()){
@@ -30,9 +33,17 @@ class AuthController extends BaseController
         }
 
         $input = $request->all();
-        //$user = User::create($input);
+        $input['password'] = Hash::make(Str::random(10));
+        $user = User::create($input);
         
-        //$this->sendOtp($request->email);
+        // Sending OTP
+        $this->sendOtp($request);
+
+        $success['email'] = $request->email;
+        if($user){
+            return $this->sendResponse($success, 'User Registered successfully.');
+        }
+        return $this->sendError('Unauthorised.', ['error'=>'Unauthorised']);
     }
    
     /**
@@ -47,11 +58,35 @@ class AuthController extends BaseController
             $success['token'] =  $user->createToken('MyApp')->plainTextToken; 
             $success['name'] =  $user->name;
    
+            return $this->sendResponse($success, 'User logged in successfully.');
+        } 
+        return $this->sendError('Unauthorised.', ['error'=>'Unauthorised']);
+    }
+
+    /**
+     * Login with socialite api
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    public function socialLogin(Request $request)
+    {
+        $provider = $request->input('provider_name');
+        $token = $request->input('access_token');
+        $providerUser = Socialite::driver($provider)->userFromToken($token);
+
+        //$user = User::where('provider_name', $provider)->where('provider_id', $providerUser->id)->first();
+        $user = User::where('email', $providerUser->email)->first();
+        // TODO: if user found, updateOrCreate with provider name and id;
+
+        if($user){
+            $success['token'] = $user->createToken(env('APP_NAME'))->plainTextToken;
+            $success['name'] = $user->name;
+
             return $this->sendResponse($success, 'User login successfully.');
-        } 
-        else{ 
-            return $this->sendError('Unauthorised.', ['error'=>'Unauthorised']);
-        } 
+        }else{
+            return $this->sendError('Unauthorized.', ['error'=>'Unauthorized']);
+        }
+
     }
 
     /**
@@ -107,9 +142,8 @@ class AuthController extends BaseController
             
             // Verifying email if not done already(Using in registration time).
             if($user->email_verified_at == null){
-                $user->update([
-                    'email_verified_at' => now()
-                ]);
+                $user->email_verified_at = now();
+                $user->save();
             }
             
 
