@@ -35,6 +35,7 @@ class AuthController extends BaseController
         $input = $request->all();
         $input['password'] = Hash::make(Str::random(10));
         $user = User::create($input);
+        $user->assignRole(['Member']);
         
         // Sending OTP
         $this->sendOtp($request);
