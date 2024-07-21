@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('member_contacts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('member_id')->constrained();
-            $table->string('type')->index();
+            $table->foreignId('user_id')->constrained();
+            $table->foreignId('contact_type_id')->constrained('member_enums');
             $table->string('title');
             $table->string('value');
             $table->timestamps();

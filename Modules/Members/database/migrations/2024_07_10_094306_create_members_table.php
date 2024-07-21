@@ -13,22 +13,17 @@ return new class extends Migration
     {
         Schema::create('members', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained();
             $table->unsignedBigInteger('parent_id')->nullable();
-            $table->enum('member_type', array('primary','spouse', 'child'))->default('primary')->index();
-            $table->string('civil_id');
-            $table->string('name');
-            $table->enum('gender', array('male','female', 'other'));
-            $table->date('dob');
-            $table->string('company')->nullable();
-            $table->string('profession')->nullable();
-            $table->string('passport_no')->nullable();
-            $table->date('passport_expiry')->nullable();
-            $table->string('blood_group')->index();
+            $table->enum('type', array('primary','spouse', 'child'))->default('primary')->index();
+            $table->string('name')->index();
+            $table->enum('gender', array('male','female', 'other'))->nullable();
+            $table->string('blood_group')->index()->nullable();
             $table->string('photo')->nullable();
             $table->boolean('active')->index()->default(0);
             $table->timestamps();
 
-            $table->foreign('parent_id')->references('id')->on('members'); 
+            $table->foreign('parent_id')->references('id')->on('users'); 
         });
     }
 

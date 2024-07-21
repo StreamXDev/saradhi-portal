@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('membership_requests', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('member_id')->constrained();
-            $table->foreignId('membership_request_status_id')->constrained('member_enums');
+            $table->foreignId('user_id')->constrained();
+            $table->foreignId('request_status_id')->constrained('member_enums');
+            $table->foreignId('updated_by')->references('id')->on('users');
+            $table->string('remark')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -27,4 +29,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('membership_requests');
     }
+
 };

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('member_trustees', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('member_id')->constrained();
+            $table->foreignId('user_id')->constrained();
             $table->unsignedBigInteger('tid')->unique();
             $table->string('title');
             $table->date('joining_date');

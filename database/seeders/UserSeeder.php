@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Modules\Members\Models\Member;
+use Nwidart\Modules\Facades\Module;
 
 class UserSeeder extends Seeder
 {
@@ -23,6 +25,16 @@ class UserSeeder extends Seeder
             $user->username = 'superadmin';
             $user->password = Hash::make('Com@9900');
             $user->save();
+        }
+
+        if(Module::has('Members')){
+            $member = Member::where('user_id', $user->id)->first();
+            if(is_null($member)){
+                $member = new Member();
+                $member->name = 'Safeer Aslam';
+                $member->user_id = $user->id;
+                $member->save();
+            }
         }
         
     }

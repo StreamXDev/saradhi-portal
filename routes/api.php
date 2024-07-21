@@ -1,9 +1,12 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\EmailVerificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
+Auth::routes(['verify' => true]);
 
 Route::controller(AuthController::class)->group(function(){
     Route::post('register', 'register');
@@ -13,11 +16,18 @@ Route::controller(AuthController::class)->group(function(){
     Route::post('verify_otp', 'verifyOtp');
 });
 
-Route::group(['middleware' => ['auth:sanctum']], function() {
+Route::controller(EmailVerificationController::class)->group(function(){
+    Route::get('email/verify/{id}', 'verify')->name('verificationapi.verify');
+    Route::get('email/resent', 'resend')->name('verificationapi.resend');
+});
+
+Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::get('/test', function (){
         
-        $user = Auth::user();
+        //$user = Auth::user();
 
-        return $user;
+        return 'tttt';
     });
+
+
 });

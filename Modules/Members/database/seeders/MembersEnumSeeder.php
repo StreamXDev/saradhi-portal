@@ -3,7 +3,7 @@
 namespace Modules\Members\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Modules\Members\Models\MemberEnums;
+use Modules\Members\Models\MemberEnum;
 
 class MembersEnumSeeder extends Seeder
 {
@@ -13,19 +13,23 @@ class MembersEnumSeeder extends Seeder
     public function run(): void
     {
         $enumList = [
-            'membership_request_status' => $this->membershipRequestStatuses(),
+            'request_status' => $this->membershipRequestStatuses(),
             'committee_type' => $this->committeeTypes(),
             'designation' => $this->designationTypes(),
+            'relationship' => $this->relationshipTypes(),
+            'contact_type' => $this->contactTypes(),
+            'blood_group' => $this->bloodGroups(),
         ];
 
         foreach ($enumList as $type => $enums) {
             foreach ($enums as $enum) {
-                MemberEnums::updateOrCreate(
+                MemberEnum::updateOrCreate(
                     [
                         'type' => $type,
                         'slug' => $enum[ 'slug' ]
                     ], [
                         'name' => $enum[ 'name' ],
+                        'category' => array_key_exists('category', $enum) ? $enum['category'] : null,
                         'description' => array_key_exists('description', $enum) ? $enum['description'] : null,
                         'order' => array_key_exists('order', $enum) ? $enum['order'] : 0,
                     ]
@@ -40,25 +44,25 @@ class MembersEnumSeeder extends Seeder
             [
                 'slug' => 'pending',
                 'name' => 'Pending',
-                'description' => 'Request is waiting for verification',
+                'description' => 'Membership request is waiting for verification',
                 'order' => 0
             ],
             [
                 'slug' => 'verified',
                 'name' => 'Verified',
-                'description' => 'Request verification completed. Pending for review',
+                'description' => 'Membership request verification is successfully completed. Waiting for review',
                 'order' => 1
             ],
             [
                 'slug' => 'reviewed',
                 'name' => 'Reviewed',
-                'description' => 'Request review completed. Pending for approval',
+                'description' => 'Membership request review is completed. Waiting for approval',
                 'order' => 2
             ],
             [
                 'slug' => 'approved',
                 'name' => 'Approved',
-                'description' => 'Request is approved',
+                'description' => 'Membership request is approved!, Processing data',
                 'order' => 3
             ],
         ];
@@ -109,21 +113,139 @@ class MembersEnumSeeder extends Seeder
                 'order' => 3
             ],
             [
+                'slug' => 'secretary',
+                'name' => 'Secretary',
+                'order' => 4
+            ],
+            [
                 'slug' => 'joint_secretary',
                 'name' => 'Joint Secretary',
-                'order' => 4
+                'order' => 5
             ],
             [
                 'slug' => 'treasurer',
                 'name' => 'Treasurer',
-                'order' => 5
+                'order' => 6
             ],
             [
                 'slug' => 'executive_member',
                 'name' => 'Executive Member',
-                'order' => 6
+                'order' => 7
             ],
             
+        ];
+    }
+
+    protected function relationshipTypes()
+    {
+        return [
+            [
+                'slug' => 'parent',
+                'name' => 'Parent',
+                'order' => 1
+            ],
+            [
+                'slug' => 'child',
+                'name' => 'Child',
+                'order' => 2
+            ],
+            [
+                'slug' => 'spouse',
+                'name' => 'Spouse',
+                'order' => 3
+            ],
+            [
+                'slug' => 'sibling',
+                'name' => 'Sibling',
+                'order' => 4
+            ],
+            [
+                'slug' => 'grand_parent',
+                'name' => 'Grand Parent',
+                'order' => 5
+            ],
+            [
+                'slug' => 'in_law',
+                'name' => 'In Law',
+                'order' => 6
+            ],
+            [
+                'slug' => 'niece',
+                'name' => 'Niece',
+                'order' => 7
+            ],
+        ];
+    }
+
+    protected function contactTypes()
+    {
+        return [
+            [
+                'slug' => 'email',
+                'name' => 'Email'
+            ],
+            [
+                'slug' => 'phone',
+                'name' => 'Phone'
+            ],
+            [
+                'slug' => 'whatsapp',
+                'name' => 'Whatsapp'
+            ],
+            [
+                'slug' => 'facebook',
+                'name' => 'Facebook'
+            ],
+            [
+                'slug' => 'instagram',
+                'name' => 'Instagram'
+            ],
+            [
+                'slug' => 'x',
+                'name' => 'X'
+            ],
+            [
+                'slug' => 'linked_in',
+                'name' => 'Linked In'
+            ],
+        ];
+    }
+
+    protected function bloodGroups()
+    {
+        return [
+            [
+                'slug' => 'a_p',
+                'name' => 'A+'
+            ],
+            [
+                'slug' => 'a_n',
+                'name' => 'A-'
+            ],
+            [
+                'slug' => 'b_p',
+                'name' => 'B+'
+            ],
+            [
+                'slug' => 'b_n',
+                'name' => 'B-'
+            ],
+            [
+                'slug' => 'o_p',
+                'name' => 'O+'
+            ],
+            [
+                'slug' => 'o_n',
+                'name' => 'O-'
+            ],
+            [
+                'slug' => 'ab_p',
+                'name' => 'AB+'
+            ],
+            [
+                'slug' => 'ab_n',
+                'name' => 'AB-'
+            ],
         ];
     }
 }

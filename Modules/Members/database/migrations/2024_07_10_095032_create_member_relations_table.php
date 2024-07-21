@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('member_relations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('member_id')->constrained();
-            $table->foreignId('related_member_id')->references('id')->on('members');
-            $table->enum('type', array('child','parent','spouse'))->index();
+            $table->foreignId('user_id')->constrained();
+            $table->foreignId('related_user_id')->references('id')->on('users');
+            $table->foreignId('relationship_id')->constrained('member_enums');
             $table->boolean('active')->default(1)->index();
             $table->timestamps();
         });

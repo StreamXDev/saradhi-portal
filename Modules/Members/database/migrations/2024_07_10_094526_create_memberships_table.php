@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('memberships', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('member_id')->constrained();
-            $table->foreignId('member_unit_id')->constrained();
+            $table->unsignedBigInteger('mid')->unique()->nullable();
+            $table->foreignId('user_id')->constrained();
             $table->date('start_date');
             $table->date('expiry_date');
-            $table->enum('membership_status', array('active', 'dormant'))->default('active')->index();
+            $table->enum('type', array('single', 'family'))->index();
+            $table->enum('status', array('active', 'dormant'))->default('active')->index();
+            $table->enum('joined_as', array('old', 'new'))->default('new');
             $table->timestamps();
         });
     }

@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Members\Http\Controllers\MembersController;
+use Modules\Members\Http\Controllers\Api\MembersController;
+use Modules\Members\Http\Middleware\VerifyProfileStatus;
 
 /*
  *--------------------------------------------------------------------------
@@ -14,6 +15,14 @@ use Modules\Members\Http\Controllers\MembersController;
  *
 */
 
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('members', MembersController::class)->names('members');
+Route::middleware(['auth:sanctum','verified'])->prefix('member')->group(function () {
+    Route::controller(MembersController::class)->group(function(){
+        Route::get('details', 'createDetails');
+        Route::post('details', 'storeDetails');
+
+        Route::middleware(VerifyProfileStatus::class)->group(function () {
+            Route::get('profile', 'showProfile');
+        });
+    });
+    
 });

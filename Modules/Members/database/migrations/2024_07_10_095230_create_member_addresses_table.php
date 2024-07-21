@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('member_addresses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('member_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained();
             $table->enum('type', array('local', 'permanent'));
             $table->string('line_1');
             $table->string('line_2')->nullable();
             $table->string('city');
             $table->string('country');
             $table->string('region');
-            $table->string('zip');
+            $table->string('zip')->index();
             $table->timestamps();
             $table->softDeletes();
         });

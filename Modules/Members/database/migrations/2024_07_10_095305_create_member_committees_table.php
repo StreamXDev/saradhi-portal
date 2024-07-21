@@ -15,9 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('committee_type_id')->constrained('member_enums');
             $table->foreignId('member_unit_id')->nullable()->constrained();
-            $table->foreignId('designation_id')->constrained('member_enums');
-            $table->foreignId('member_id')->constrained();
-            $table->string('year');
+            $table->date('formed_on');
+            $table->string('year')->index();
             $table->boolean('active')->default(1)->index();
             $table->timestamps();
             $table->softDeletes();

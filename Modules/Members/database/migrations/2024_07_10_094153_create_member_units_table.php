@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('member_units', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique();
-            $table->string('name');
+            $table->string('slug')->unique();
+            $table->string('name')->index();
             $table->boolean('active')->default(1);
             $table->timestamps();
         });

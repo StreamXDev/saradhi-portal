@@ -1,0 +1,67 @@
+<?php
+
+namespace Modules\Members\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Modules\Members\Models\Member;
+use Modules\Members\Models\MemberDetail;
+use Modules\Members\Models\MemberEnum;
+use Modules\Members\Models\MembershipRequest;
+
+class VerifyProfileStatus
+{
+    /**
+     * Handle an incoming request.
+     */
+    public function handle(Request $request, Closure $next)
+    {
+        
+        $user = auth()->user();
+        $member = Member::where('user_id', $user->id)->first();
+        
+        if($member){
+
+            if($member->status === 'active'){
+                return $next($request);
+            }
+
+
+            // Checking member profile details.
+            $details = MemberDetail::where('user_id', $user->id)->first();
+
+            if(!$details || !$details->completed){
+                //No details, returning error
+                $response = [
+                    'success' => false,
+                    'message' => 'Member details not added',
+                    'is_member' => true,
+                    'profile_completed' => false,
+                ];
+                return response()->json($response, 403);
+
+            }else{
+
+                // Checking membership request status
+                $request_status = MembershipRequest::where('user_id', $user->id)->latest()->first();
+
+                $response = [
+                    'success' => false,
+                    'message' => $request_status->request_status->description,
+                    'is_member' => true,
+                    'profile_completed' => true,
+                    
+                ];
+                return response()->json($response, 403);
+            }
+        }else{
+            $response = [
+                'success' => false,
+                'message' => 'Not a member',
+                'is_member' => false
+            ];
+            return response()->json($response, 401);
+        }
+        
+    }
+}

@@ -10,7 +10,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes();
+Auth::routes(['verify' => true]);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -19,7 +19,7 @@ Route::controller(SocialAuthController::class)->group(function(){
     Route::get('auth/google/callback', 'googleCallback');
 });
 
-Route::group(['middleware' => ['auth']], function() {
+Route::group(['middleware' => ['auth','verified']], function() {
     Route::resource('roles', RoleController::class);
     Route::resource('users', UserController::class);
 });

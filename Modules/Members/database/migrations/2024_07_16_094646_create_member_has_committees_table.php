@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('membership_request_logs', function (Blueprint $table) {
+        Schema::create('member_has_committees', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('member_id')->constrained();
-            $table->foreignId('membership_request_status_id')->constrained('member_enums');
-            $table->foreignId('updated_by')->references('id')->on('members');
+            $table->foreignId('member_committee_id')->constrained();
+            $table->foreignId('user_id')->constrained();
+            $table->foreignId('designation_id')->constrained('member_enums');
+            $table->boolean('active')->default(1)->index();
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('membership_request_logs');
+        Schema::dropIfExists('member_has_committees');
     }
 };

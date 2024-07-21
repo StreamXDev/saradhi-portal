@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('slug');
             $table->string('name');
             $table->string('type');
+            $table->string('category')->nullable();
             $table->string('description')->nullable();
             $table->unsignedInteger('order')->default(0);
             $table->boolean('active')->default(1);

@@ -12,7 +12,8 @@ class MembersDatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            MembersEnumSeeder::class
+            MembersEnumSeeder::class,
+            MemberUnitSeeder::class
         ]);
     }
 }
