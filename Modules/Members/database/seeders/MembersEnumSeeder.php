@@ -65,6 +65,12 @@ class MembersEnumSeeder extends Seeder
                 'description' => 'Membership request is approved!, Processing data',
                 'order' => 3
             ],
+            [
+                'slug' => 'confirmed',
+                'name' => 'Confirmed',
+                'description' => 'Membership ID is issued',
+                'order' => 4
+            ],
         ];
     }
 

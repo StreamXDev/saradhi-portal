@@ -16,6 +16,7 @@ class MemberDetail extends Model
         'company',
         'profession',
         'passport_no',
-        'passport_expiry'
+        'passport_expiry',
+        'completed'
     ];
 }

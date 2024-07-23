@@ -31,36 +31,46 @@ class VerifyProfileStatus
             $details = MemberDetail::where('user_id', $user->id)->first();
 
             if(!$details || !$details->completed){
-                //No details, returning error
-                $response = [
-                    'success' => false,
-                    'message' => 'Member details not added',
-                    'is_member' => true,
-                    'profile_completed' => false,
-                ];
-                return response()->json($response, 403);
+
+                if ($request->is('api/*')) {
+                    //No details, returning error
+                    $response = [
+                        'success' => false,
+                        'message' => 'Member details not added',
+                        'is_member' => true,
+                        'profile_completed' => false,
+                    ];
+                    return response()->json($response, 403);
+                }
+                return redirect('/member/detail');
 
             }else{
 
                 // Checking membership request status
                 $request_status = MembershipRequest::where('user_id', $user->id)->latest()->first();
 
-                $response = [
-                    'success' => false,
-                    'message' => $request_status->request_status->description,
-                    'is_member' => true,
-                    'profile_completed' => true,
-                    
-                ];
-                return response()->json($response, 403);
+                if ($request->is('api/*')) {
+                    $response = [
+                        'success' => false,
+                        'message' => $request_status->request_status->description,
+                        'is_member' => true,
+                        'profile_completed' => true,
+                        
+                    ];
+                    return response()->json($response, 403);
+                }
+                return redirect('/member/profile/pending');
             }
         }else{
-            $response = [
-                'success' => false,
-                'message' => 'Not a member',
-                'is_member' => false
-            ];
-            return response()->json($response, 401);
+            if ($request->is('api/*')) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Not a member',
+                    'is_member' => false
+                ];
+                return response()->json($response, 401);
+            }
+            return redirect('home');
         }
         
     }

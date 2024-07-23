@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Members\Http\Controllers\MembersController;
+use Modules\Members\Http\Middleware\VerifyProfileStatus;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +15,26 @@ use Modules\Members\Http\Controllers\MembersController;
 |
 */
 
-Route::group([], function () {
-    Route::resource('members', MembersController::class)->names('members');
+Route::prefix('member')->group(function () {
+    Route::controller(MembersController::class)->group(function () {
+        Route::get('register', 'create');
+        Route::post('register', 'store')->name('member.register');
+        Route::get('verify_email_otp', 'createEmailOtpForm')->name('member.verify_email_otp');
+        Route::post('verify_email_otp', 'verifyEmailOtp')->name('member.verify_email_otp');
+        Route::post('resend_email_otp', 'resendEmailOtp')->name('member.resend_email_otp');
+    });
+});
+
+
+Route::middleware(['auth:sanctum','verified_email'])->prefix('member')->group(function () {
+    Route::controller(MembersController::class)->group(function(){
+        Route::get('detail', 'createDetails')->name('member.detail');
+        Route::post('detail', 'storeDetails')->name('member.detail');
+        Route::get('profile/pending', 'profilePending')->name('member.profile.pending');
+
+        Route::middleware(VerifyProfileStatus::class)->group(function () {
+            Route::get('/', 'showProfile')->name('member.profile');
+            Route::get('profile', 'showProfile')->name('member.profile');
+        });
+    });   
 });

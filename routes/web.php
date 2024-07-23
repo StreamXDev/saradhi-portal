@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\SocialAuthController;
+use App\Http\Controllers\OtpController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +19,7 @@ Route::controller(SocialAuthController::class)->group(function(){
     Route::get('auth/google', 'googleRedirect')->name('auth.google');
     Route::get('auth/google/callback', 'googleCallback');
 });
+
 
 Route::group(['middleware' => ['auth','verified']], function() {
     Route::resource('roles', RoleController::class);

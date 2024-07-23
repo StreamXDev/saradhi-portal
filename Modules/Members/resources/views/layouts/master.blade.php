@@ -6,24 +6,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
 
-    <title>Members Module - {{ config('app.name', 'Laravel') }}</title>
+    <title>Saradhi - {{ $page_title ?? 'Members' }}</title>
 
-    <meta name="description" content="{{ $description ?? '' }}">
-    <meta name="keywords" content="{{ $keywords ?? '' }}">
-    <meta name="author" content="{{ $author ?? '' }}">
+    <meta name="description" content="{{ $page_description ?? '' }}">
+    <meta name="keywords" content="{{ $page_keywords ?? '' }}">
+    <meta name="author" content="{{ $page_author ?? '' }}">
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker.min.css" rel="stylesheet">
+    
 
     {{-- Vite CSS --}}
     {{-- {{ module_vite('build-members', 'resources/assets/sass/app.scss') }} --}}
+    
+    @vite(\Nwidart\Modules\Module::getAssets())
+    @yield('page-style')
 </head>
 
 <body>
-    @yield('content')
+    <header class="main">
+        <div class="container">
+            <div class="logo">
+                <img src="{{ asset('images/logo.png') }}" alt="{{ env('APP_NAME') }}" class="img-fluid logo-img">
+            </div>
+        </div>
+    </header>
+    <div class="container-main">
+        @yield('content')
+    </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
     {{-- Vite JS --}}
     {{-- {{ module_vite('build-members', 'resources/assets/js/app.js') }} --}}
+    @yield('page_scripts')
 </body>

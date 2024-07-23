@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('mid')->unique()->nullable();
             $table->foreignId('user_id')->constrained();
             $table->date('start_date');
+            $table->date('updated_date');
             $table->date('expiry_date');
             $table->enum('type', array('single', 'family'))->index();
             $table->enum('status', array('active', 'dormant'))->default('active')->index();

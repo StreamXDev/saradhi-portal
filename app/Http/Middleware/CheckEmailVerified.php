@@ -7,11 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class CheckEmailVerifiedApi
+class CheckEmailVerified
 {
     
-   
-
     /**
      * Handle an incoming request.
      *
@@ -23,14 +21,17 @@ class CheckEmailVerifiedApi
     {
         $user = Auth::user();
 
-        $response = [
-            'success' => false,
-            'email_verified' => false,
-            'message' => 'Email not verified',
-        ];
-
         if(!$user->hasVerifiedEmail()){
-            return response()->json($response, 401);
+            if ($request->is('api/*')) {
+                $response = [
+                    'success' => false,
+                    'email_verified' => false,
+                    'message' => 'Email not verified',
+                ];
+                return response()->json($response, 401);
+            }else{
+                return redirect('/member/verify_email_otp?name='.$user->name.'&email='.$user->email);
+            }
         }
 
         return $next($request);

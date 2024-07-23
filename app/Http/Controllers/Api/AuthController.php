@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\API\BaseController as BaseController;
+use App\Http\Controllers\OtpController;
 use App\Models\User;
 use App\Notifications\SendOtp;
 use Illuminate\Foundation\Auth\VerifiesEmails;
@@ -52,15 +53,15 @@ class AuthController extends BaseController
             Member::create($member);
         }
 
-        
         // Sending OTP
         $this->sendOtp($request);
-
+        /*
         $success['email'] = $request->email;
         if($user){
             return $this->sendResponse($success, 'User Registered successfully.');
         }
         return $this->sendError('Unauthorized.', ['error'=>'Unauthorized']);
+        */
     }
    
     /**
@@ -126,6 +127,7 @@ class AuthController extends BaseController
      * 
      * @return \Illuminate\Http\Response
      */
+    
     public function sendOtp(Request $request)
     {
         $data = $request->validate(

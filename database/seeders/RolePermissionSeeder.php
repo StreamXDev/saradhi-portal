@@ -56,10 +56,23 @@ class RolePermissionSeeder extends Seeder
                     'profile.update',
                 ]
             ],
+            [
+                'group_name' => 'membership_request',
+                'permissions' => [
+                    'membership_request.verification.show',
+                    'membership_request.verification.verify',
+                    'membership_request.review.show',
+                    'membership_request.review.review',
+                    'membership_request.approval.show',
+                    'membership_request.approval.approve',
+                    'membership_request.confirm',
+                ]
+            ]
         ];
 
         $admin = User::where('username', 'superadmin')->first();
         $roleSuperAdmin = $this->maybeCreateSuperAdminRole($admin);
+        $this->createMemberRole();
 
         // Create and Assign Permissions
         for ($i = 0; $i < count($permissions); $i++) {
@@ -84,6 +97,17 @@ class RolePermissionSeeder extends Seeder
         if ($admin) {
             $admin->assignRole($roleSuperAdmin);
         }
+    }
+
+    private function createMemberRole()
+    {
+        $memberRole = Role::where('name', 'member')->where('guard_name', 'web')->first();
+
+        if(is_null($memberRole)){
+            $memberRole = Role::create(['name' => 'member', 'guard_name' => 'web']);
+        }
+
+        return $memberRole;
     }
 
     private function maybeCreateSuperAdminRole($admin): Role

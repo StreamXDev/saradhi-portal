@@ -54,7 +54,7 @@ class EmailVerificationController extends BaseController
         $request->user()->sendEmailVerificationNotification();
 
         $success['email_verification_sent'] = true;
-        return $this->sendResponse($success, 'Sent email verification code.');
+        return $this->sendResponse($success, 'OTP Sent. Please check your email');
 
     }
 

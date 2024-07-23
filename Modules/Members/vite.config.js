@@ -20,7 +20,7 @@ export default defineConfig({
     ],
 });
 
-//export const paths = [
-//    'Modules/Members/resources/assets/sass/app.scss',
-//    'Modules/Members/resources/assets/js/app.js',
-//];
+export const paths = [
+    'Modules/Members/resources/assets/sass/app.scss',
+    'Modules/Members/resources/assets/js/app.js',
+];

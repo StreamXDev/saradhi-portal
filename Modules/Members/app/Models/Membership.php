@@ -15,6 +15,7 @@ class Membership extends Model
     protected $fillable = [
         'user_id',
         'start_date',
+        'updated_date',
         'expiry_date',
         'type',
         'status',

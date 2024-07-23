@@ -102,7 +102,7 @@ class MembersController extends BaseController
         ]);
 
         //Add phone to users and member contact table
-        User::where('user_id', $user->id)->update([
+        User::where('id', $user->id)->update([
             'phone' => $input['phone']
         ]);
 
@@ -124,18 +124,21 @@ class MembersController extends BaseController
             'updated_by' => $user->id
         ]);
 
-        //TODO: get notified to Treasurer role
-
+        //TODO: [Phase 2] get notified the users who permitted to view new membership requests
 
         DB::commit();
 
-        // add gender,blood group to members
-        // add membership request first status to requests table
-
-        //DB::beginTransaction();
-        return $this->sendResponse($status, 'test', 401);
+        $response = [
+            'request_status' => $status->name,
+            'description' => $status->description
+        ];
+        
+        return $this->sendResponse($response, 'Your membership request has been sent for review.');
 
     }
+
+    //add address
+    //add family member
 
     protected function validationRules()
     {

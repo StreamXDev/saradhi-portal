@@ -15,7 +15,7 @@ use Modules\Members\Http\Middleware\VerifyProfileStatus;
  *
 */
 
-Route::middleware(['auth:sanctum','verified'])->prefix('member')->group(function () {
+Route::middleware(['auth:sanctum','verified_email'])->prefix('member')->group(function () {
     Route::controller(MembersController::class)->group(function(){
         Route::get('details', 'createDetails');
         Route::post('details', 'storeDetails');
