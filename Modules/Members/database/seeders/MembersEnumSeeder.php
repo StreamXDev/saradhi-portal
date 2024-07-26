@@ -32,6 +32,7 @@ class MembersEnumSeeder extends Seeder
                         'category' => array_key_exists('category', $enum) ? $enum['category'] : null,
                         'description' => array_key_exists('description', $enum) ? $enum['description'] : null,
                         'order' => array_key_exists('order', $enum) ? $enum['order'] : 0,
+                        'protected' => array_key_exists('protected', $enum) ? $enum['protected'] : 0,
                     ]
                 );
             }
@@ -45,31 +46,36 @@ class MembersEnumSeeder extends Seeder
                 'slug' => 'pending',
                 'name' => 'Pending',
                 'description' => 'Membership request is waiting for verification',
-                'order' => 0
+                'order' => 0,
+                'protected' => 1
             ],
             [
                 'slug' => 'verified',
                 'name' => 'Verified',
                 'description' => 'Membership request verification is successfully completed. Waiting for review',
-                'order' => 1
+                'order' => 1,
+                'protected' => 1
             ],
             [
                 'slug' => 'reviewed',
                 'name' => 'Reviewed',
                 'description' => 'Membership request review is completed. Waiting for approval',
-                'order' => 2
+                'order' => 2,
+                'protected' => 1
             ],
             [
                 'slug' => 'approved',
                 'name' => 'Approved',
                 'description' => 'Membership request is approved!, Processing data',
-                'order' => 3
+                'order' => 3,
+                'protected' => 1
             ],
             [
                 'slug' => 'confirmed',
                 'name' => 'Confirmed',
                 'description' => 'Membership ID is issued',
-                'order' => 4
+                'order' => 4,
+                'protected' => 1
             ],
         ];
     }

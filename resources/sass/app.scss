@@ -58,3 +58,22 @@ header.main{
         }
     }
 }
+
+.admin-layout{
+    .container{
+        width: 100%;
+        max-width: none;
+    }
+    .content-main{
+        display: flex;
+        align-items: stretch;
+        column-gap: 1rem;
+        padding: 1rem;
+        aside.main{
+            flex: 1;
+        }
+        main.main{
+            flex: 5;
+        }
+    }
+}

@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\Auth\SocialAuthController;
-use App\Http\Controllers\OtpController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
@@ -24,4 +24,12 @@ Route::controller(SocialAuthController::class)->group(function(){
 Route::group(['middleware' => ['auth','verified']], function() {
     Route::resource('roles', RoleController::class);
     Route::resource('users', UserController::class);
+
+    Route::prefix('admin')->group(function() {
+        Route::controller(DashboardController::class)->group(function(){
+            Route::get('/' , 'index');
+            Route::get('/dashboard' , 'index');
+        });
+    });
 });
+

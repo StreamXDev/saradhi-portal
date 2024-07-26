@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Saradhi - {{ $page_title ?? 'Members' }}</title>
+    <title>Saradhi - Admin</title>
 
     <meta name="description" content="{{ $page_description ?? '' }}">
     <meta name="keywords" content="{{ $page_keywords ?? '' }}">
@@ -22,7 +22,7 @@
     @yield('page-style')
 </head>
 <body>
-    <div id="app">
+    <div id="app" class="admin-layout">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
@@ -35,13 +35,11 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
+
                     </ul>
-                    
+
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
-                        @if (Auth::user()->hasRole(['superadmin','admin']))
-                            <li class="nav-item"><a class="nav-link" href="#">Admin</a></li>
-                        @endif
                         <!-- Authentication Links -->
                         @guest
                             @if (Route::has('login'))
@@ -78,10 +76,14 @@
                 </div>
             </div>
         </nav>
-
-        <main class="py-4">
-            @yield('content')
-        </main>
+        <div class="content-main">
+            <aside class="main">
+                @include('admin.includes.sidebar')
+            </aside>
+            <main class="main">
+                @yield('content')
+            </main>
+        </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>

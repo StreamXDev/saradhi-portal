@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->unsignedInteger('order')->default(0);
             $table->boolean('active')->default(1);
+            $table->boolean('protected')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
