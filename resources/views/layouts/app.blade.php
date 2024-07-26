@@ -39,9 +39,11 @@
                     
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
-                        @if (Auth::user()->hasRole(['superadmin','admin']))
-                            <li class="nav-item"><a class="nav-link" href="#">Admin</a></li>
-                        @endif
+                        @auth    
+                            @if (Auth::user()->hasRole(['superadmin','admin']))
+                                <li class="nav-item"><a class="nav-link" href="#">Admin</a></li>
+                            @endif
+                        @endauth
                         <!-- Authentication Links -->
                         @guest
                             @if (Route::has('login'))

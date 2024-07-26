@@ -1,3 +1,7 @@
-<div>
-    <!-- Because you are alive, everything is possible. - Thich Nhat Hanh -->
+@extends('layouts.admin')
+
+@section('content')
+<div class="container">
+    Requests
 </div>
+@endsection

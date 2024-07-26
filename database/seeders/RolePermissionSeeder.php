@@ -72,7 +72,7 @@ class RolePermissionSeeder extends Seeder
 
         $admin = User::where('username', 'superadmin')->first();
         $roleSuperAdmin = $this->maybeCreateSuperAdminRole($admin);
-        $this->createMemberRole();
+        $this->createMemberRoles();
 
         // Create and Assign Permissions
         for ($i = 0; $i < count($permissions); $i++) {
@@ -99,15 +99,30 @@ class RolePermissionSeeder extends Seeder
         }
     }
 
-    private function createMemberRole()
+    private function createMemberRoles()
     {
         $memberRole = Role::where('name', 'member')->where('guard_name', 'web')->first();
 
         if(is_null($memberRole)){
             $memberRole = Role::create(['name' => 'member', 'guard_name' => 'web']);
         }
+        
+        $treasurerRole = Role::where('name', 'treasurer')->where('guard_name', 'web')->first();
+        if(is_null($treasurerRole)){
+            $treasurerRole = Role::create(['name' => 'treasurer', 'guard_name' => 'web']);
+        }
 
-        return $memberRole;
+        $secretaryRole = Role::where('name', 'secretary')->where('guard_name', 'web')->first();
+        if(is_null($secretaryRole)){
+            $secretaryRole = Role::create(['name' => 'secretary', 'guard_name' => 'web']);
+        }
+
+        $presidentRole = Role::where('name', 'president')->where('guard_name', 'web')->first();
+        if(is_null($presidentRole)){
+            $presidentRole = Role::create(['name' => 'president', 'guard_name' => 'web']);
+        }
+
+        return true;
     }
 
     private function maybeCreateSuperAdminRole($admin): Role
