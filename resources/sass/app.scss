@@ -77,3 +77,41 @@ header.main{
         }
     }
 }
+
+.form-title-divider{
+    margin:2rem 0 2rem 0;
+    border-bottom: 4px solid #ddd;
+}
+
+.list-profile-photo{
+    width:40px ;
+    border-radius: 4px;
+}
+
+.member-view{
+    .header{
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+        .member-photo{
+            img{
+                width: 140px !important;
+            }
+        }
+    }
+}
+.detail-list{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    li{
+        display: flex;
+        .label{
+            flex: 2;
+            max-width: 200px;
+        }
+        .value{
+            flex: 4;
+        }
+    }
+}

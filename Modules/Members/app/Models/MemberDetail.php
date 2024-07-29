@@ -17,6 +17,10 @@ class MemberDetail extends Model
         'profession',
         'passport_no',
         'passport_expiry',
+        'photo_civil_id_front',
+        'photo_civil_id_back',
+        'photo_passport_front',
+        'photo_passport_back',
         'completed'
     ];
 }

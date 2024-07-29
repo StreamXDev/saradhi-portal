@@ -9,96 +9,157 @@
     @if($errors->any())
         <div class="form-errors">{!! implode('', $errors->all('<div>:message</div>')) !!}</div>
     @endif
-    <form action="{{ route('member.detail') }}" method="post">
+    <form action="{{ route('member.detail') }}" method="post" enctype="multipart/form-data">
         @csrf
         
         <div class="form-group row">
             <div class="col-md-6">
-                <label for="phone" class="control-label">Phone</label>
+                <label for="phone" class="form-label">Phone<span class="asterisk">*</span></label>
                 <div class="control-col">
                     <input type="tel" name="phone" id="phone" class="form-control" value="{{ old('phone') }}">
                 </div>
             </div>
             <div class="col-md-6">
-                <label for="civil_id" class="control-label">Civil ID</label>
+                <label for="dob" class="form-label">Date of Birth<span class="asterisk">*</span></label>
                 <div class="control-col">
-                    <input type="tel" name="civil_id" id="civil_id" class="form-control">
+                    <input type="tel" name="dob" id="dob" class="date form-control" value="{{ old('dob') }}">
                 </div>
             </div>
         </div>
         <div class="form-group row">
             <div class="col-md-6">
-                <label for="dob" class="control-label">Date of Birth</label>
+                <label for="gender" class="form-label">Gender<span class="asterisk">*</span></label>
                 <div class="control-col">
-                    <input type="tel" name="dob" id="dob" class="date form-control">
-                </div>
-            </div>
-            <div class="col-md-6">
-                <label for="gender" class="control-label">Gender</label>
-                <div class="control-col">
-                    <select name="gender" id="gender" class="form-control">
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
+                    <select name="gender" id="gender" class="form-select">
+                        <option value="male" @selected(old('gender') == 'male')>Male</option>
+                        <option value="female" @selected(old('gender') == 'female')>Female</option>
                     </select>
                 </div>
             </div>
-            
-        </div>
-        <div class="form-group row">
             <div class="col-md-6">
-                <label for="passport_no" class="control-label">Passport Number</label>
+                <label for="blood_group" class="form-label">Blood Group</label>
                 <div class="control-col">
-                    <input type="tel" name="passport_no" id="passport_no" class="form-control">
-                </div>
-            </div>
-            <div class="col-md-6">
-                <label for="passport_expiry" class="control-label">Passport Expiry</label>
-                <div class="control-col">
-                    <input type="tel" name="passport_expiry" id="passport_expiry" class="date form-control">
-                </div>
-            </div>
-        </div>
-        
-        <div class="form-group row">
-            
-            <div class="col-md-6">
-                <label for="blood_group" class="control-label">Blood Group</label>
-                <div class="control-col">
-                    <select name="blood_group" id="blood_group" class="form-control">
+                    <select name="blood_group" id="blood_group" class="form-select">
                         <option value="">Select</option>
                         @foreach ($blood_groups as $blood_group)
-                            <option value="{{ $blood_group->name }}">{{ $blood_group->name }}</option>
+                            <option value="{{ $blood_group->name }}" @selected(old('blood_group') == $blood_group->name)>{{ $blood_group->name }}</option>
                         @endforeach
                     </select>
                 </div>
             </div>
         </div>
-        <hr>
         <div class="form-group row">
             <div class="col-md-6">
-                <label for="company" class="control-label">Company</label>
+                <label class="form-label" for="avatar">Profile Photo</label>
                 <div class="control-col">
-                    <input type="tel" name="company" id="company" class=" form-control">
+                    <input  type="file"  name="avatar"  id="avatar" class="form-control @error('avatar') is-invalid @enderror">
+                    <div id="avatar" class="form-text">
+                        Upload profile photo
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-title-divider"></div>
+        <div class="form-group row">
+            <div class="col-md-6">
+                <label for="civil_id" class="form-label">Civil ID<span class="asterisk">*</span></label>
+                <div class="control-col">
+                    <input type="tel" name="civil_id" id="civil_id" class="form-control" value="{{ old('civil_id') }}">
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-6">
+                <label class="form-label" for="photo_civil_id_front">Civil Id (Front side):</label>
+                <div class="control-col">
+                    <input  type="file"  name="photo_civil_id_front"  id="photo_civil_id_front" class="form-control @error('photo_civil_id_front') is-invalid @enderror">
+                    <div id="photo_civil_id_front" class="form-text">
+                        Upload Civil id front side image
+                    </div>
                 </div>
             </div>
             <div class="col-md-6">
-                <label for="profession" class="control-label">Profession</label>
+                <label class="form-label" for="photo_civil_id_back">Civil Id (Back side):</label>
                 <div class="control-col">
-                    <input type="tel" name="profession" id="profession" class=" form-control">
+                    <input  type="file"  name="photo_civil_id_back"  id="photo_civil_id_back" class="form-control @error('photo_civil_id_back') is-invalid @enderror">
+                    <div id="photo_civil_id_back" class="form-text">
+                        Upload Civil id back side image
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="form-group">
-            <label for="unit" class="control-label">Saradhi Unit</label>
-            <div class="control-col">
-                <select name="member_unit_id" id="unit" class="form-control">
-                    <option value="">Select</option>
-                    @foreach ($units as $unit)
-                        <option value="{{ $unit->id }}">{{ $unit->name }}</option>
-                    @endforeach
-                </select>
+        <div class="form-title-divider"></div>
+        <div class="form-group row">
+            <div class="col-md-6">
+                <label for="passport_no" class="form-label">Passport Number<span class="asterisk">*</span></label>
+                <div class="control-col">
+                    <input type="tel" name="passport_no" id="passport_no" class="form-control" value="{{ old('passport_no') }}">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="passport_expiry" class="form-label">Passport Expiry<span class="asterisk">*</span></label>
+                <div class="control-col">
+                    <input type="tel" name="passport_expiry" id="passport_expiry" class="date form-control" value="{{ old('passport_expiry') }}">
+                </div>
             </div>
         </div>
+        <div class="form-group row">
+            <div class="col-md-6">
+                <label class="form-label" for="photo_passport_front">Passport (Front side):</label>
+                <div class="control-col">
+                    <input  type="file"  name="photo_passport_front"  id="photo_passport_front" class="form-control @error('photo_passport_front') is-invalid @enderror">
+                    <div id="photo_passport_front" class="form-text">
+                        Upload Passport front side image
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="photo_passport_back">Passport (Back side):</label>
+                <div class="control-col">
+                    <input  type="file"  name="photo_passport_back"  id="photo_passport_back" class="form-control @error('photo_passport_back') is-invalid @enderror">
+                    <div id="photo_passport_back" class="form-text">
+                        Upload Passport back side image
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-title-divider"></div>
+        <div class="form-group row">
+            <div class="col-md-6">
+                <label for="type" class="form-label">Membership Type</label>
+                <select name="type" id="type" class="form-select">
+                    <option value="single" @selected(old('type') == 'single')>Single</option>
+                    <option value="family" @selected(old('type') == 'family')>Family</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="unit" class="form-label">Saradhi Unit</label>
+                <div class="control-col">
+                    <select name="member_unit_id" id="unit" class="form-select">
+                        <option value="">Select</option>
+                        @foreach ($units as $unit)
+                            <option value="{{ $unit->id }}" @selected(old('member_unit_id') == $unit->id)>{{ $unit->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-title-divider"></div>
+        <div class="form-group row">
+            <div class="col-md-6">
+                <label for="company" class="form-label">Company</label>
+                <div class="control-col">
+                    <input type="tel" name="company" id="company" class=" form-control" value="{{ old('company') }}">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="profession" class="form-label">Profession</label>
+                <div class="control-col">
+                    <input type="tel" name="profession" id="profession" class=" form-control" value="{{ old('profession') }}">
+                </div>
+            </div>
+        </div>
+        
         <div class="form-group">
             <button type="submit" class="btn btn-primary">Submit</button>
         </div>

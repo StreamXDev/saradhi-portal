@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\Members\Http\Controllers\Admin\MemberController;
 use Modules\Members\Http\Controllers\Admin\MembershipController;
 use Modules\Members\Http\Controllers\MembersController;
 use Modules\Members\Http\Middleware\VerifyProfileStatus;
@@ -40,8 +41,11 @@ Route::middleware(['auth:sanctum','verified_email'])->prefix('member')->group(fu
     });
 });
 
-Route::prefix('admin')->middleware(['auth:sanctum', 'verified_email'])->group(function() {
+Route::prefix('admin/members')->middleware(['auth:sanctum', 'verified_email'])->group(function() {
     Route::controller(MembershipController::class)->group(function(){
         Route::get('/requests', 'requestsForVerification');
+    });
+    Route::controller(MemberController::class)->group(function(){
+        Route::get('/member/view/{id}', 'show');
     });
 });

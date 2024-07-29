@@ -6,30 +6,18 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Modules\Members\Models\MemberEnum;
+use Modules\Members\Models\Member;
+use Modules\Members\Models\MemberDetail;
 use Modules\Members\Models\MembershipRequest;
 
-class MembershipController extends Controller
+class MemberController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    function __construct()
+    public function index()
     {
-        $this->middleware('permission:membership_request.verification.show', ['only' => ['requestsForVerification']]);
-    }
-    
-    /**
-     * Display a listing of the resource.
-     */
-    public function requestsForVerification()
-    {
-        
-        $status_model = MemberEnum::where('type', 'request_status')->where('slug', 'pending')->first();
-        $requests = MembershipRequest::with(['member', 'details', 'user'])->where('request_status_id', $status_model->id)->get();
-        return view('members::admin.membership.request', compact('requests'));
+        return view('members::index');
     }
 
     /**
@@ -53,7 +41,8 @@ class MembershipController extends Controller
      */
     public function show($id)
     {
-        return view('members::show');
+        $member = Member::with(['user', 'details', 'membership', 'contacts', 'addresses', 'relations', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
+        return view('members::admin.member.show', compact('member'));
     }
 
     /**

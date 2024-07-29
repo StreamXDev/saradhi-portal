@@ -21,6 +21,10 @@ return new class extends Migration
             $table->string('profession')->nullable();
             $table->string('passport_no')->nullable();
             $table->date('passport_expiry')->nullable();
+            $table->string('photo_civil_id_front');
+            $table->string('photo_civil_id_back');
+            $table->string('photo_passport_front');
+            $table->string('photo_passport_back');
             $table->boolean('completed')->default(0);
             $table->timestamps();
         });

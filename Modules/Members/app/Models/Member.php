@@ -2,6 +2,7 @@
 
 namespace Modules\Members\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -27,10 +28,16 @@ class Member extends Model
         'photo',  
     ];
 
+    //User
+    public function user(): HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
+    
     // Member details
     public function details(): HasOne
     {
-        return $this->hasOne(MemberDetails::class, 'user_id', 'user_id');
+        return $this->hasOne(MemberDetail::class, 'user_id', 'user_id');
     }
 
     // Membership details
@@ -61,7 +68,7 @@ class Member extends Model
         return $this->hasMany(MembershipRequest::class, 'user_id', 'user_id');
     }
 
-    public function committee(): HasMany
+    public function committees(): HasMany
     {
         return $this->hasMany(MemberHasCommittee::class, 'user_id', 'user_id');
     }

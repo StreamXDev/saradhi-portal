@@ -12,7 +12,7 @@ class MemberContact extends Model
 
     protected $fillable = ['user_id', 'contact_type_id', 'title', 'value'];
 
-    public function type(): BelongsTo
+    public function contact_type(): BelongsTo
     {
         return $this->belongsTo(MemberEnum::class)->select('id', 'slug', 'name');
     }

@@ -78,6 +78,21 @@ class MembersController extends BaseController
             return $this->sendError('Validation Error.', $validator->errors());       
         }
 
+        $avatarName = 'av'.$user->id.'_'.time().'.'.$request->avatar->extension(); 
+        $request->avatar->storeAs('images', $avatarName);
+
+        $civil_id_front_name = 'cvf'.$user->id.'_'.time().'.'.$request->photo_civil_id_front->extension(); 
+        $request->photo_civil_id_front->storeAs('images', $civil_id_front_name);
+
+        $civil_id_back_name = 'cvb'.$user->id.'_'.time().'.'.$request->photo_civil_id_back->extension(); 
+        $request->photo_civil_id_back->storeAs('images', $civil_id_back_name);
+
+        $passport_front_name = 'ppf'.$user->id.'_'.time().'.'.$request->photo_passport_front->extension(); 
+        $request->photo_passport_front->storeAs('images', $passport_front_name);
+
+        $passport_back_name = 'ppb'.$user->id.'_'.time().'.'.$request->photo_passport_back->extension(); 
+        $request->photo_passport_back->storeAs('images', $passport_back_name);
+
         $input = $request->all();
 
         DB::beginTransaction();
@@ -87,11 +102,15 @@ class MembersController extends BaseController
             [
                 'member_unit_id' => $input['member_unit_id'],
                 'civil_id' => $input['civil_id'],
+                'photo_civil_id_front' => $civil_id_front_name,
+                'photo_civil_id_back' => $civil_id_back_name,
                 'dob' => $input['dob'],
                 'company' => $input['company'],
                 'profession' => $input['profession'],
                 'passport_no' => $input['passport_no'],
                 'passport_expiry' => $input['passport_expiry'],
+                'photo_passport_front' => $passport_front_name,
+                'photo_passport_back' => $passport_back_name,
                 'completed' => 1
             ]
         );
@@ -103,7 +122,8 @@ class MembersController extends BaseController
 
         //Add phone to users and member contact table
         User::where('id', $user->id)->update([
-            'phone' => $input['phone']
+            'phone' => $input['phone'],
+            'avatar' => $avatarName,
         ]);
 
         $contact_types = MemberEnum::where('type', 'contact_type')->where('slug', 'phone')->first();
@@ -121,6 +141,7 @@ class MembersController extends BaseController
         MembershipRequest::create([
             'user_id' => $user->id,
             'request_status_id' => $status->id,
+            'type' => $input['type'],
             'updated_by' => $user->id
         ]);
 
@@ -152,6 +173,12 @@ class MembersController extends BaseController
             'passport_expiry'   => ['required', 'date_format:Y-m-d'],
             'gender'            => ['required', 'string'],
             'blood_group'       => ['required', 'string'],
+            'type'              => ['required', 'string'],
+            'avatar'            => ['required','image|mimes:jpeg,png,jpg,gif,svg','max:2048'],
+            'civil_id_front'    => ['required','image|mimes:jpeg,png,jpg,gif,svg','max:2048'],
+            'civil_id_back'     => ['required','image|mimes:jpeg,png,jpg,gif,svg','max:2048'],
+            'passport_front'    => ['required','image|mimes:jpeg,png,jpg,gif,svg','max:2048'],
+            'passport_back'     => ['required','image|mimes:jpeg,png,jpg,gif,svg','max:2048'],
         ];
 
         $messages = [
@@ -166,6 +193,25 @@ class MembersController extends BaseController
             'passport_expiry.date_format' => 'Passport expiry date should be of format Y-m-d',
             'gender.required' => 'Gender is required',
             'blood_group.required' => 'Blood group is required',
+            'type.required' => 'Membership type is required',
+            
+            'avatar.required' => 'Profile photo is required',
+            'avatar.image' => 'Profile photo should be an image',
+            'avatar.max' => 'Profile photo size should not be exceeded more than 2mb',
+            
+            'civil_id_front.required' => 'Civil Id copy (Front) is required',
+            'civil_id_front.image' => 'Civil Id copy (Front) should be an image',
+            'civil_id_front.max' => 'Civil Id copy (Front) file size should not be exceeded more than 2mb',
+            'civil_id_back.required' => 'Civil Id copy (Back) is required',
+            'civil_id_back.image' => 'Civil Id copy (Back) should be an image',
+            'civil_id_back.max' => 'Civil Id copy (Back) file size should not be exceeded more than 2mb',
+            
+            'passport_front.required' => 'Passport copy (Front) is required',
+            'passport_front.image' => 'Passport copy (Front) should be an image',
+            'passport_front.max' => 'Passport copy (Front) file size should not be exceeded more than 2mb',
+            'passport_back.required' => 'Passport copy (Back) is required',
+            'passport_back.image' => 'Passport copy (Back) should be an image',
+            'passport_back.max' => 'Passport copy (Back) file size should not be exceeded more than 2mb',
         ];
 
         return [
