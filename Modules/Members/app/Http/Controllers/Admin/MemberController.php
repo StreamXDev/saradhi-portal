@@ -3,6 +3,7 @@
 namespace Modules\Members\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -43,6 +44,26 @@ class MemberController extends Controller
     {
         $member = Member::with(['user', 'details', 'membership', 'contacts', 'addresses', 'relations', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
         return view('members::admin.member.show', compact('member'));
+    }
+
+    /**
+     * Generate member view pdf
+     */
+    public function generatePDF($id)
+    {
+        $member = Member::with(['user', 'details', 'membership', 'contacts', 'addresses', 'relations', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
+        
+        $data = [
+            'title' => 'Membership Application',
+            'date' => date('M d, Y'),
+            'member' => $member
+        ];
+
+        //return view('members::admin.member.pdf', compact('data'));
+        $pdf = Pdf::loadView('members::admin.member.pdf', compact('data'));
+
+        return $pdf->download('member_request_'.str_replace(" ", "-", $member->user->name).'.pdf');
+
     }
 
     /**

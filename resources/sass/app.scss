@@ -34,6 +34,9 @@ header.main{
 }
 .page-title{
     margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     .title{
         font-size: 1.8rem;
     }
@@ -112,6 +115,26 @@ header.main{
         }
         .value{
             flex: 4;
+        }
+    }
+}
+
+.proof_list{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    li{
+        flex: 1 0 50%;
+        margin-bottom: 1.5rem;
+        .image{
+            img{
+                border-radius: 6px;
+            }
+        }
+        .title{
+            font-size: 0.8em;
         }
     }
 }

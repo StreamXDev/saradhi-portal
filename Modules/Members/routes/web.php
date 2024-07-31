@@ -47,5 +47,6 @@ Route::prefix('admin/members')->middleware(['auth:sanctum', 'verified_email'])->
     });
     Route::controller(MemberController::class)->group(function(){
         Route::get('/member/view/{id}', 'show');
+        Route::get('/member/pdf/{id}', 'generatePDF');
     });
 });

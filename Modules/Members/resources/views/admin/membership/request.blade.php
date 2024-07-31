@@ -19,7 +19,6 @@
             <td>{{ date('d M, Y H:i A', strtotime($request->created_at)) }}</td>
             <td>
                 <a href="/admin/members/member/view/{{ $request->user->id }}" class="btn btn-primary">View</a>
-                <a href="#" class="btn btn-success">Verify</a>
             </td>
         </tr>
         @endforeach
