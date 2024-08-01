@@ -4,11 +4,16 @@ use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/linkstorage', function () {
+    Artisan::call('storage:link') ;// this will do the command line job
 });
 
 Auth::routes(['verify' => true]);
