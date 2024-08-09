@@ -73,6 +73,12 @@ class Member extends Model
         return $this->hasMany(MemberHasCommittee::class, 'user_id', 'user_id');
     }
 
+    // Member introduced by
+    public function introducer(): HasOne
+    {
+        return $this->hasOne(MemberIntroduce::class, 'user_id', 'user_id');
+    }
+
     public function trustee(): HasOne
     {
         return $this->hasOne(MemberTrustee::class, 'user_id', 'user_id');

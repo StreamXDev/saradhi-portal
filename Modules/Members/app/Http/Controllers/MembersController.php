@@ -18,6 +18,7 @@ use Modules\Members\Models\Member;
 use Modules\Members\Models\MemberContact;
 use Modules\Members\Models\MemberDetail;
 use Modules\Members\Models\MemberEnum;
+use Modules\Members\Models\MemberIntroduce;
 use Modules\Members\Models\Membership;
 use Modules\Members\Models\MembershipRequest;
 use Modules\Members\Models\MemberUnit;
@@ -314,7 +315,7 @@ class MembersController extends Controller
 
         Membership::create([
             'user_id' => $user->id,
-            'type' => $input['type']
+            'type' => $input['type'] 
         ]);
 
         MemberContact::create([
@@ -332,6 +333,15 @@ class MembersController extends Controller
             'request_status_id' => $status->id,
             'updated_by' => $user->id
         ]);
+
+        MemberIntroduce::create([
+            'user_id' => $user->id,
+            'introducer_id' => $input['introducer_id'],
+            'introducer_name' => $input['introducer_name'],
+            'introducer_phone' => $input['introducer_phone'],
+            'introducer_mid' => $input['introducer_mid'],
+            'introducer_unit' => $input['introducer_unit'],
+        ])
 
         //TODO: [Phase 2] get notified the users who permitted to view new membership requests
 
@@ -359,6 +369,8 @@ class MembersController extends Controller
             'photo_civil_id_back'     => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg','max:2048'],
             'photo_passport_front'    => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg','max:2048'],
             'photo_passport_back'     => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg','max:2048'],
+            'introducer_name'   => ['required', 'string'],
+            'introducer_phone'   => ['required', 'string'],
         ];
 
         $messages = [

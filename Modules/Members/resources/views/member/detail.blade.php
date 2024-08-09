@@ -126,27 +126,6 @@
         <div class="form-title-divider"></div>
         <div class="form-group row">
             <div class="col-md-6">
-                <label for="type" class="form-label">Membership Type</label>
-                <select name="type" id="type" class="form-select">
-                    <option value="single" @selected(old('type') == 'single')>Single</option>
-                    <option value="family" @selected(old('type') == 'family')>Family</option>
-                </select>
-            </div>
-            <div class="col-md-6">
-                <label for="unit" class="form-label">Saradhi Unit</label>
-                <div class="control-col">
-                    <select name="member_unit_id" id="unit" class="form-select">
-                        <option value="">Select</option>
-                        @foreach ($units as $unit)
-                            <option value="{{ $unit->id }}" @selected(old('member_unit_id') == $unit->id)>{{ $unit->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div class="form-title-divider"></div>
-        <div class="form-group row">
-            <div class="col-md-6">
                 <label for="company" class="form-label">Company</label>
                 <div class="control-col">
                     <input type="tel" name="company" id="company" class=" form-control" value="{{ old('company') }}">
@@ -159,7 +138,65 @@
                 </div>
             </div>
         </div>
+        <div class="form-title-divider"></div>
+        <div class="form-group row">
+            <div class="col-md-6">
+                <label for="type" class="form-label">Membership Type</label>
+                <select name="type" id="type" class="form-select">
+                    <option value="single" @selected(old('type') == 'single')>Single</option>
+                    <option value="family" @selected(old('type') == 'family')>Family</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="unit" class="form-label">Your Saradhi Unit</label>
+                <div class="control-col">
+                    <select name="member_unit_id" id="unit" class="form-select">
+                        <option value="">Select</option>
+                        @foreach ($units as $unit)
+                            <option value="{{ $unit->id }}" @selected(old('member_unit_id') == $unit->id)>{{ $unit->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
         
+        <div class="form-title-divider"></div>
+        <h5 class="form-subtitle">Introducer Details</h5>
+        <div class="form-group row">
+            <div class="col-md-6">
+                <label for="intro_name" class="form-label">Introducer Name<span class="asterisk">*</span></label>
+                <div class="control-col">
+                    <input type="text" name="introducer_name" id="intro_name" class="form-control"> 
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="introducer_phone" class="form-label">Introducer's Phone<span class="asterisk">*</span></label>
+                <div class="control-col">
+                    <input type="text" name="introducer_phone" id="introducer_phone" class="form-control"> 
+                </div>
+            </div>
+            
+        </div>
+        <div class="form-group row">
+            <div class="col-md-6">
+                <label for="introducer_mid" class="form-label">Introducer's Membership Number</label>
+                <div class="control-col">
+                    <input type="text" name="introducer_mid" id="introducer_mid" class="form-control"> 
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="introducer_units" class="form-label">Introducer's Unit</label>
+                <div class="control-col">
+                    <select name="introducer_unit" id="introducer_unit" class="form-select">
+                        <option value="">Select</option>
+                        @foreach ($units as $unit)
+                            <option value="{{ $unit->name }}" @selected(old('introducer_unit') == $unit->id)>{{ $unit->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
+
         <div class="form-group">
             <button type="submit" class="btn btn-primary">Submit</button>
         </div>
