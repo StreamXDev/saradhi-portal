@@ -341,7 +341,7 @@ class MembersController extends Controller
             'introducer_phone' => $input['introducer_phone'],
             'introducer_mid' => $input['introducer_mid'],
             'introducer_unit' => $input['introducer_unit'],
-        ])
+        ]);
 
         //TODO: [Phase 2] get notified the users who permitted to view new membership requests
 
