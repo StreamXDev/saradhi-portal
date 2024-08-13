@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->foreignId('request_status_id')->constrained('member_enums');
+            $table->boolean('checked')->default(0);
             $table->foreignId('updated_by')->references('id')->on('users');
             $table->string('remark')->nullable();
             $table->timestamps();

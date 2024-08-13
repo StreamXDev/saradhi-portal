@@ -10,6 +10,7 @@
             <th>Request Status</th>
             <th>Requested On</th>
             <th></th>
+            <th></th>
         </tr>
         @foreach ($requests as $request)
         <tr>
@@ -19,6 +20,14 @@
             <td>{{ date('d M, Y H:i A', strtotime($request->created_at)) }}</td>
             <td>
                 <a href="/admin/members/member/view/{{ $request->user->id }}" class="btn btn-primary">View</a>
+            </td>
+            <td>
+                <form action="{{ route('admin.member.change_status') }}" method="post">
+                    @csrf
+                    <input type="hidden" name="user_id" value="{{ $request->member->user_id }}">
+                    <input type="hidden" name="current_status_id" value="{{ $request->request_status->request_status_id }}">
+                    <input type="submit" value="Verify">
+                </form>
             </td>
         </tr>
         @endforeach

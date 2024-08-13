@@ -336,7 +336,6 @@ class MembersController extends Controller
 
         MemberIntroduce::create([
             'user_id' => $user->id,
-            'introducer_id' => $input['introducer_id'],
             'introducer_name' => $input['introducer_name'],
             'introducer_phone' => $input['introducer_phone'],
             'introducer_mid' => $input['introducer_mid'],

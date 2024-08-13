@@ -43,7 +43,8 @@ Route::middleware(['auth:sanctum','verified_email'])->prefix('member')->group(fu
 
 Route::prefix('admin/members')->middleware(['auth:sanctum', 'verified_email'])->group(function() {
     Route::controller(MembershipController::class)->group(function(){
-        Route::get('/requests', 'requestsForVerification');
+        Route::get('/requests', 'requests');
+        Route::post('/change_status', 'changeStatus')->name('admin.member.change_status');
     });
     Route::controller(MemberController::class)->group(function(){
         Route::get('/member/view/{id}', 'show');

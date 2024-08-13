@@ -1,10 +1,10 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
 <div class="row">
     <div class="col-lg-12 margin-tb">
         <div class="pull-left">
-            <h2>Edit User</h2>
+            <h2>Create New User</h2>
         </div>
         <div class="pull-right">
             <a class="btn btn-primary btn-sm mb-2" href="{{ route('users.index') }}"><i class="fa fa-arrow-left"></i> Back</a>
@@ -23,21 +23,19 @@
     </div>
 @endif
 
-<form method="POST" action="{{ route('users.update', $user->id) }}">
+<form method="POST" action="{{ route('users.store') }}">
     @csrf
-    @method('PUT')
-
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">
                 <strong>Name:</strong>
-                <input type="text" name="name" placeholder="Name" class="form-control" value="{{ $user->name }}">
+                <input type="text" name="name" placeholder="Name" class="form-control">
             </div>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">
                 <strong>Email:</strong>
-                <input type="email" name="email" placeholder="Email" class="form-control" value="{{ $user->email }}">
+                <input type="email" name="email" placeholder="Email" class="form-control">
             </div>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12">
@@ -57,7 +55,7 @@
                 <strong>Role:</strong>
                 <select name="roles[]" class="form-control" multiple="multiple">
                     @foreach ($roles as $value => $label)
-                        <option value="{{ $value }}" {{ isset($userRole[$value]) ? 'selected' : ''}}>
+                        <option value="{{ $value }}">
                             {{ $label }}
                         </option>
                      @endforeach

@@ -32,7 +32,7 @@ class MemberController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         //
     }
@@ -43,6 +43,7 @@ class MemberController extends Controller
     public function show($id)
     {
         $member = Member::with(['user', 'details', 'membership', 'contacts', 'addresses', 'relations', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
+        
         return view('members::admin.member.show', compact('member'));
     }
 
@@ -77,7 +78,7 @@ class MemberController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id): RedirectResponse
+    public function update(Request $request, $id)
     {
         //
     }
