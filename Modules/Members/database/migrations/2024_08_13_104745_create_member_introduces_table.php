@@ -13,8 +13,15 @@ return new class extends Migration
     {
         Schema::create('member_introduces', function (Blueprint $table) {
             $table->id();
-            
+            $table->foreignId('user_id')->constrained();
+            $table->unsignedBigInteger('introducer_id')->nullable();
+            $table->string('introducer_name');
+            $table->string('introducer_phone');
+            $table->string('introducer_mid')->index();
+            $table->string('introducer_unit');
             $table->timestamps();
+
+            $table->foreign('introducer_id')->references('id')->on('users'); 
         });
     }
 

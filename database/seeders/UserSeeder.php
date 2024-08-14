@@ -32,7 +32,7 @@ class UserSeeder extends Seeder
             $member = Member::where('user_id', $user->id)->first();
             if(is_null($member)){
                 $member = new Member();
-                $member->name = 'Safeer Aslam';
+                $member->name = 'SHanoob Sekhar';
                 $member->user_id = $user->id;
                 $member->save();
             }
