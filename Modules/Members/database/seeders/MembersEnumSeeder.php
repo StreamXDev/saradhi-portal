@@ -43,38 +43,52 @@ class MembersEnumSeeder extends Seeder
     {
         return [
             [
-                'slug' => 'pending',
-                'name' => 'Pending',
-                'description' => 'Membership request is waiting for verification',
+                'slug' => 'rejected',
+                'name' => 'Rejected',
+                'description' => 'Membership request is rejected',
                 'order' => 0,
+                'protected' => 1
+            ],
+            [
+                'slug' => 'saved',
+                'name' => 'Saved',
+                'description' => 'Membership request is waiting for verification',
+                'order' => 1,
+                'protected' => 1
+            ],
+            [
+                'slug' => 'submitted',
+                'name' => 'Submitted',
+                'description' => 'Membership request is waiting for verification',
+                'order' => 2,
                 'protected' => 1
             ],
             [
                 'slug' => 'verified',
                 'name' => 'Verified',
-                'description' => 'Membership request verification is successfully completed. Waiting for review',
-                'order' => 1,
+                'description' => 'Membership request is waiting for review',
+                'order' => 3,
                 'protected' => 1
             ],
             [
                 'slug' => 'reviewed',
                 'name' => 'Reviewed',
-                'description' => 'Membership request review is completed. Waiting for approval',
-                'order' => 2,
+                'description' => 'Membership request is waiting for approval',
+                'order' => 4,
                 'protected' => 1
             ],
             [
                 'slug' => 'approved',
                 'name' => 'Approved',
-                'description' => 'Membership request is approved!, Processing data',
-                'order' => 3,
+                'description' => 'Membership request is approved, Waiting for confirmation',
+                'order' => 5,
                 'protected' => 1
             ],
             [
                 'slug' => 'confirmed',
                 'name' => 'Confirmed',
                 'description' => 'Membership ID is issued',
-                'order' => 4,
+                'order' => 6,
                 'protected' => 1
             ],
         ];

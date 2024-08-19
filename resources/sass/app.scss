@@ -74,6 +74,12 @@ header.main{
         padding: 1rem;
         aside.main{
             flex: 1;
+            nav.aside{
+                .nav-link{
+                    display: block;
+                    padding: 0.5rem 0;
+                }
+            }
         }
         main.main{
             flex: 5;
@@ -137,4 +143,75 @@ header.main{
             font-size: 0.8em;
         }
     }
+}
+
+.request-status-list{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    li{
+        padding: 0 0 1rem 0;
+        padding-left: 25px;
+        position: relative;
+        color: rgba(0,0,0,0.4);
+        .title{
+            font-weight: 500;
+        }
+        .description{
+            font-size: 0.9em;
+        }
+        &::before{
+            content: '\f058';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            top: 1px;
+            color: rgba(0,0,0,0.1);
+            z-index: 1;
+        }
+        &::after{
+            content: ' ';
+            width: 1px;
+            background-color: #ddd;
+            position: absolute;
+            top:1.5rem;
+            bottom: 0;
+            left: 0.5rem;
+        }
+        &:last-child{
+            padding-bottom: 0;
+            &::after{
+                content: none;
+            }
+        }
+        &.active{
+            .title{color: #222;}
+            .description{color: #666;}
+            .remark{ color: #222; font-size: 0.8em;}
+            &::before{
+                color: green;
+            }
+            &::after{
+                background-color: green;
+            }
+        }
+        &.active-rejected{
+            .title{color: crimson;}
+            .remark{
+                color: crimson;
+                font-size: 0.8em;
+            }
+            &::before{
+                color: crimson;
+            }
+            &::after{
+                background-color: #ddd;
+            }
+        }
+    }
+}
+
+.request-action{
+    padding: 2rem 0;
 }

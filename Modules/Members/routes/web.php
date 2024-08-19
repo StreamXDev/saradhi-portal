@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\admin\DashboardController;
 use Illuminate\Support\Facades\Route;
 use Modules\Members\Http\Controllers\Admin\MemberController;
 use Modules\Members\Http\Controllers\Admin\MembershipController;
@@ -41,10 +42,21 @@ Route::middleware(['auth:sanctum','verified_email'])->prefix('member')->group(fu
     });
 });
 
-Route::prefix('admin/members')->middleware(['auth:sanctum', 'verified_email'])->group(function() {
+
+/**
+ * Admin Routes
+ */
+Route::prefix('admin')->middleware(['auth:sanctum', 'verified_email', 'is_admin'])->group(function() {
+    Route::controller(DashboardController::class)->group(function() {
+        Route::get('/', 'index');
+    });
+});
+
+Route::prefix('admin/members')->middleware(['auth:sanctum', 'verified_email', 'is_admin'])->group(function() {
     Route::controller(MembershipController::class)->group(function(){
         Route::get('/requests', 'requests');
         Route::post('/change_status', 'changeStatus')->name('admin.member.change_status');
+        Route::post('/confirm_membership_request', 'confirmMembershipRequest')->name('admin.member.confirm_membership_request');
     });
     Route::controller(MemberController::class)->group(function(){
         Route::get('/member/view/{id}', 'show');

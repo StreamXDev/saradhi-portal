@@ -20,7 +20,10 @@
             "Modules\\Members\\": "app/",
             "Modules\\Members\\Database\\Factories\\": "database/factories/",
             "Modules\\Members\\Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/Helpers/membershipRequestHelper.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

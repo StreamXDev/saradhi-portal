@@ -38,7 +38,7 @@ class MembersController extends Controller
 
 
     /**
-     * Display profile verification pending page
+     * Display profile verification pending page (The page shows after a new membership request)
      */
     public function profilePending()
     {
@@ -60,10 +60,7 @@ class MembersController extends Controller
         
         $statuses = $member_request->request_status;
             
-        
-        
-        
-        return view('members::member/profile/index');
+        return view('members::member.profile.index');
     }
 
 
@@ -282,6 +279,7 @@ class MembersController extends Controller
 
         DB::beginTransaction();
 
+        // Adding member details
         MemberDetail::updateOrCreate(
             ['user_id' => $user->id],
             [
@@ -300,24 +298,26 @@ class MembersController extends Controller
             ]
         );
 
+        // Updating members table (Already created an entry when registering username)
         Member::where('user_id', $user->id)->update([
             'gender' => $input['gender'],
             'blood_group' => $input['blood_group']
         ]);
 
-        //Add phone to users and member contact table
+        //Updating users table - phone number and avatar
         User::where('id', $user->id)->update([
             'phone' => $input['phone'],
             'avatar' => $avatarName,
         ]);
 
-        $contact_types = MemberEnum::where('type', 'contact_type')->where('slug', 'phone')->first();
-
+        // Create membership table entry
         Membership::create([
             'user_id' => $user->id,
             'type' => $input['type'] 
         ]);
 
+        // Create contacts table entry
+        $contact_types = MemberEnum::where('type', 'contact_type')->where('slug', 'phone')->first();
         MemberContact::create([
             'user_id' => $user->id,
             'contact_type_id' => $contact_types->id,
@@ -325,15 +325,7 @@ class MembersController extends Controller
             'value' => $input['phone']
         ]);
 
-        //Getting status data
-        $status = MemberEnum::where('type', 'request_status')->where('order', 0)->first();
-
-        MembershipRequest::create([
-            'user_id' => $user->id,
-            'request_status_id' => $status->id,
-            'updated_by' => $user->id
-        ]);
-
+        // Adding introducers details
         MemberIntroduce::create([
             'user_id' => $user->id,
             'introducer_name' => $input['introducer_name'],
@@ -341,6 +333,27 @@ class MembersController extends Controller
             'introducer_mid' => $input['introducer_mid'],
             'introducer_unit' => $input['introducer_unit'],
         ]);
+
+        
+        // Adding entry to membership_request table, with 'saved' status;
+        $status = MemberEnum::where('type', 'request_status')->where('slug', 'saved')->first();
+        MembershipRequest::create([
+            'user_id' => $user->id,
+            'request_status_id' => $status->id,
+            'checked' => 1, 
+            'updated_by' => $user->id,
+        ]);
+
+        // If form submitted as 'save & submit', add entry to membership_request table with 'submitted' status
+        if($request->input('action') == 'submit'){
+            $status = MemberEnum::where('type', 'request_status')->where('slug', 'submitted')->first();
+            MembershipRequest::create([
+                'user_id' => $user->id,
+                'request_status_id' => $status->id,
+                'updated_by' => $user->id,
+            ]);
+        }
+        
 
         //TODO: [Phase 2] get notified the users who permitted to view new membership requests
 

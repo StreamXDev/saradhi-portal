@@ -50,6 +50,10 @@
                     <h5 class="list-title">Mebership Details</h5>
                     <ul class="detail-list">
                         <li>
+                            <span class="label">Membership ID</span>
+                            <div class="value"><strong>{{ $member->membership->mid }}</strong></div>
+                        </li>
+                        <li>
                             <span class="label">Membership Type</span>
                             <div class="value">{{ ucfirst($member->membership->type) }}</div>
                         </li>
@@ -123,6 +127,72 @@
                     </ul>
                 </div>
             </div>
+            <div>
+                <ul class="request-status-list">
+                    @foreach ($statuses as $status)
+                        <li class={{ $status->checked ? 'active' : '' }}{{$status->slug == 'rejected' ? '-rejected' : ''}}>
+                            <div class="title">{{ $status->name }}</div>
+                            <div class="description">{{ $status->description }}</div>
+                            <div class="remark">{{ $status->remark }}</div>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+
+            @if (count($errors) > 0)
+                <div class="alert alert-danger">
+                    <strong>Whoops!</strong> There were some problems with your input.<br><br>
+                    <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            @if($current_status->request_status->slug == 'approved' && $request_action->action['slug'] == 'confirm')
+                @if(Auth::user()->can('membership_request.confirm'))
+                <div class="request-confirmation">
+                    <form action="{{ route('admin.member.confirm_membership_request') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="user_id" value="{{ $member->user_id }}">
+                        <div class="form-group">
+                            <label for="mid" class="control-label">Member Id</label>
+                            <div>Suggested Member Id: <strong>{{ $suggested_mid }}</strong></div>
+                            <div class="col"><input type="text" name="mid" id="mid" class="form-control"></div>
+                        </div>
+                        <div class="form-group">
+                            <textarea name="remark" id="remark" rows="5" class="form-control" placeholder="Enter comments"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Confirm</button>
+                    </form>
+                </div>
+                @endif
+            @else
+                @if($request_action->action)
+                <div class="request-action">
+                    <form action="{{ route('admin.member.change_status') }}" method="post">
+                        @csrf
+                        @if($current_status->rejected != null)
+                            <div class="form-group">The request is already rejected. Do you want to {{ $request_action->action['slug'] }} the action?</div>
+                        @else
+                            <div class="form-group">Are you sure want to {{ $request_action->action['slug'] }} the request?</div>
+                        @endif
+                        <input type="hidden" name="user_id" value="{{ $member->user_id }}">
+                        <input type="hidden" name="current_status_id" value="{{ $request_action->request_status_id }}">
+                        <div class="form-group">
+                            <textarea name="remark" id="remark" cols="30" rows="5" placeholder="Enter comment (Optional)" class="form-control"></textarea>
+                        </div>
+                        @if($current_status->rejected == null)
+                            <button type="submit" class="btn btn-success" name="action" value="submit">{{ $request_action->action['name'] }}</button>
+                        @else
+                            <button type="submit" class="btn btn-warning" name="action" value="submit">{{ $request_action->action['name'] }}</button>
+                        @endif
+                    </form>
+                </div>
+                @endif
+            @endif
+            
         </div>
     </div>
 </div>

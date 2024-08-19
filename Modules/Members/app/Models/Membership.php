@@ -4,11 +4,10 @@ namespace Modules\Members\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Modules\Members\Database\Factories\MembershipFactory;
 
 class Membership extends Model
 {
-    
+
     /**
      * The attributes that are mass assignable.
      */
@@ -26,4 +25,6 @@ class Membership extends Model
     {
         return $this->belongsTo(Member::class, 'user_id', 'user_id');
     }
+
+
 }

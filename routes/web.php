@@ -26,10 +26,10 @@ Route::controller(SocialAuthController::class)->group(function(){
 });
 
 
-Route::group(['middleware' => ['auth','verified']], function() {
-    Route::prefix('admin')->group(function() {
-        Route::resource('roles', RoleController::class);
-        Route::resource('users', UserController::class);
+Route::group(['middleware' => ['auth', 'verified', 'is_admin']], function() {
+    Route::prefix('/admin')->group(function() {
+        Route::resource('/roles', RoleController::class);
+        Route::resource('/users', UserController::class);
         Route::controller(DashboardController::class)->group(function(){
             Route::get('/' , 'index');
             Route::get('/dashboard' , 'index');

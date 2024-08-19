@@ -19,6 +19,8 @@ class MembershipRequest extends Model
     protected $fillable = [
         'user_id',
         'request_status_id',
+        'checked',
+        'rejected',
         'updated_by',
         'remark'
     ];

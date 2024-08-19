@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Modules\Members\Models\Member;
 use Modules\Members\Models\MemberDetail;
+use Modules\Members\Models\Membership;
 use Modules\Members\Models\MembershipRequest;
 
 class MemberController extends Controller
@@ -43,8 +44,11 @@ class MemberController extends Controller
     public function show($id)
     {
         $member = Member::with(['user', 'details', 'membership', 'contacts', 'addresses', 'relations', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
-        
-        return view('members::admin.member.show', compact('member'));
+        $statuses = requestStatusDisplay($id);
+        $current_status = MembershipRequest::where('user_id', $id)->latest()->first();
+        $request_action = requestByPermission($current_status);
+        $suggested_mid = Membership::max('mid') + 1;
+        return view('members::admin.member.show', compact('member', 'statuses', 'current_status', 'request_action', 'suggested_mid'));
     }
 
     /**

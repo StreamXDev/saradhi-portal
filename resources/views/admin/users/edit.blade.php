@@ -55,13 +55,12 @@
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">
                 <strong>Role:</strong>
-                <select name="roles[]" class="form-control" multiple="multiple">
-                    @foreach ($roles as $value => $label)
-                        <option value="{{ $value }}" {{ isset($userRole[$value]) ? 'selected' : ''}}>
-                            {{ $label }}
-                        </option>
-                     @endforeach
-                </select>
+                @foreach ($roles as $value => $label)
+                    <div>
+                        <input type="checkbox" name="roles[]" id="{{ $value }}" value="{{ $value }}" {{ isset($userRole[$value]) ? 'checked' : ''}}>
+                        <label for="{{ $value }}">{{ $label }}</label>
+                    </div>
+                @endforeach
             </div>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12 text-center">

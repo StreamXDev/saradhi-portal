@@ -67,7 +67,18 @@ class RolePermissionSeeder extends Seeder
                     'membership_request.approval.approve',
                     'membership_request.confirm',
                 ]
-            ]
+            ],
+            [
+                'group_name' => 'user',
+                'permissions' => [
+                    // user Permissions
+                    'user.create',
+                    'user.view',
+                    'user.edit',
+                    'user.delete',
+                    'user.approve',
+                ]
+            ],
         ];
 
         $admin = User::where('username', 'superadmin')->first();
