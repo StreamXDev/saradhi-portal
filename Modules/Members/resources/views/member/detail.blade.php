@@ -141,13 +141,6 @@
         <div class="form-title-divider"></div>
         <div class="form-group row">
             <div class="col-md-6">
-                <label for="type" class="form-label">Membership Type</label>
-                <select name="type" id="type" class="form-select">
-                    <option value="single" @selected(old('type') == 'single')>Single</option>
-                    <option value="family" @selected(old('type') == 'family')>Family</option>
-                </select>
-            </div>
-            <div class="col-md-6">
                 <label for="unit" class="form-label">Your Saradhi Unit</label>
                 <div class="control-col">
                     <select name="member_unit_id" id="unit" class="form-select">
@@ -158,6 +151,14 @@
                     </select>
                 </div>
             </div>
+            <div class="col-md-6">
+                <label for="type" class="form-label">Membership Type</label>
+                <select name="type" id="type" class="form-select">
+                    <option value="single" @selected(old('type') == 'single')>Single</option>
+                    <option value="family" @selected(old('type') == 'family')>Family</option>
+                </select>
+            </div>
+            
         </div>
         
         <div class="form-title-divider"></div>
