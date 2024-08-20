@@ -66,6 +66,7 @@ class RolePermissionSeeder extends Seeder
                     'membership_request.approval.show',
                     'membership_request.approval.approve',
                     'membership_request.confirm',
+                    'membership_request.export',
                 ]
             ],
             [

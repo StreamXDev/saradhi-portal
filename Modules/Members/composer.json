@@ -22,7 +22,8 @@
             "Modules\\Members\\Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helpers/membershipRequestHelper.php"
+            "app/Helpers/membershipRequestHelper.php",
+            "app/Exports/MemberExport.php"
         ]
     },
     "autoload-dev": {

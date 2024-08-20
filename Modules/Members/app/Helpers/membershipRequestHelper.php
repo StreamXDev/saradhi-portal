@@ -15,6 +15,7 @@ if (! function_exists('requestByPermission')) {
     function requestByPermission($request)
     {
         $user = Auth::user();
+        $permitted = false;
         if($user->can('membership_request.verification.verify')){
             $status = MemberEnum::where('type', 'request_status')->where('slug', 'submitted')->first();
             if($request->request_status_id == $status->id){
@@ -23,6 +24,7 @@ if (! function_exists('requestByPermission')) {
                     'name' => 'Verify',
                     'title' => 'Verify request'
                 ];
+                $permitted = true;
             }
         }
         if($user->can('membership_request.review.review')){
@@ -33,6 +35,7 @@ if (! function_exists('requestByPermission')) {
                     'name' => 'Review',
                     'title' => 'Review request'
                 ];
+                $permitted = true;
             }
         }
         if($user->can('membership_request.approval.approve')){
@@ -43,6 +46,7 @@ if (! function_exists('requestByPermission')) {
                     'name' => 'Approve',
                     'title' => 'Approve request'
                 ];
+                $permitted = true;
             }
         }
         if($user->can('membership_request.confirm')){
@@ -53,6 +57,7 @@ if (! function_exists('requestByPermission')) {
                     'name' => 'Confirm',
                     'title' => 'Confirm request'
                 ];
+                $permitted = true;
             }
         }
         if($user->can([
@@ -68,9 +73,14 @@ if (! function_exists('requestByPermission')) {
                     'name' => 'Revise',
                     'title' => 'Revise rejected request'
                 ];
+                $permitted = true;
             }
         }
-        return $request;
+        if($permitted){
+            return $request;
+        }else{
+            return array();
+        }
     }
 }
 

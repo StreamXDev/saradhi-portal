@@ -12,6 +12,7 @@
         "laravel/socialite": "^5.15",
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.5",
+        "maatwebsite/excel": "^3.1",
         "nwidart/laravel-modules": "^11.0",
         "spatie/laravel-permission": "^6.9",
         "squirephp/countries-en": "^3.6",

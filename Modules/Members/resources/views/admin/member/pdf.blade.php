@@ -15,6 +15,10 @@
         <td>{{ $data['member']->user->phone }}</td>
     </tr>
     <tr>
+        <td>Member ID</td>
+        <td>{{ $data['member']->membership->mid }}</td>
+    </tr>
+    <tr>
         <td>Civil ID</td>
         <td>{{ $data['member']->details->civil_id }} |  
             <a download="{{ str_replace(" ", "-", $data['member']->name).'_civil-id_front-'.$data['member']->details->photo_civil_id_front }}" href="{{ url('storage/images/'. $data['member']->details->photo_civil_id_front) }}">front</a> |
@@ -61,7 +65,7 @@
         <td>{{ $data['member']->details->company }}</td>
     </tr>
     <tr>
-        <td>Company</td>
+        <td>Profession</td>
         <td>{{ $data['member']->details->profession }}</td>
     </tr>
 </table>

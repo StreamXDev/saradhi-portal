@@ -2,11 +2,13 @@
 
 namespace Modules\Members\Http\Controllers\Admin;
 
+use Modules\Members\Exports\MemberExport;
 use App\Http\Controllers\Controller;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Maatwebsite\Excel\Facades\Excel;
 use Modules\Members\Models\Member;
 use Modules\Members\Models\MemberDetail;
 use Modules\Members\Models\Membership;
@@ -48,6 +50,7 @@ class MemberController extends Controller
         $current_status = MembershipRequest::where('user_id', $id)->latest()->first();
         $request_action = requestByPermission($current_status);
         $suggested_mid = Membership::max('mid') + 1;
+        //dd($request_action);
         return view('members::admin.member.show', compact('member', 'statuses', 'current_status', 'request_action', 'suggested_mid'));
     }
 
@@ -69,6 +72,16 @@ class MemberController extends Controller
 
         return $pdf->download('member_request_'.str_replace(" ", "-", $member->user->name).'.pdf');
 
+    }
+
+    public function generateExcel($id)
+    {
+        $member = Member::with(['user', 'details', 'membership', 'contacts', 'addresses', 'relations', 'requests', 'committees', 'trustee', 'details.member_unit', 'contacts.contact_type'])->where('user_id' , $id)->get();
+
+        //dd($member);
+        
+        return Excel::download(new MemberExport($member), 'member.xlsx');
+        
     }
 
     /**
