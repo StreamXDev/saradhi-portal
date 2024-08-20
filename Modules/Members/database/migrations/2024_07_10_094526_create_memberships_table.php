@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('updated_date')->nullable();
             $table->date('expiry_date')->nullable();
             $table->enum('type', array('single', 'family'))->index();
+            $table->enum('family_in', array('india', 'kuwait'))->nullable();
             $table->enum('status', array('active','inactive', 'rejected', 'dormant'))->default('inactive')->index();
             $table->enum('joined_as', array('old', 'new'))->default('new');
             $table->timestamps();

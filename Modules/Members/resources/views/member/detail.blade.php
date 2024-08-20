@@ -167,13 +167,13 @@
             <div class="col-md-6">
                 <label for="intro_name" class="form-label">Introducer Name<span class="asterisk">*</span></label>
                 <div class="control-col">
-                    <input type="text" name="introducer_name" id="intro_name" class="form-control"> 
+                    <input type="text" name="introducer_name" id="intro_name" class="form-control" value="{{ old('introducer_name') }}"> 
                 </div>
             </div>
             <div class="col-md-6">
                 <label for="introducer_phone" class="form-label">Introducer's Phone<span class="asterisk">*</span></label>
                 <div class="control-col">
-                    <input type="text" name="introducer_phone" id="introducer_phone" class="form-control"> 
+                    <input type="text" name="introducer_phone" id="introducer_phone" class="form-control" value="{{ old('introducer_phone') }}"> 
                 </div>
             </div>
             
@@ -182,7 +182,7 @@
             <div class="col-md-6">
                 <label for="introducer_mid" class="form-label">Introducer's Membership Number</label>
                 <div class="control-col">
-                    <input type="text" name="introducer_mid" id="introducer_mid" class="form-control"> 
+                    <input type="text" name="introducer_mid" id="introducer_mid" class="form-control" value="{{ old('introducer_mid') }}"> 
                 </div>
             </div>
             <div class="col-md-6">

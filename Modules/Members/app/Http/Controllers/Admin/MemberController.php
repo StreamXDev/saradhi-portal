@@ -77,8 +77,6 @@ class MemberController extends Controller
     public function generateExcel($id)
     {
         $member = Member::with(['user', 'details', 'membership', 'contacts', 'addresses', 'relations', 'requests', 'committees', 'trustee', 'details.member_unit', 'contacts.contact_type'])->where('user_id' , $id)->get();
-
-        //dd($member);
         
         return Excel::download(new MemberExport($member), 'member.xlsx');
         
