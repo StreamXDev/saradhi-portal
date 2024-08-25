@@ -95,12 +95,7 @@
                             <span class="label">Profession</span>
                             <div class="value">{{ $member->details->profession }}</div>
                         </li>
-                        @foreach ($member->contacts as $contact)
-                            <li>
-                                <span class="label">{{ $contact->title }}</span>
-                                <div class="value">{{ $contact->value }}</div>
-                            </li>
-                        @endforeach
+                        
                     </ul>
                 </div>
                 <div class="col-md-4">

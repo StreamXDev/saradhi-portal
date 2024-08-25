@@ -45,7 +45,7 @@ class MemberController extends Controller
      */
     public function show($id)
     {
-        $member = Member::with(['user', 'details', 'membership', 'contacts', 'addresses', 'relations', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
+        $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
         $statuses = requestStatusDisplay($id);
         $current_status = MembershipRequest::where('user_id', $id)->latest()->first();
         $request_action = requestByPermission($current_status);
@@ -59,7 +59,7 @@ class MemberController extends Controller
      */
     public function generatePDF($id)
     {
-        $member = Member::with(['user', 'details', 'membership', 'contacts', 'addresses', 'relations', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
+        $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
         
         $data = [
             'title' => 'Membership Application',
@@ -76,7 +76,7 @@ class MemberController extends Controller
 
     public function generateExcel($id)
     {
-        $member = Member::with(['user', 'details', 'membership', 'contacts', 'addresses', 'relations', 'requests', 'committees', 'trustee', 'details.member_unit', 'contacts.contact_type'])->where('user_id' , $id)->get();
+        $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'requests', 'committees', 'trustee', 'details.member_unit', 'contacts.contact_type'])->where('user_id' , $id)->get();
         
         return Excel::download(new MemberExport($member), 'member.xlsx');
         

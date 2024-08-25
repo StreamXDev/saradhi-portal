@@ -52,7 +52,7 @@ class Member extends Model
     
     public function relations(): HasMany
     {
-        return $this->hasMany(MemberRelation::class, 'user_id', 'user_id');
+        return $this->hasMany(MemberRelation::class, 'id', 'member_id');
     }
 
     public function requests(): HasMany
