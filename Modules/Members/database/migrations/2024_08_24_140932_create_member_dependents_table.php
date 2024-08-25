@@ -11,12 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('member_relations', function (Blueprint $table) {
+        Schema::create('member_dependents', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
-            $table->foreignId('related_user_id')->references('id')->on('users');
-            $table->foreignId('relationship_id')->constrained('member_enums');
-            $table->boolean('active')->default(1)->index();
+            
             $table->timestamps();
         });
     }
@@ -26,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('member_relations');
+        Schema::dropIfExists('member_dependents');
     }
 };

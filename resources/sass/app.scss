@@ -91,10 +91,36 @@ header.main{
     margin:2rem 0 2rem 0;
     border-bottom: 4px solid #ddd;
 }
-
+.form-section-title{
+    background-color: #eba337;
+    color: #fff;
+    font-weight: 600;
+    padding:0.4rem 1rem;
+    margin: 1rem 0;
+}
+.form-section-subtitle{
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0.5rem 0;
+}
+.form-label{
+    font-weight: 600;
+}
+.asterisk{
+    color: crimson;
+}
 .list-profile-photo{
     width:40px ;
     border-radius: 4px;
+}
+.form-family-details{
+    padding: 0.5rem;
+    background-color: #eee;
+    border-radius: 6px;
+    display: none;
+    .control-col{
+        margin-bottom: 1rem;
+    }
 }
 
 .member-view{

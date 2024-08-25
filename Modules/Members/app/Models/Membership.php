@@ -18,7 +18,11 @@ class Membership extends Model
         'expiry_date',
         'type',
         'status',
-        'joined_as'
+        'joined_as',
+        'introducer_name',
+        'introducer_phone',
+        'introducer_mid',
+        'introducer_unit',
     ];
 
     public function members(): BelongsTo

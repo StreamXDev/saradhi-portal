@@ -22,7 +22,7 @@ class VerifyProfileStatus
         
         if($member){
 
-            if($member->status === 'active'){
+            if($member->active){
                 return $next($request);
             }
 

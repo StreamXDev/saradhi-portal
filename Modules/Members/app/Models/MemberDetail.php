@@ -16,14 +16,21 @@ class MemberDetail extends Model
         'member_unit_id',
         'civil_id',
         'dob',
+        'whatsapp',
+        'emergency_phone',
         'company',
         'profession',
+        'company_address',
         'passport_no',
         'passport_expiry',
         'photo_civil_id_front',
         'photo_civil_id_back',
         'photo_passport_front',
         'photo_passport_back',
+        'paci',
+        'sndp_branch',
+        'sndp_branch_number',
+        'sndp_union',
         'completed'
     ];
 

@@ -22,6 +22,10 @@ return new class extends Migration
             $table->enum('family_in', array('india', 'kuwait'))->nullable();
             $table->enum('status', array('active','inactive', 'rejected', 'dormant'))->default('inactive')->index();
             $table->enum('joined_as', array('old', 'new'))->default('new');
+            $table->string('introducer_name')->nullable();
+            $table->string('introducer_phone')->nullable();
+            $table->string('introducer_mid')->nullable();
+            $table->string('introducer_unit')->nullable();
             $table->timestamps();
         });
     }

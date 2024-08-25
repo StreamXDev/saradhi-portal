@@ -12,10 +12,9 @@ class MemberRelation extends Model
     protected $with = ['relationship'];
 
     protected $fillable = [
-        'user_id',
-        'related_user_id',
+        'member_id',
+        'related_member_id',
         'relationship_id',
-        'type',
         'active'
     ];
 

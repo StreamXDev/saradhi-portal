@@ -19,7 +19,7 @@ class Member extends Model
         'name',
         'gender',
         'blood_group',
-        'photo',  
+        'photo', 
     ];
 
     //User
@@ -40,16 +40,14 @@ class Member extends Model
         return $this->hasOne(Membership::class, 'user_id', 'user_id');
     }
 
-    // Member contacts
-    public function contacts(): HasMany
-    {
-        return $this->hasMany(MemberContact::class, 'user_id', 'user_id');
-    }
-
     // Member addresses
-    public function addresses(): HasMany
+    public function localAddress(): HasOne
     {
-        return $this->hasMany(MemberAddress::class, 'user_id', 'user_id');
+        return $this->hasOne(MemberLocalAddress::class, 'user_id', 'user_id');
+    }
+    public function permanentAddress(): HasOne
+    {
+        return $this->hasOne(MemberPermanentAddress::class, 'user_id', 'user_id');
     }
     
     public function relations(): HasMany
@@ -65,12 +63,6 @@ class Member extends Model
     public function committees(): HasMany
     {
         return $this->hasMany(MemberHasCommittee::class, 'user_id', 'user_id');
-    }
-
-    // Member introduced by
-    public function introducer(): HasOne
-    {
-        return $this->hasOne(MemberIntroduce::class, 'user_id', 'user_id');
     }
 
     public function trustee(): HasOne

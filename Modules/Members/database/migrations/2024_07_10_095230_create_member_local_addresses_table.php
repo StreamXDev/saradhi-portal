@@ -11,16 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('member_addresses', function (Blueprint $table) {
+        Schema::create('member_local_addresses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained();
-            $table->enum('type', array('local', 'permanent'));
             $table->string('line_1');
-            $table->string('line_2')->nullable();
-            $table->string('city');
-            $table->string('country');
-            $table->string('region');
-            $table->string('zip')->index();
+            $table->string('building')->nullable();
+            $table->string('flat')->nullable();
+            $table->string('floor')->nullable();
+            $table->string('country')->nullable();
+            $table->string('region')->nullable();
+            $table->string('district')->nullable();
+            $table->string('city')->nullable();
+            $table->string('zip')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -31,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('member_addresses');
+        Schema::dropIfExists('member_local_addresses');
     }
 };

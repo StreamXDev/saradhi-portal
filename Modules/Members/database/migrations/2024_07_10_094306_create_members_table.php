@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->unsignedBigInteger('parent_id')->nullable();
-            $table->enum('type', array('primary','spouse', 'child'))->default('primary')->index();
+            $table->enum('type', array('primary','spouse'))->default('primary')->index();
             $table->string('name')->index();
             $table->enum('gender', array('male','female', 'other'))->nullable();
             $table->string('blood_group')->index()->nullable();
