@@ -241,3 +241,22 @@ header.main{
 .request-action{
     padding: 2rem 0;
 }
+
+.member-relation{
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    margin-bottom: 1.5rem;
+    background-color: bisque;
+    .image{
+        margin-right: 1rem;
+    }
+    .value{
+        display: flex;
+        flex-direction: column;
+    }
+    .btn{
+        margin-left: auto;
+    }
+}

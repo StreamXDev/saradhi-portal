@@ -14,6 +14,19 @@
     <div class="member-view">
         <div class="header">
             <div class="row">
+                <div class="col-md-12">
+                    @foreach ($member->relations as $relation)
+                        @if ($relation->relatedTo->type == 'primary')
+                            <div class="member-relation">
+                                <div class="image"><img src="{{ url('storage/images/'. $relation->relatedTo->user->avatar) }}" alt="{{ $relation->relatedTo->name }}" title="{{ $relation->relatedTo->name }}" class="list-profile-photo" /></div>
+                                <div class="value">
+                                    {{ $member->name }} is {{$relation->relationship->slug }} of <br /><strong>{{ $relation->relatedTo->name }}</strong>
+                                </div>
+                                <a href="/admin/members/member/view/{{ $relation->relatedTo->user->id}}" class="btn btn-default">VIEW</a>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
                 <div class="col-md-2">
                     <div class="member-photo">
                         <img src="{{ url('storage/images/'. $member->user->avatar) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}" class="list-profile-photo" />

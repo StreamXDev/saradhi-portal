@@ -45,12 +45,12 @@ class MemberController extends Controller
      */
     public function show($id)
     {
-        $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
+        $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'relations.relatedTo.user', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
         $statuses = requestStatusDisplay($id);
         $current_status = MembershipRequest::where('user_id', $id)->latest()->first();
         $request_action = requestByPermission($current_status);
         $suggested_mid = Membership::max('mid') + 1;
-        //dd($request_action);
+        //dd($member);
         return view('members::admin.member.show', compact('member', 'statuses', 'current_status', 'request_action', 'suggested_mid'));
     }
 
@@ -76,7 +76,7 @@ class MemberController extends Controller
 
     public function generateExcel($id)
     {
-        $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'requests', 'committees', 'trustee', 'details.member_unit', 'contacts.contact_type'])->where('user_id' , $id)->get();
+        $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'requests', 'committees', 'trustee', 'details.member_unit'])->where('user_id' , $id)->get();
         
         return Excel::download(new MemberExport($member), 'member.xlsx');
         
