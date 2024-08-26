@@ -359,6 +359,14 @@
             }
         });
 
+        $("input[type$=file]").on('change', function(){
+            var imageKb = this.files[0].size/1024;
+            var imageMb = imageKb / 1024;
+            if(imageMb > 2){
+                $(this).addClass('is-invalid').val('').next('.form-text').text('The file should be less than 2MB');
+            }
+        })
+
     })
 </script> 
 @endsection
