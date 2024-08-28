@@ -47,10 +47,9 @@ class MemberController extends Controller
     {
         $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'relations.relatedTo.user', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
         $statuses = requestStatusDisplay($id);
-        $current_status = MembershipRequest::where('user_id', $id)->latest()->first();
+        $current_status = MembershipRequest::where('user_id', $id)->latest('id')->first();
         $request_action = requestByPermission($current_status);
         $suggested_mid = Membership::max('mid') + 1;
-        //dd($member);
         return view('members::admin.member.show', compact('member', 'statuses', 'current_status', 'request_action', 'suggested_mid'));
     }
 
