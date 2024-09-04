@@ -50,6 +50,7 @@ class MemberController extends Controller
         $current_status = MembershipRequest::where('user_id', $id)->latest('id')->first();
         $request_action = requestByPermission($current_status);
         $suggested_mid = Membership::max('mid') + 1;
+        //dd($member);
         return view('members::admin.member.show', compact('member', 'statuses', 'current_status', 'request_action', 'suggested_mid'));
     }
 

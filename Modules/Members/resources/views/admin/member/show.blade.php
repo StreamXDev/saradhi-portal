@@ -6,6 +6,7 @@
         <a href="{{ url()->previous() }}" class="back btn">< Back</a>
         <div>
             @can('membership_request.export')
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#idCardModal">ID Card</button>
                 <a href="/admin/members/member/pdf/{{ $member->user->id }}" class="btn btn-outline-primary">Export to PDF</a>
                 <a href="/admin/members/member/excel/{{ $member->user->id }}" class="btn btn-outline-primary">Export to Excel</a>
             @endcan
@@ -47,8 +48,20 @@
                             <div class="value">{{ $member->user->phone }}</div>
                         </li>
                         <li>
+                            <span class="label">Whatsapp</span>
+                            <div class="value">{{ $member->details->whatsapp }}</div>
+                        </li>
+                        <li>
+                            <span class="label">Emergency Phone</span>
+                            <div class="value">{{ $member->details->emergency_phone }}</div>
+                        </li>
+                        <li>
                             <span class="label">Civil ID</span>
                             <div class="value">{{ $member->details->civil_id }}</div>
+                        </li>
+                        <li>
+                            <span class="label">PACI No.</span>
+                            <div class="value">{{ $member->details->paci }}</div>
                         </li>
                         <li>
                             <span class="label">Member Type</span>
@@ -81,7 +94,27 @@
                             <div class="value {{ $member->membership->status =='active' ? 'text-success' : 'text-danger' }}">{{ ucfirst($member->membership->status) }}</div>
                         </li>
                     </ul>
-                    
+                    <br />
+                    <h5 class="list-title">Address</h5>
+                    <div class="address">
+                        <h6>Kuwait Address</h6>
+                        {{ $member->localAddress->line_1 }},
+                        {{ $member->localAddress->building }}, {{ $member->localAddress->flat }}, {{ $member->localAddress->floor }}<br />
+                        {{ $member->details->member_unit->name }}
+                    </div>
+                    <br />
+                    <div>
+                        <h6>India Address</h6>
+                        {{ $member->permanentAddress->line_1 }}<br />
+                        @if ($member->permanentAddress->line_2 != null ) {{ $member->permanentAddress->line_2 }} <br /> @endif
+                        @if ($member->permanentAddress->city != null ) {{ $member->permanentAddress->city }} <br /> @endif
+                        @if ($member->permanentAddress->district != null ) {{ $member->permanentAddress->district }} <br /> @endif
+                        @if ($member->permanentAddress->region != null ) {{ $member->permanentAddress->region }} <br /> @endif
+                        @if ($member->permanentAddress->country != null ) {{ $member->permanentAddress->country }} <br /> @endif
+                        @if ($member->permanentAddress->zip != null ) {{ $member->permanentAddress->zip }} <br /> @endif
+                        @if ($member->permanentAddress->contact != null ) Contact: {{ $member->permanentAddress->contact }} <br /> @endif
+                    </div>
+                    <br />
                     <h5 class="list-title">Basic Details</h5>
                     <ul class="detail-list">
                         <li>
@@ -115,31 +148,38 @@
                     <ul class="proof_list">
                         <li>
                             <div class="image">
-                                <img src="{{ url('storage/images/'. $member->details->photo_civil_id_front) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}" class="image-fluid"  style="width:160px" />
+                                <img id="photo_c1" src="{{ url('storage/images/'. $member->details->photo_civil_id_front) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}" class="image-fluid zoom-photo"  style="width:160px" />
                             </div>
                             <div class="title">Civil ID 01</div>
                         </li>
                         <li>
                             <div class="image">
-                                <img src="{{ url('storage/images/'. $member->details->photo_civil_id_back) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}"  class="image-fluid"  style="width:160px"/>
+                                <img id="photo_c2" src="{{ url('storage/images/'. $member->details->photo_civil_id_back) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}"  class="image-fluid zoom-photo"  style="width:160px"/>
                             </div>
                             <div class="title">Civil ID 02</div>
                         </li>
                         <li>
                             <div class="image">
-                                <img src="{{ url('storage/images/'. $member->details->photo_passport_front) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}"  class="image-fluid"  style="width:160px"/>
+                                <img id="photo_p1" src="{{ url('storage/images/'. $member->details->photo_passport_front) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}"  class="image-fluid zoom-photo"  style="width:160px"/>
                             </div>
                             <div class="title">Passport copy - 01</div>
                         </li>
                         <li>
                             <div class="image">
-                                <img src="{{ url('storage/images/'. $member->details->photo_passport_back) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}"  class="image-fluid"  style="width:160px"/>
+                                <img id="photo_p2" src="{{ url('storage/images/'. $member->details->photo_passport_back) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}"  class="image-fluid zoom-photo"  style="width:160px"/>
                             </div>
                             <div class="title">Passport copy - 02</div>
                         </li>
                     </ul>
                 </div>
             </div>
+            <br />
+            <ul class="detail-list">
+                <li><span class="label">SNDP Branch:</span> <span class="value">{{ $member->details->sndp_branch }}</span></li>
+                <li><span class="label">Number:</span> <span class="value"> {{ $member->details->sndp_branch_number }}</span></li>
+                <li><span class="label">SNDP Union:</span> <span class="value"> {{ $member->details->sndp_union }}</span></li>
+            </ul>
+            <br />
             <div>
                 <ul class="request-status-list">
                     @foreach ($statuses as $status)
@@ -208,4 +248,32 @@
         </div>
     </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="idCardModal" tabindex="-1" aria-labelledby="idCardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="idCardModalLabel">ID Card</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Download</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+@endsection
+@section('page_scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.6.1/jquery.zoom.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('.zoom-photo').wrap('<span style="display:inline-block"></span>').css('display', 'block').parent().zoom();
+    });
+</script>
 @endsection

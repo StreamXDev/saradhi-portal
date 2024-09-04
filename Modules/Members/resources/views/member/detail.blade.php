@@ -360,7 +360,7 @@
         });
 
         $("input[type$=file]").on('change', function(){
-            $(this)next('.form-text').removeClass('error');
+            $(this).next('.form-text').removeClass('error');
             var imageKb = this.files[0].size/1024;
             var imageMb = imageKb / 1024;
             if(imageMb > 2){
