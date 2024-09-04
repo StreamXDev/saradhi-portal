@@ -13,6 +13,8 @@ use Modules\Members\Models\Member;
 use Modules\Members\Models\MemberDetail;
 use Modules\Members\Models\Membership;
 use Modules\Members\Models\MembershipRequest;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Spatie\Browsershot\Browsershot;
 
 class MemberController extends Controller
 {
@@ -50,8 +52,8 @@ class MemberController extends Controller
         $current_status = MembershipRequest::where('user_id', $id)->latest('id')->first();
         $request_action = requestByPermission($current_status);
         $suggested_mid = Membership::max('mid') + 1;
-        //dd($member);
-        return view('members::admin.member.show', compact('member', 'statuses', 'current_status', 'request_action', 'suggested_mid'));
+        $idQr = QrCode::size(300)->generate(json_encode(['Name' =>  $member->name,  'Membership ID' => $member->membership->mid, 'Civil ID' => $member->details->civil_id]));
+        return view('members::admin.member.show', compact('member', 'statuses', 'current_status', 'request_action', 'suggested_mid', 'idQr'));
     }
 
     /**

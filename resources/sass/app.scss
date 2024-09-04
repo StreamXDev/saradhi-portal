@@ -263,3 +263,90 @@ header.main{
         margin-left: auto;
     }
 }
+
+.id-card-wrapper{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+.id-card{
+    width: 400px;
+    background-color: orange;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid orange;
+    .photo{
+        margin-top: 2rem;
+        width: 140px;
+        border-radius: 6px;
+        overflow: hidden;
+        img{
+            width: 100%;
+        }
+    }
+    .name{
+        font-size: 1.4rem;
+        font-weight: 600;
+        text-shadow: 0 5px 5px rgba(0,0,0,0.1);
+        color: #fff;
+        padding: 1.5rem 0;
+    }
+    .id-wrapper{
+        background-color: rgba(255,255,255,0.5);
+        flex: 1;
+        width: 100%;
+        display: flex;
+        align-items: stretch;
+        justify-content: space-between;
+        text-align: center;
+        .item{
+            padding: 0.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid orange;
+            &:last-child{
+                border: none;
+            }
+        }
+        .label{
+            font-size: 0.7em;
+            display: block;
+        }
+    }
+    .logo-wrapper{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 0;
+        .item{
+            flex: 1;
+            text-align: center;
+            padding: 0.5rem;
+            img, svg{
+                max-width: 60%;
+            }
+            svg{
+                height: auto !important;
+            }
+        }
+    }
+    .footer{
+        background-color: #fff;
+        width: 100%;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        .item{
+            padding: 0.5rem;
+            font-size: 0.8em;
+        }
+    }
+}

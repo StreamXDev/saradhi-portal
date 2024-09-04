@@ -6,7 +6,7 @@
         <a href="{{ url()->previous() }}" class="back btn">< Back</a>
         <div>
             @can('membership_request.export')
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#idCardModal">ID Card</button>
+                @if($member->active) <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#idCardModal">ID Card</button> @endif
                 <a href="/admin/members/member/pdf/{{ $member->user->id }}" class="btn btn-outline-primary">Export to PDF</a>
                 <a href="/admin/members/member/excel/{{ $member->user->id }}" class="btn btn-outline-primary">Export to Excel</a>
             @endcan
@@ -258,11 +258,15 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          
+            
+            <div class="id-card-wrapper">
+                @include('members::includes.idcard')
+            </div>
+
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Download</button>
+          <button type="button" class="btn btn-primary" id="screenshot">Download</button>
         </div>
       </div>
     </div>
@@ -271,7 +275,18 @@
 @endsection
 @section('page_scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.6.1/jquery.zoom.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
+    $('#screenshot').click(function(){
+        var link = document.createElement('a');
+        html2canvas(document.getElementById('idCard')).then(function(canvas) {
+            var image = canvas.toDataURL();
+            link.setAttribute('download', '<?php echo $member->name ?>'+'_Member-ID.png');
+            link.href = image;
+            link.click();
+        });
+    })
+
     $(document).ready(function(){
         $('.zoom-photo').wrap('<span style="display:inline-block"></span>').css('display', 'block').parent().zoom();
     });

@@ -14,6 +14,8 @@
         "laravel/ui": "^4.5",
         "maatwebsite/excel": "^3.1",
         "nwidart/laravel-modules": "^11.0",
+        "simplesoftwareio/simple-qrcode": "^4.2",
+        "spatie/browsershot": "^4.3",
         "spatie/laravel-permission": "^6.9",
         "squirephp/countries-en": "^3.6",
         "squirephp/regions-en": "^3.6"
