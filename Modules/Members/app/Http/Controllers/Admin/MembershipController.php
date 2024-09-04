@@ -130,6 +130,7 @@ class MembershipController extends Controller
             $membership->mid = $input['mid'];
             $membership->start_date = now();
             $membership->updated_date = now();
+            $membership->expiry_date = date('Y-m-d', strtotime('+1 year'));
             $membership->status = 'active';
             $membership->save();
 

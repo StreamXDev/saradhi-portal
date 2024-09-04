@@ -180,6 +180,26 @@
                 <li><span class="label">SNDP Union:</span> <span class="value"> {{ $member->details->sndp_union }}</span></li>
             </ul>
             <br />
+            <h5 class="list-title">Introducer Details</h5>
+            <ul class="detail-list">
+                <li>
+                    <span class="label">Name</span>
+                    <div class="value">{{ $member->membership->introducer_name }}</div>
+                </li>
+                <li>
+                    <span class="label">Phone</span>
+                    <div class="value">{{ $member->membership->introducer_phone }}</div>
+                </li>
+                <li>
+                    <span class="label">Membership ID</span>
+                    <div class="value">{{ $member->membership->introducer_mid }}</div>
+                </li>
+                <li>
+                    <span class="label">Unit</span>
+                    <div class="value">{{ $member->membership->introducer_unit }}</div>
+                </li>
+            </ul>
+            <br />
             <div>
                 <ul class="request-status-list">
                     @foreach ($statuses as $status)
