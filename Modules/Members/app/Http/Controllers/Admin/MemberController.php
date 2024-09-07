@@ -14,8 +14,6 @@ use Modules\Members\Models\MemberDetail;
 use Modules\Members\Models\Membership;
 use Modules\Members\Models\MembershipRequest;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use Spatie\Browsershot\Browsershot;
-
 class MemberController extends Controller
 {
     /**
@@ -23,7 +21,9 @@ class MemberController extends Controller
      */
     public function index()
     {
-        return view('members::index');
+        $members = Member::with(['details', 'user'])->where('active', 1)->paginate(5);
+        //dd($members);
+        return view('members::admin.member.list', compact('members'));
     }
 
     /**

@@ -1,0 +1,60 @@
+.container-main{
+    display: flex;
+    align-items: stretch;
+    position: relative;
+    nav.sidebar{
+        width: $sidebar-width;
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        >.title{
+            height: $header-height;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            .logo{
+                img{
+                    max-width: 80%;
+                }
+            }
+        }
+    }
+    .content-wrapper{
+        flex: 1;
+        padding: 0 1rem 0 0;
+        margin-left: $sidebar-width;
+        .header-main{
+            height: $header-height;
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            >.sidebar-toggle{
+                display: none;
+            }
+            >.title{
+                display: none;
+            }
+            >.actions{
+                margin-left: auto;
+            }
+        }
+        .content-main{
+            background-color: #fff;
+            border-radius: 10px;
+            min-height: calc(100vh - $header-height - 1rem);
+            @include app-box-1;
+            .page-title{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding:1.5rem 1.5rem 1rem 1.5rem;
+            }
+            .page-content{
+                padding: 1rem 1.5rem;
+            }
+        }
+    }
+}

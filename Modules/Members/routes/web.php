@@ -59,6 +59,7 @@ Route::prefix('admin/members')->middleware(['auth:sanctum', 'verified_email', 'i
         Route::post('/confirm_membership_request', 'confirmMembershipRequest')->name('admin.member.confirm_membership_request');
     });
     Route::controller(MemberController::class)->group(function(){
+        Route::get('/', 'index');
         Route::get('/member/view/{id}', 'show');
         Route::get('/member/pdf/{id}', 'generatePDF');
         Route::get('/member/excel/{id}', 'generateExcel');

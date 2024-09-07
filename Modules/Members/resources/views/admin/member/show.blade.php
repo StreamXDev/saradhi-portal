@@ -1,6 +1,30 @@
 @extends('layouts.admin')
 
 @section('content')
+<div class="page-title">
+    <div class="col">
+        <h1 class="title">Member Profile</h1>
+    </div>
+</div>
+<div class="profile-view pf-default">
+    <div class="pf-face">
+        <div class="col-left">
+            <div class="photo">
+                @if($member->user->avatar)
+                    <img src="{{ url('storage/images/'. $member->user->avatar) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}" class="list-profile-photo" />
+                @else
+                    <img src="{{ $member->gender == 'male' ? url('images/avatar-male.jpeg') : url('images/avatar-female.png') }}" alt="">
+                @endif
+            </div>
+            <div class="info">
+                <div class="pf-name">{{ $member->name }}</div>
+                <div class="pf-info-item">{{ $member->user->email }}</div>
+                <div class="pf-info-item">{{ $member->user->phone }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container">
     <div class="page-title">
         <a href="{{ url()->previous() }}" class="back btn">< Back</a>
