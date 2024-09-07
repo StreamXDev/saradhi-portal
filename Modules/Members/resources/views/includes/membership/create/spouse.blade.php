@@ -15,18 +15,33 @@
         <div class="col-md-6 col-lg-4">
             <label for="spouse_phone" class="form-label">Spouse Phone <span class="asterisk">*</span></label>
             <div class="control-col">
+                <select name="spouse_tel_country_code" id="spouse_tel_contry_code" class="form-select country-code">
+                    @foreach ($countries as $country)
+                        <option value="{{ $country->calling_code }}" @if($country->code == 'kw') selected @endif>{{ $country->name }} (+{{ $country->calling_code}})</option>
+                    @endforeach
+                </select>
                 <input type="tel" class="form-control @error('spouse_phone') is-invalid @enderror" name="spouse_phone" id="spouse_phone" value="{{ old('spouse_phone') }}">
             </div>
         </div>
         <div class="col-md-6 col-lg-4">
             <label for="spouse_whatsapp" class="form-label">Spouse Whatsapp <span class="asterisk">*</span></label>
             <div class="control-col">
+                <select name="spouse_whatsapp_country_code" id="spouse_whatsapp_contry_code" class="form-select country-code">
+                    @foreach ($countries as $country)
+                        <option value="{{ $country->calling_code }}" @if($country->code == 'kw') selected @endif>{{ $country->name }} (+{{ $country->calling_code}})</option>
+                    @endforeach
+                </select>
                 <input type="tel" class="form-control @error('spouse_whatsapp') is-invalid @enderror" name="spouse_whatsapp" id="spouse_whatsapp" value="{{ old('spouse_whatsapp') }}">
             </div>
         </div>
         <div class="col-md-6 col-lg-4">
             <label for="spouse_emergency_phone" class="form-label">Spouse Emergency Contact No.<span class="asterisk">*</span></label>
             <div class="control-col">
+                <select name="spouse_emergency_country_code" id="spouse_emergency_contry_code" class="form-select country-code">
+                    @foreach ($countries as $country)
+                        <option value="{{ $country->calling_code }}" @if($country->code == 'kw') selected @endif>{{ $country->name }} (+{{ $country->calling_code}})</option>
+                    @endforeach
+                </select>
                 <input type="tel" name="spouse_emergency_phone" id="spouse_emergency_phone" class="form-control @error('spouse_emergency_phone') is-invalid @enderror" value="{{ old('spouse_emergency_phone') }}">
             </div>
         </div>

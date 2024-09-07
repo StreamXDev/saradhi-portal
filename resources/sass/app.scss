@@ -112,6 +112,22 @@ header.main{
 .asterisk{
     color: crimson;
 }
+.control-col{
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    .country-code{
+        width: 160px;
+        margin-right: 1rem;
+        font-size: 0.8em;
+    }
+    .form-control{
+        flex: 1;
+    }
+    .form-text{
+        flex: 1 0 100%;
+    }
+}
 .list-profile-photo{
     width:40px ;
     border-radius: 4px;

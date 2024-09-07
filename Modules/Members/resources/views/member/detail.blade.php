@@ -20,12 +20,22 @@
             <div class="col-md-6">
                 <label for="phone" class="form-label">Phone<span class="asterisk">*</span></label>
                 <div class="control-col">
+                    <select name="tel_country_code" id="tel_contry_code" class="form-select country-code">
+                        @foreach ($countries as $country)
+                            <option value="{{ $country->calling_code }}" @if($country->code == 'kw') selected @endif>{{ $country->name }} (+{{ $country->calling_code}})</option>
+                        @endforeach
+                    </select>
                     <input type="tel" name="phone" id="phone" class="form-control @error('phone') is-invalid @enderror" value="{{ old('phone') }}">
                 </div>
             </div>
             <div class="col-md-6">
                 <label for="whatsapp" class="form-label">Whatsapp<span class="asterisk">*</span></label>
                 <div class="control-col">
+                    <select name="whatsapp_country_code" id="whatsapp_contry_code" class="form-select country-code">
+                        @foreach ($countries as $country)
+                            <option value="{{ $country->calling_code }}" @if($country->code == 'kw') selected @endif>{{ $country->name }} (+{{ $country->calling_code}})</option>
+                        @endforeach
+                    </select>
                     <input type="tel" name="whatsapp" id="whatsapp" class="form-control @error('whatsapp') is-invalid @enderror" value="{{ old('whatsapp') }}">
                 </div>
             </div>
@@ -34,6 +44,11 @@
             <div class="col-md-6">
                 <label for="emergency_phone" class="form-label">Emergency Contact No in Kuwait<span class="asterisk">*</span></label>
                 <div class="control-col">
+                    <select name="emergency_country_code" id="emergency_contry_code" class="form-select country-code">
+                        @foreach ($countries as $country)
+                            <option value="{{ $country->calling_code }}" @if($country->code == 'kw') selected @endif>{{ $country->name }} (+{{ $country->calling_code}})</option>
+                        @endforeach
+                    </select>
                     <input type="tel" name="emergency_phone" id="emergency_phone" class="form-control @error('emergency_phone') is-invalid @enderror" value="{{ old('emergency_phone') }}">
                 </div>
             </div>
@@ -265,6 +280,13 @@
                 <div class="form-group">
                     <label for="permanent_address_contact" class="form-label">Contact No. in India</label>
                     <div class="control-col">
+                        <select name="permanent_address_country_code" id="permanent_address_contry_code" class="form-select country-code">
+                            @foreach ($countries as $country)
+                                @if($country->code == 'in')
+                                    <option value="{{ $country->calling_code }}" >{{ $country->name }} (+{{ $country->calling_code}})</option>
+                                @endif
+                            @endforeach
+                        </select>
                         <input type="tel" name="permanent_address_contact" id="permanent_address_contact" class="form-control" value="{{ old('permanent_address_contact') }}">
                     </div>
                 </div>
@@ -304,6 +326,11 @@
             <div class="col-md-6">
                 <label for="introducer_phone" class="form-label">Introducer's Phone<span class="asterisk">*</span></label>
                 <div class="control-col">
+                    <select name="introducer_country_code" id="contry_code" class="form-select country-code">
+                        @foreach ($countries as $country)
+                            <option value="{{ $country->calling_code }}" @if($country->code == 'kw') selected @endif>{{ $country->name }} (+{{ $country->calling_code}})</option>
+                        @endforeach
+                    </select>
                     <input type="text" name="introducer_phone" id="introducer_phone" class="form-control" value="{{ old('introducer_phone') }}"> 
                 </div>
             </div>

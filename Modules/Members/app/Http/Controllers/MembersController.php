@@ -3,6 +3,7 @@
 namespace Modules\Members\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Country;
 use App\Models\User;
 use App\Notifications\SendOtp;
 use Dotenv\Exception\ValidationException;
@@ -238,6 +239,7 @@ class MembersController extends Controller
             return redirect('/member/profile');
         }
 
+        $countries = Country::with('regions')->where('active', 1)->get();
         $units = MemberUnit::select('id', 'slug', 'name')->where('active', 1)->get();
         $blood_groups = MemberEnum::select('id', 'slug', 'name')->where('type', 'blood_group')->get();
         $gender = [
@@ -263,7 +265,7 @@ class MembersController extends Controller
         );
 
 
-        return view('members::member.detail', compact('units', 'blood_groups', 'gender', 'district_kerala'));
+        return view('members::member.detail', compact('countries', 'units', 'blood_groups', 'gender', 'district_kerala'));
     }
 
     /**
@@ -317,8 +319,8 @@ class MembersController extends Controller
                 'photo_civil_id_front' => $civil_id_front_name,
                 'photo_civil_id_back' => $civil_id_back_name,
                 'dob' => $input['dob'],
-                'whatsapp' => $input['whatsapp'],
-                'emergency_phone' => $input['emergency_phone'],
+                'whatsapp' => $input['whatsapp_country_code'].$input['whatsapp'],
+                'emergency_phone' => $input['emergency_country_code'].$input['emergency_phone'],
                 'company' => $input['company'],
                 'profession' => $input['profession'],
                 'company_address' => $input['company_address'],
@@ -343,6 +345,7 @@ class MembersController extends Controller
         //Updating users table - phone number and avatar
         User::where('id', $user->id)->update([
             'phone' => $input['phone'],
+            'calling_code' => $input['tel_country_code'],
             'avatar' => $avatarName,
         ]);
 
@@ -351,7 +354,7 @@ class MembersController extends Controller
             'user_id' => $user->id,
             'type' => $input['type'],
             'introducer_name' => $input['introducer_name'],
-            'introducer_phone' => $input['introducer_phone'],
+            'introducer_phone' => $input['introducer_country_code'].$input['introducer_phone'],
             'introducer_mid' => $input['introducer_mid'],
             'introducer_unit' => $input['introducer_unit'],
         ]);
@@ -370,7 +373,7 @@ class MembersController extends Controller
             'user_id' => $user->id,
             'line_1' => $input['permanent_address_line_1'],
             'district' => $input['permanent_address_district'],
-            'contact' => $input['permanent_address_contact'],
+            'contact' => $input['permanent_address_country_code'].$input['permanent_address_contact'],
         ]);
 
         
@@ -435,8 +438,8 @@ class MembersController extends Controller
                     'photo_civil_id_front' => $spouse_civil_id_front_name,
                     'photo_civil_id_back' => $spouse_civil_id_back_name,
                     'dob' => $input['spouse_dob'],
-                    'whatsapp' => $input['spouse_whatsapp'],
-                    'emergency_phone' => $input['spouse_emergency_phone'],
+                    'whatsapp' => $input['spouse_whatsapp_country_code'].$input['spouse_whatsapp'],
+                    'emergency_phone' => $input['spouse_emergency_country_code'].$input['spouse_emergency_phone'],
                     'company' => $input['spouse_company'],
                     'profession' => $input['spouse_profession'],
                     'company_address' => $input['spouse_company_address'],
@@ -461,6 +464,7 @@ class MembersController extends Controller
             //Updating users table - phone number and avatar
             User::where('id', $spouse_user->id)->update([
                 'phone' => $input['spouse_phone'],
+                'calling_code' => $input['spouse_tel_country_code'],
                 'avatar' => $spouse_avatarName,
             ]);
 
@@ -469,7 +473,7 @@ class MembersController extends Controller
                 'user_id' => $spouse_user->id,
                 'type' => $input['type'],
                 'introducer_name' => $input['introducer_name'],
-                'introducer_phone' => $input['introducer_phone'],
+                'introducer_phone' => $input['introducer_country_code'].$input['introducer_phone'],
                 'introducer_mid' => $input['introducer_mid'],
                 'introducer_unit' => $input['introducer_unit'],
             ]);
@@ -488,7 +492,7 @@ class MembersController extends Controller
                 'user_id' => $spouse_user->id,
                 'line_1' => $input['permanent_address_line_1'],
                 'district' => $input['permanent_address_district'],
-                'contact' => $input['permanent_address_contact'],
+                'contact' => $input['permanent_address_country_code'].$input['permanent_address_contact'],
             ]);
 
             // Adding entry to membership_request table, with 'saved' status;
