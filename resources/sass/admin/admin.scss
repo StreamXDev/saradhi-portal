@@ -23,9 +23,36 @@ a{
         padding: 0.2rem;
         font-size: 1.5rem;
         border: none;
+        display: flex;
+        align-items: center;
         &:focus{
             border:none;
         }
+    }
+    .icon{
+        width: 14px;
+        height: 14px;
+        margin:0 0.2rem;
+    }
+    &.btn-xs{
+        font-size: 0.9em;
+        padding: 0.4rem;
+    }
+    &.btn-primary{
+        background-color: $color-primary;
+        border-color: $color-primary;
+        &:hover,&:active,&:focus{
+            background-color: $color-primary-dark;
+            border-color: $color-primary-dark;
+        }
+    }
+    &.btn-outline-default{
+        border-color: #ddd;
+        color: #666;
+    }
+    &.btn-outline-primary{
+        border-color: $color-primary;
+        color: $color-primary;
     }
 }
 .avatar{
@@ -364,6 +391,7 @@ a{
             display: flex;
             align-items: center;
             justify-content: center;
+            border: 5px solid rgba(0,0,0,0.1);
             img{
                 width: 100%;
             }
@@ -375,17 +403,102 @@ a{
         .pf-info-item{
             font-size: 0.9rem;
             color: #666;
+            .icon{
+                width: 14px;
+                height: 14px;
+                color: #999;
+                margin-right: 0.5rem;
+            }
         }
         .col-left{
+            flex: 1;
             display: flex;
             align-items: stretch;
+            justify-content: space-between;
+            padding: 1.5rem;
+            padding-right: 0;
             >.info{
-                padding: 1.5rem;
+                flex: 1;
+            }
+            >.actions{
+                flex: 1;
+                display: flex;
+                justify-content: flex-end;
+                align-items: flex-start;
             }
         }
     }
 }
+.member-relation-box{
+    border: 1px solid #f7e2a6;
+    background-color: #faf5e6;
+    padding: 0.4rem;
+    border-radius: 100px;
+    display: inline-block;
+    margin: 0.4rem 0;
+    .box-content{
+        display: flex;
+        align-items: center;
+        .image{
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            img{
+                width: 100%;
+            }
+        }
+        .value{
+            font-size: 0.9em;
+            padding:0 0.5rem;
+        }
+        .btn{
+            font-size: 0.75em;
+            padding: 0.1rem 0.4rem;
+            border: 1px solid #f0d486;
+            line-height: normal;
+            background-color: #f7e2a6;
+        }
+    }
+}
+.action-buttons{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    column-gap: 0.4rem;
+    li{
+        .btn{
+            &::after{
+                content: none;
+            }
+        }
 
+    }
+}
+
+.dropdown-menu{
+    border: none;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    li{
+        .dropdown-item{
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #666;
+            &.disabled{
+                color: #999;
+            }
+            &:focus,&:active{
+                background-color: $color-primary;
+                color: #fff;
+            }
+        }
+    }
+}
 
 .id-card-wrapper{
     display: flex;

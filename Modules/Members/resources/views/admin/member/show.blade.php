@@ -1,62 +1,69 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="page-title">
-    <div class="col">
-        <h1 class="title">Member Profile</h1>
-    </div>
-</div>
 <div class="profile-view pf-default">
     <div class="pf-face">
+        <div class="photo">
+            @if($member->user->avatar)
+                <img src="{{ url('storage/images/'. $member->user->avatar) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}" class="list-profile-photo" />
+            @else
+                <img src="{{ $member->gender == 'male' ? url('images/avatar-male.jpeg') : url('images/avatar-female.png') }}" alt="">
+            @endif
+        </div>
         <div class="col-left">
-            <div class="photo">
-                @if($member->user->avatar)
-                    <img src="{{ url('storage/images/'. $member->user->avatar) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}" class="list-profile-photo" />
-                @else
-                    <img src="{{ $member->gender == 'male' ? url('images/avatar-male.jpeg') : url('images/avatar-female.png') }}" alt="">
-                @endif
-            </div>
             <div class="info">
                 <div class="pf-name">{{ $member->name }}</div>
                 <div class="pf-info-item">{{ $member->user->email }}</div>
-                <div class="pf-info-item">{{ $member->user->phone }}</div>
+                <div class="pf-info-item"><i class="icon" data-feather="phone"></i>+{{ $member->user->calling_code }}{{ $member->user->phone }}</div>
+                @foreach ($member->relations as $relation)
+                    @if ($relation->relatedTo->type == 'primary')
+                        <div class="member-relation-box">
+                            <div class="box-content">
+                                <div class="image"><img src="{{ url('storage/images/'. $relation->relatedTo->user->avatar) }}" alt="{{ $relation->relatedTo->name }}" title="{{ $relation->relatedTo->name }}" class="list-profile-photo" /></div>
+                                <div class="value">
+                                    {{ $member->name }} is {{$relation->relationship->slug }} of <strong>{{ $relation->relatedTo->name }}</strong>
+                                </div>
+                                <a href="/admin/members/member/view/{{ $relation->relatedTo->user->id}}" class="btn btn-default">VIEW</a>
+                            </div>
+                        </div>
+                    @endif
+                @endforeach
+            </div>
+            <div class="actions">
+                <ul class="action-buttons">
+                    @can('membership_request.export')
+                    <li>
+                        <a href="#" class="btn btn-xs btn-primary"><i class="icon" data-feather="credit-card"></i> ID Card</a>
+                    </li>
+                    <li>
+                        <a href="#" class="btn btn-xs btn-outline-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="icon" data-feather="file"></i> Export</a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a href="/admin/members/member/pdf/{{ $member->user->id }}" class="dropdown-item">Export to PDF</a></li>
+                            <li><a href="/admin/members/member/excel/{{ $member->user->id }}" class="dropdown-item">Export to Excel</a></li>
+                        </ul>
+                    </li>
+                    @endcan
+                    <li>
+                        <a href="#" class="btn btn-xs btn-outline-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="icon" data-feather="more-vertical"></i></a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a href="#" class="dropdown-item disabled">Edit Profile</a></li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
 </div>
 
-<div class="container">
-    <div class="page-title">
-        <a href="{{ url()->previous() }}" class="back btn">< Back</a>
-        <div>
-            @can('membership_request.export')
-                @if($member->active) <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#idCardModal">ID Card</button> @endif
-                <a href="/admin/members/member/pdf/{{ $member->user->id }}" class="btn btn-outline-primary">Export to PDF</a>
-                <a href="/admin/members/member/excel/{{ $member->user->id }}" class="btn btn-outline-primary">Export to Excel</a>
-            @endcan
-        </div>
-    </div>
+<div class="p-2">
+    
     <div class="member-view">
         <div class="header">
             <div class="row">
                 <div class="col-md-12">
-                    @foreach ($member->relations as $relation)
-                        @if ($relation->relatedTo->type == 'primary')
-                            <div class="member-relation">
-                                <div class="image"><img src="{{ url('storage/images/'. $relation->relatedTo->user->avatar) }}" alt="{{ $relation->relatedTo->name }}" title="{{ $relation->relatedTo->name }}" class="list-profile-photo" /></div>
-                                <div class="value">
-                                    {{ $member->name }} is {{$relation->relationship->slug }} of <br /><strong>{{ $relation->relatedTo->name }}</strong>
-                                </div>
-                                <a href="/admin/members/member/view/{{ $relation->relatedTo->user->id}}" class="btn btn-default">VIEW</a>
-                            </div>
-                        @endif
-                    @endforeach
+                    
                 </div>
-                <div class="col-md-2">
-                    <div class="member-photo">
-                        <img src="{{ url('storage/images/'. $member->user->avatar) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}" class="list-profile-photo" />
-                    </div>
-                </div>
+                
                 <div class="col-md-10">
                     <ul class="detail-list">
                         <li>
