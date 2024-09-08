@@ -2,236 +2,280 @@
 
 @section('content')
 <div class="profile-view pf-default">
-    <div class="pf-face">
-        <div class="photo">
-            @if($member->user->avatar)
-                <img src="{{ url('storage/images/'. $member->user->avatar) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}" class="list-profile-photo" />
-            @else
-                <img src="{{ $member->gender == 'male' ? url('images/avatar-male.jpeg') : url('images/avatar-female.png') }}" alt="">
-            @endif
-        </div>
-        <div class="col-left">
-            <div class="info">
-                <div class="pf-name">{{ $member->name }}</div>
-                <div class="pf-info-item">{{ $member->user->email }}</div>
-                <div class="pf-info-item"><i class="icon" data-feather="phone"></i>+{{ $member->user->calling_code }}{{ $member->user->phone }}</div>
-                @foreach ($member->relations as $relation)
-                    @if ($relation->relatedTo->type == 'primary')
-                        <div class="member-relation-box">
-                            <div class="box-content">
-                                <div class="image"><img src="{{ url('storage/images/'. $relation->relatedTo->user->avatar) }}" alt="{{ $relation->relatedTo->name }}" title="{{ $relation->relatedTo->name }}" class="list-profile-photo" /></div>
-                                <div class="value">
-                                    {{ $member->name }} is {{$relation->relationship->slug }} of <strong>{{ $relation->relatedTo->name }}</strong>
-                                </div>
-                                <a href="/admin/members/member/view/{{ $relation->relatedTo->user->id}}" class="btn btn-default">VIEW</a>
-                            </div>
-                        </div>
-                    @endif
-                @endforeach
+    <div class="pf-main">
+        <div class="pf-face">
+            <div class="photo">
+                @if($member->user->avatar)
+                    <img src="{{ url('storage/images/'. $member->user->avatar) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}" class="list-profile-photo" />
+                @else
+                    <img src="{{ $member->gender == 'male' ? url('images/avatar-male.jpeg') : url('images/avatar-female.png') }}" alt="">
+                @endif
             </div>
-            <div class="actions">
-                <ul class="action-buttons">
-                    @can('membership_request.export')
-                    <li>
-                        <a href="#" class="btn btn-xs btn-primary"><i class="icon" data-feather="credit-card"></i> ID Card</a>
+            <div class="col-left">
+                <div class="info">
+                    <div class="pf-info-item pf-name">{{ $member->name }} <span class="status-pill {{ $member->membership->status }}">{{ $member->membership->status }}</span></div>
+                    <div class="pf-info-item">{{ $member->user->email }}</div>
+                    <div class="pf-info-item"><i class="icon" data-feather="phone"></i>+{{ $member->user->calling_code }}{{ $member->user->phone }}</div>
+                    <div class="pf-info-item"><span class="label">Membership ID: </span> <span class="value"><strong>{{ $member->membership->mid ? $member->membership->mid : 'NA' }}</strong></span></div>
+                    @foreach ($member->relations as $relation)
+                        @if ($relation->relatedTo->type == 'primary')
+                            <div class="member-relation-box">
+                                <div class="box-content">
+                                    <div class="image"><img src="{{ url('storage/images/'. $relation->relatedTo->user->avatar) }}" alt="{{ $relation->relatedTo->name }}" title="{{ $relation->relatedTo->name }}" class="list-profile-photo" /></div>
+                                    <div class="value">
+                                        {{ $member->name }} is {{$relation->relationship->slug }} of <strong>{{ $relation->relatedTo->name }}</strong>
+                                    </div>
+                                    <a href="/admin/members/member/view/{{ $relation->relatedTo->user->id}}" class="btn btn-default">VIEW</a>
+                                </div>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+                
+            </div>
+        </div>
+        <div class="pf-content">
+            <div class="pf-tab">
+                <ul class="nav nav-underline" id="profileTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="overview_tab" data-bs-toggle="tab" data-bs-target="#overview_tab_pane" role="tab" aria-controls="overview_tab_pane" aria-selected="true">Overview</a>
                     </li>
-                    <li>
-                        <a href="#" class="btn btn-xs btn-outline-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="icon" data-feather="file"></i> Export</a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a href="/admin/members/member/pdf/{{ $member->user->id }}" class="dropdown-item">Export to PDF</a></li>
-                            <li><a href="/admin/members/member/excel/{{ $member->user->id }}" class="dropdown-item">Export to Excel</a></li>
-                        </ul>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="membership_tab" data-bs-toggle="tab" data-bs-target="#membership_tab_pane" role="tab" aria-controls="membership_tab_pane" aria-selected="false">Membership</a>
                     </li>
-                    @endcan
-                    <li>
-                        <a href="#" class="btn btn-xs btn-outline-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="icon" data-feather="more-vertical"></i></a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a href="#" class="dropdown-item disabled">Edit Profile</a></li>
-                        </ul>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="relation_tab" data-bs-toggle="tab" data-bs-target="#relation_tab_pane" role="tab" aria-controls="relation_tab_pane" aria-selected="false">Relations</a>
                     </li>
                 </ul>
+                <div class="tab-content" id="profileTabContent">
+                    <div class="tab-pane fade show active" id="overview_tab_pane" role="tabpanel" aria-labelledby="overview_tab" tabindex="0">
+                        <div class="page-col-wrapper">
+                            <div class="col-sub">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="title">Membership Details</div>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-basic">
+                                            <li>
+                                                <span class="label">Membership ID</span>
+                                                <div class="value"><strong>{{ $member->membership->mid ? $member->membership->mid : 'NA' }}</strong></div>
+                                            </li>
+                                            <li>
+                                                <span class="label">Membership Type</span>
+                                                <div class="value">{{ ucfirst($member->membership->type) }}</div>
+                                            </li>
+                                            
+                                            <li>
+                                                <span class="label">Membership Status</span>
+                                                <div class="value {{ $member->membership->status =='active' ? 'text-success' : 'text-danger' }}">{{ ucfirst($member->membership->status) }}</div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="title">Kuwait Address</div>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="list-basic">
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="2">{{ $member->localAddress->line_1 }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label">Building</td>
+                                                    <td class="value">{{ $member->localAddress->building }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label">Flat</td>
+                                                    <td class="value">{{ $member->localAddress->flat }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label">Floor</td>
+                                                    <td class="value">{{ $member->localAddress->floor }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label">Unit</td>
+                                                    <td class="value">{{ $member->details->member_unit->name }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="title">India Address</div>
+                                    </div>
+                                    <div class="card-body">
+                                        {{ $member->permanentAddress->line_1 }}<br />
+                                        @if ($member->permanentAddress->line_2 != null ) {{ $member->permanentAddress->line_2 }} <br /> @endif
+                                        @if ($member->permanentAddress->city != null ) {{ $member->permanentAddress->city }} <br /> @endif
+                                        @if ($member->permanentAddress->district != null ) {{ $member->permanentAddress->district }} <br /> @endif
+                                        @if ($member->permanentAddress->region != null ) {{ $member->permanentAddress->region }} <br /> @endif
+                                        @if ($member->permanentAddress->country != null ) {{ $member->permanentAddress->country }} <br /> @endif
+                                        @if ($member->permanentAddress->zip != null ) {{ $member->permanentAddress->zip }} <br /> @endif
+                                        <table class="list-basic">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="label">Contact</td>
+                                                    <td class="value">{{ $member->permanentAddress->contact }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="title">SNDP Info</div>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="list-basic">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="label">Branch</td>
+                                                    <td class="value">{{ $member->details->sndp_branch }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label">Branch Number</td>
+                                                    <td class="value">{{ $member->details->sndp_branch_number }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label">Union</td>
+                                                    <td class="value">{{ $member->details->sndp_union }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-main">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="title">Basic Info</div>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="list-basic">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="label">Name</td>
+                                                    <td class="value">{{ $member->name }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label">Email</td>
+                                                    <td class="value">{{ $member->user->email }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label">Phone</td>
+                                                    <td class="value">+{{ $member->user->calling_code }} {{ $member->user->phone }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label">Whatsapp</td>
+                                                    <td class="value">+{{ $member->details->whatsapp_code }} {{ $member->details->whatsapp }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label">Emergency No.</td>
+                                                    <td class="value">+{{ $member->details->emergency_phone_code }} {{ $member->details->emergency_phone }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label">Civil ID</td>
+                                                    <td class="value">
+                                                        {{ $member->details->civil_id }}
+                                                        <a href="#" class="link" data-bs-toggle="modal" data-bs-target="#civilIdProof"><i class="icon" data-feather="file-text"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label">PACI No.</td>
+                                                    <td class="value">{{ $member->details->civil_id }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label">Unit</td>
+                                                    <td class="value">{{ $member->details->member_unit->name }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="title">Personal Info</div>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="list-basic">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="label">Gender</td>
+                                                    <td class="value">{{ ucfirst($member->gender) }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label">Date of birth</td>
+                                                    <td class="value">{{ date('M d, Y', strtotime($member->details->dob)) }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label">Passport No.</td>
+                                                    <td class="value">
+                                                        {{ $member->details->passport_no }}
+                                                        <a href="#" class="link" data-bs-toggle="modal" data-bs-target="#passportProof"><i class="icon" data-feather="file-text"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label">Passport Expiry</td>
+                                                    <td class="value">
+                                                        {{ date('M d, Y', strtotime($member->details->passport_expiry)) }}
+                                                        <a href="#" class="link" data-bs-toggle="modal" data-bs-target="#passportProof"><i class="icon" data-feather="file-text"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label">Company</td>
+                                                    <td class="value">{{ $member->details->company }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label">Profession</td>
+                                                    <td class="value">{{ $member->details->profession }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="membership_tab_pane" role="tabpanel" aria-labelledby="membership_tab" tabindex="0">Membership</div>
+                    <div class="tab-pane fade" id="relation_tab_pane" role="tabpanel" aria-labelledby="relation_tab" tabindex="0">Relations</div>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-<div class="p-2">
-    
-    <div class="member-view">
-        <div class="header">
-            <div class="row">
-                <div class="col-md-12">
-                    
-                </div>
-                
-                <div class="col-md-10">
-                    <ul class="detail-list">
-                        <li>
-                            <span class="label">Name</span>
-                            <div class="value">{{ $member->name }}</div>
-                        </li>
-                        <li>
-                            <span class="label">Email</span>
-                            <div class="value">{{ $member->user->email }}</div>
-                        </li>
-                        <li>
-                            <span class="label">Phone</span>
-                            <div class="value">{{ $member->user->phone }}</div>
-                        </li>
-                        <li>
-                            <span class="label">Whatsapp</span>
-                            <div class="value">{{ $member->details->whatsapp }}</div>
-                        </li>
-                        <li>
-                            <span class="label">Emergency Phone</span>
-                            <div class="value">{{ $member->details->emergency_phone }}</div>
-                        </li>
-                        <li>
-                            <span class="label">Civil ID</span>
-                            <div class="value">{{ $member->details->civil_id }}</div>
-                        </li>
-                        <li>
-                            <span class="label">PACI No.</span>
-                            <div class="value">{{ $member->details->paci }}</div>
-                        </li>
-                        <li>
-                            <span class="label">Member Type</span>
-                            <div class="value">{{ ucfirst($member->type) }}</div>
-                        </li>
-                        <li>
-                            <span class="label">Unit</span>
-                            <div class="value">{{ $member->details->member_unit->name }}</div>
-                        </li>
+    <div class="pf-aside">
+        <div class="actions">
+            <ul class="action-buttons">
+                @can('membership_request.export')
+                @if($member->active)
+                    <li>
+                        <a href="#" class="btn btn-xs btn-primary" data-bs-toggle="modal" data-bs-target="#idCardModal"><i class="icon" data-feather="credit-card"></i> ID Card</a>
+                    </li>
+                @endif
+                <li>
+                    <a href="#" class="btn btn-xs btn-outline-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="icon" data-feather="file"></i> Export</a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a href="/admin/members/member/pdf/{{ $member->user->id }}" class="dropdown-item">Export to PDF</a></li>
+                        <li><a href="/admin/members/member/excel/{{ $member->user->id }}" class="dropdown-item">Export to Excel</a></li>
                     </ul>
-                </div>
-            </div>
+                </li>
+                @endcan
+                <li>
+                    <a href="#" class="btn btn-xs btn-outline-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="icon" data-feather="more-vertical"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a href="#" class="dropdown-item disabled">Edit Profile</a></li>
+                    </ul>
+                </li>
+            </ul>
         </div>
-        <div class="data-section">
-            <div class="row">
-                <div class="col-md-8">
-                    <h5 class="list-title">Mebership Details</h5>
-                    <ul class="detail-list">
-                        <li>
-                            <span class="label">Membership ID</span>
-                            <div class="value"><strong>{{ $member->membership->mid }}</strong></div>
-                        </li>
-                        <li>
-                            <span class="label">Membership Type</span>
-                            <div class="value">{{ ucfirst($member->membership->type) }}</div>
-                        </li>
-                        
-                        <li>
-                            <span class="label">Membership Status</span>
-                            <div class="value {{ $member->membership->status =='active' ? 'text-success' : 'text-danger' }}">{{ ucfirst($member->membership->status) }}</div>
-                        </li>
-                    </ul>
-                    <br />
-                    <h5 class="list-title">Address</h5>
-                    <div class="address">
-                        <h6>Kuwait Address</h6>
-                        {{ $member->localAddress->line_1 }},
-                        {{ $member->localAddress->building }}, {{ $member->localAddress->flat }}, {{ $member->localAddress->floor }}<br />
-                        {{ $member->details->member_unit->name }}
-                    </div>
-                    <br />
-                    <div>
-                        <h6>India Address</h6>
-                        {{ $member->permanentAddress->line_1 }}<br />
-                        @if ($member->permanentAddress->line_2 != null ) {{ $member->permanentAddress->line_2 }} <br /> @endif
-                        @if ($member->permanentAddress->city != null ) {{ $member->permanentAddress->city }} <br /> @endif
-                        @if ($member->permanentAddress->district != null ) {{ $member->permanentAddress->district }} <br /> @endif
-                        @if ($member->permanentAddress->region != null ) {{ $member->permanentAddress->region }} <br /> @endif
-                        @if ($member->permanentAddress->country != null ) {{ $member->permanentAddress->country }} <br /> @endif
-                        @if ($member->permanentAddress->zip != null ) {{ $member->permanentAddress->zip }} <br /> @endif
-                        @if ($member->permanentAddress->contact != null ) Contact: {{ $member->permanentAddress->contact }} <br /> @endif
-                    </div>
-                    <br />
-                    <h5 class="list-title">Basic Details</h5>
-                    <ul class="detail-list">
-                        <li>
-                            <span class="label">Gender</span>
-                            <div class="value">{{ ucfirst($member->gender) }}</div>
-                        </li>
-                        <li>
-                            <span class="label">Date of birth</span>
-                            <div class="value">{{ date('M d, Y', strtotime($member->details->dob)) }}</div>
-                        </li>
-                        <li>
-                            <span class="label">Passport No.</span>
-                            <div class="value">{{ $member->details->passport_no }}</div>
-                        </li>
-                        <li>
-                            <span class="label">Passport Expiry</span>
-                            <div class="value">{{ date('M d, Y', strtotime($member->details->passport_expiry)) }}</div>
-                        </li>
-                        <li>
-                            <span class="label">Company</span>
-                            <div class="value">{{ $member->details->company }}</div>
-                        </li>
-                        <li>
-                            <span class="label">Profession</span>
-                            <div class="value">{{ $member->details->profession }}</div>
-                        </li>
-                        
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <ul class="proof_list">
-                        <li>
-                            <div class="image">
-                                <img id="photo_c1" src="{{ url('storage/images/'. $member->details->photo_civil_id_front) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}" class="image-fluid zoom-photo"  style="width:160px" />
-                            </div>
-                            <div class="title">Civil ID 01</div>
-                        </li>
-                        <li>
-                            <div class="image">
-                                <img id="photo_c2" src="{{ url('storage/images/'. $member->details->photo_civil_id_back) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}"  class="image-fluid zoom-photo"  style="width:160px"/>
-                            </div>
-                            <div class="title">Civil ID 02</div>
-                        </li>
-                        <li>
-                            <div class="image">
-                                <img id="photo_p1" src="{{ url('storage/images/'. $member->details->photo_passport_front) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}"  class="image-fluid zoom-photo"  style="width:160px"/>
-                            </div>
-                            <div class="title">Passport copy - 01</div>
-                        </li>
-                        <li>
-                            <div class="image">
-                                <img id="photo_p2" src="{{ url('storage/images/'. $member->details->photo_passport_back) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}"  class="image-fluid zoom-photo"  style="width:160px"/>
-                            </div>
-                            <div class="title">Passport copy - 02</div>
-                        </li>
-                    </ul>
-                </div>
+        <div class="card card-warning">
+            <div class="card-header">
+                <div class="title">Membership Status</div>
             </div>
-            <br />
-            <ul class="detail-list">
-                <li><span class="label">SNDP Branch:</span> <span class="value">{{ $member->details->sndp_branch }}</span></li>
-                <li><span class="label">Number:</span> <span class="value"> {{ $member->details->sndp_branch_number }}</span></li>
-                <li><span class="label">SNDP Union:</span> <span class="value"> {{ $member->details->sndp_union }}</span></li>
-            </ul>
-            <br />
-            <h5 class="list-title">Introducer Details</h5>
-            <ul class="detail-list">
-                <li>
-                    <span class="label">Name</span>
-                    <div class="value">{{ $member->membership->introducer_name }}</div>
-                </li>
-                <li>
-                    <span class="label">Phone</span>
-                    <div class="value">{{ $member->membership->introducer_phone }}</div>
-                </li>
-                <li>
-                    <span class="label">Membership ID</span>
-                    <div class="value">{{ $member->membership->introducer_mid }}</div>
-                </li>
-                <li>
-                    <span class="label">Unit</span>
-                    <div class="value">{{ $member->membership->introducer_unit }}</div>
-                </li>
-            </ul>
-            <br />
-            <div>
+            <div class="card-body">
                 <ul class="request-status-list">
                     @foreach ($statuses as $status)
                         <li class={{ $status->checked ? 'active' : '' }}{{$status->slug == 'rejected' ? '-rejected' : ''}}>
@@ -242,64 +286,42 @@
                     @endforeach
                 </ul>
             </div>
-
-            @if (count($errors) > 0)
-                <div class="alert alert-danger">
-                    <strong>Whoops!</strong> There were some problems with your input.<br><br>
-                    <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                    </ul>
+            @if($request_action)
+                <div class="card-footer">
+                    @include('members::admin.includes.membership.request.action')
                 </div>
             @endif
-            @if($request_action)
-                @if($current_status->request_status->slug == 'approved' && $request_action->action['slug'] == 'confirm')
-                    @if(Auth::user()->can('membership_request.confirm'))
-                    <div class="request-confirmation">
-                        <form action="{{ route('admin.member.confirm_membership_request') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="user_id" value="{{ $member->user_id }}">
-                            <div class="form-group">
-                                <label for="mid" class="control-label">Member Id</label>
-                                <div>Suggested Member Id: <strong>{{ $suggested_mid }}</strong></div>
-                                <div class="col"><input type="text" name="mid" id="mid" class="form-control"></div>
-                            </div>
-                            <div class="form-group">
-                                <textarea name="remark" id="remark" rows="5" class="form-control" placeholder="Enter comments"></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Confirm</button>
-                        </form>
-                    </div>
-                    @endif
-                @else
-                    <div class="request-action">
-                        <form action="{{ route('admin.member.change_status') }}" method="post">
-                            @csrf
-                            @if($current_status->rejected != null)
-                                <div class="form-group">The request is already rejected. Do you want to {{ $request_action->action['slug'] }} the action?</div>
-                            @else
-                                <div class="form-group">Are you sure want to {{ $request_action->action['slug'] }} the request?</div>
-                            @endif
-                            <input type="hidden" name="user_id" value="{{ $member->user_id }}">
-                            <input type="hidden" name="current_status_id" value="{{ $request_action->request_status_id }}">
-                            <div class="form-group">
-                                <textarea name="remark" id="remark" cols="30" rows="5" placeholder="Enter comment (Optional)" class="form-control"></textarea>
-                            </div>
-                            @if($current_status->rejected == null)
-                                <button type="submit" class="btn btn-success" name="action" value="submit">{{ $request_action->action['name'] }}</button>
-                            @else
-                                <button type="submit" class="btn btn-warning" name="action" value="submit">{{ $request_action->action['name'] }}</button>
-                            @endif
-                        </form>
-                    </div>
-                @endif
-            @endif
-            
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="title">Introducer Info</div>
+            </div>
+            <div class="card-body">
+                <table class="list-basic">
+                    <tbody>
+                        <tr>
+                            <td class="label">Name</td>
+                            <td class="value">{{ $member->membership->introducer_name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Phone</td>
+                            <td class="value">+{{ $member->membership->introducer_phone_code }} {{ $member->membership->introducer_phone }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Membership ID</td>
+                            <td class="value">{{ $member->membership->introducer_mid }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Unit</td>
+                            <td class="value">{{ $member->membership->introducer_unit }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
-
+@include('members::admin.includes.membership.request.proof')
 <!-- Modal -->
 <div class="modal fade" id="idCardModal" tabindex="-1" aria-labelledby="idCardModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -339,7 +361,7 @@
     })
 
     $(document).ready(function(){
-        $('.zoom-photo').wrap('<span style="display:inline-block"></span>').css('display', 'block').parent().zoom();
+        //$('.zoom-photo').wrap('<span style="display:inline-block"></span>').css('display', 'block').parent().zoom();
     });
 </script>
 @endsection

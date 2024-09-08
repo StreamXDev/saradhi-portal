@@ -17,7 +17,15 @@ a{
         text-decoration: none;
     }
 }
-
+.justify-self-end{
+    margin-left: auto;
+}
+.form-group{
+    margin-bottom: 1rem;
+}
+.asterisk{
+    color: crimson;
+}
 .btn{
     &.sidebar-toggle{
         padding: 0.2rem;
@@ -294,7 +302,7 @@ a{
                 .label{
                     display: block;
                     font-weight: 600;
-                    color: rgba(0,0,0,0.4);
+                    color: $color-grey-600;
                     text-transform: uppercase;
                     font-size: 0.7em;
                 }
@@ -379,6 +387,25 @@ a{
 }
 
 .profile-view{
+    display: flex;
+    align-items: stretch;
+    >.pf-main{
+        flex: 3;
+    }
+    >.pf-aside{
+        flex: 1;
+        border-left: 1px solid $border-color;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        row-gap: 1rem;
+        .actions{
+            margin-bottom: 1.5rem;
+            .action-buttons{
+                justify-content: flex-end;
+            }
+        }
+    }
     .pf-face{
         display: flex;
         align-items: stretch;
@@ -398,11 +425,17 @@ a{
         }
         .pf-name{
             font-weight: 600;
-            font-size: 1.2rem;
+            font-size: 1.2rem !important;
         }
         .pf-info-item{
             font-size: 0.9rem;
             color: #666;
+            display: flex;
+            align-items: center;
+            column-gap: 0.4rem;
+            .label{
+                color: $color-grey-600;
+            }
             .icon{
                 width: 14px;
                 height: 14px;
@@ -428,6 +461,53 @@ a{
             }
         }
     }
+    .pf-content{
+        display: flex;
+        align-items: stretch;
+        .pf-tab{
+            flex: 3;
+            .nav{
+                padding: 0 1.5rem;
+                .nav-link{
+                    cursor: pointer;
+                    color: #333;
+                    &.active{
+                        color: $color-primary;
+                    }
+                }
+            }
+            .tab-content{
+                padding:2rem  1.5rem;
+                
+            }
+        }
+        .pf-aside{
+            flex: 1;
+        }
+    }
+}
+.proof-display{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    .item{
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        img{
+            height: 100%;
+        }
+    }
+}
+.proof-text{
+    font-size: 1.4rem;
+    margin-right: auto;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    column-gap: 1.5rem;
+    color: red;
 }
 .member-relation-box{
     border: 1px solid #f7e2a6;
@@ -480,7 +560,81 @@ a{
 
     }
 }
-
+.page-col-wrapper{
+    display: flex;
+    column-gap: 1rem;
+    row-gap: 1rem;
+    .col-sub{
+        flex: 2;
+        display: flex;
+        flex-direction: column;
+        row-gap: 1rem;
+    }
+    .col-main{
+        flex: 4;
+        display: flex;
+        flex-direction: column;
+        row-gap: 1rem;
+    }
+}
+.card{
+    border-color: $border-color;
+    @include box-shadow;
+    .card-header{
+        background-color: #fff;
+        border-bottom-color: $border-color;
+        .title{
+            font-weight: 600;
+        }
+    }
+    .card-footer{
+        background-color: transparent;
+        display: flex;
+        justify-content: space-between;
+    }
+    &.card-warning{
+        border: 1px solid #f7e2a6;
+        background-color: #faf5e6;
+        .card-header{
+            background-color: #f7e2a6;
+        }
+    }
+}
+.list-basic{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    li{
+        display: flex;
+        align-items: center;
+        line-height: 1.25rem;
+        padding: 0.2rem 0;
+    }
+    td{
+        padding: 0.2rem 0;
+    }
+    .label{
+        color: $color-grey-600;
+        font-size: 0.875rem;
+        flex: 1 0 20%;
+        min-width: 150px;
+    }
+    .value{
+        color: #071437;
+        font-size: 0.875rem;
+        flex: 1 0 80%;
+        display: flex;
+        align-items: center;
+        column-gap: 0.5rem;
+        .link{
+            font-size: 0.7rem;
+            .icon{
+                width: 16px;
+                height: 16px;
+            }
+        }
+    }
+}
 .dropdown-menu{
     border: none;
     box-shadow: 0 0 5px rgba(0,0,0,0.1);
@@ -499,7 +653,104 @@ a{
         }
     }
 }
+.status-pill{
+    font-size: 0.6rem !important;
+    font-weight: normal;
+    text-transform: uppercase;
+    padding: 0.2rem 0.4rem;
+    line-height: normal;
+    background-color: #eee;
+    border-radius: 50px;
+    display: inline-block;
+    margin: 0 0.5rem;
+    &.active{
+        border-color: #10e372;
+        background-color: #bbfcd9;
+        color: #019144;
+    }
+    &.inactive{
+        border-color: #ddd;
+        background-color: #eee;
+        color: #666;
+    }
+    &.rejected{
+        border-color: #ed7288;
+        background-color: #ffe3e8;
+        color: #b50526;
+    }
+    &.dormant{
+        border-color: #e0d753;
+        background-color: #faf7cd;
+        color: #a39905;
 
+    }
+}
+.request-status-list{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    li{
+        padding: 0 0 1rem 0;
+        padding-left: 25px;
+        position: relative;
+        color: rgba(0,0,0,0.4);
+        .title{
+            font-weight: 500;
+        }
+        .description{
+            font-size: 0.9em;
+        }
+        &::before{
+            content: '\f058';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            top: 1px;
+            color: rgba(0,0,0,0.1);
+            z-index: 1;
+        }
+        &::after{
+            content: ' ';
+            width: 1px;
+            background-color: #ddd;
+            position: absolute;
+            top:1.5rem;
+            bottom: 0;
+            left: 0.5rem;
+        }
+        &:last-child{
+            padding-bottom: 0;
+            &::after{
+                content: none;
+            }
+        }
+        &.active{
+            .title{color: #222;}
+            .description{color: #666;}
+            .remark{ color: #222; font-size: 0.8em;}
+            &::before{
+                color: green;
+            }
+            &::after{
+                background-color: green;
+            }
+        }
+        &.active-rejected{
+            .title{color: crimson;}
+            .remark{
+                color: crimson;
+                font-size: 0.8em;
+            }
+            &::before{
+                color: crimson;
+            }
+            &::after{
+                background-color: #ddd;
+            }
+        }
+    }
+}
 .id-card-wrapper{
     display: flex;
     align-items: center;
