@@ -336,6 +336,10 @@ a{
         .actions{
             width: 10%;
             padding: 0.4rem;
+            padding-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
         }
         .relations{
             background-color: #edf3f5;

@@ -34,9 +34,12 @@ class MemberExport implements FromCollection, WithHeadings, WithMapping
             $member->membership->mid,
             $member->name,
             $member->user->email,
-            $member->user->phone,
+            '+'.$member->user->calling_code.$member->user->phone,
+            '+'.$member->details->whatsapp_code.$member->details->whatsapp,
+            '+'.$member->details->emergency_phone_code.$member->details->emergency_phone,
             $member->membership->type,
             $member->details->civil_id,
+            $member->details->paci,
             $member->details->member_unit->name,
             $member->gender,
             $member->blood_group,
@@ -45,8 +48,14 @@ class MemberExport implements FromCollection, WithHeadings, WithMapping
             $member->details->profession,
             $member->details->passport_no,
             date('d-m-Y', strtotime($member->details->passport_expiry)),
-            $member->user->avatar,
-            
+            url('storage/images/'. $member->user->avatar),
+            $member->details->sndp_branch,
+            $member->details->sndp_branch_number,
+            $member->details->sndp_union,
+            $member->membership->introducer_name,
+            '+'.$member->membership->introducer_phone_code.$member->membership->introducer_phone,
+            $member->membership->introducer_mid,
+            $member->membership->introducer_unit
         ];
     }
 
@@ -58,6 +67,32 @@ class MemberExport implements FromCollection, WithHeadings, WithMapping
      */
     public function headings(): array
     {
-        return ['Member ID', 'Name', 'Email', 'Phone', 'Membership Type', 'Civil ID', 'Unit', 'Gender', 'Blood Group', 'DOB', 'Company', 'Profession', 'Passport No', 'Passport Expiry', 'Photo'];
+        return [
+            'Member ID', 
+            'Name',
+            'Email',
+            'Phone',
+            'Whatsapp',
+            'Emergency Phone',
+            'Membership Type',
+            'Civil ID',
+            'PACI',
+            'Unit',
+            'Gender',
+            'Blood Group',
+            'DOB',
+            'Company',
+            'Profession',
+            'Passport No',
+            'Passport Expiry',
+            'Photo',
+            'SNDP Branch',
+            'SNDP Branch No.',
+            'SNDP Union',
+            'Introducer',
+            'Introducer Phone',
+            'Introducer MID',
+            'Introducer Unit'
+        ];
     }
 }

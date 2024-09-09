@@ -186,7 +186,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td class="label">PACI No.</td>
-                                                    <td class="value">{{ $member->details->civil_id }}</td>
+                                                    <td class="value">{{ $member->details->paci }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="label">Unit</td>

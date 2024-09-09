@@ -12,7 +12,15 @@
     </tr>
     <tr>
         <td>Phone</td>
-        <td>{{ $data['member']->user->phone }}</td>
+        <td>+{{ $data['member']->user->calling_code.$data['member']->user->phone }}</td>
+    </tr>
+    <tr>
+        <td>Whatsapp</td>
+        <td>+{{ $data['member']->details->whatsapp_code.$data['member']->details->whatsapp }}</td>
+    </tr>
+    <tr>
+        <td>Phone</td>
+        <td>+{{ $data['member']->details->emergency_phone_code.$data['member']->details->emergency_phone }}</td>
     </tr>
     <tr>
         <td>Member ID</td>
