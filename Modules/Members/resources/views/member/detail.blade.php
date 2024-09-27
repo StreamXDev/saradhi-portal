@@ -167,15 +167,15 @@
         <div class="form-section-title">Professional Details</div>
         <div class="form-group row">
             <div class="col-md-6 col-lg-4">
-                <label for="company" class="form-label">Company</label>
-                <div class="control-col">
-                    <input type="text" name="company" id="company" class=" form-control" value="{{ old('company') }}">
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-4">
                 <label for="profession" class="form-label">Profession</label>
                 <div class="control-col">
                     <input type="text" name="profession" id="profession" class=" form-control" value="{{ old('profession') }}">
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <label for="company" class="form-label">Company</label>
+                <div class="control-col">
+                    <input type="text" name="company" id="company" class=" form-control" value="{{ old('company') }}">
                 </div>
             </div>
             <div class="col-md-6 col-lg-4">

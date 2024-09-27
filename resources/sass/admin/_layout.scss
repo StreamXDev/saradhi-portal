@@ -57,4 +57,29 @@
             }
         }
     }
+    @include xs{
+        nav.sidebar{
+            left: -100%;
+            z-index: 1000;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: all 200ms ease;
+            &.opened{
+                left: 0;
+            }
+        }
+        .content-wrapper{
+            margin: 0;
+            padding: 0;
+            .header-main{
+                padding: 0.5rem 1rem;
+                >.sidebar-toggle{
+                    display: block;
+                }
+                >.title{
+                    display: block;
+                }
+            }
+        }
+    }
 }

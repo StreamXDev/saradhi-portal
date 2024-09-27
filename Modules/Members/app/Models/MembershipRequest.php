@@ -31,6 +31,12 @@ class MembershipRequest extends Model
         return $this->hasOne(User::class, 'id', 'user_id');
     }
 
+    // Collecting User
+    public function updatedBy(): HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'updated_by');
+    }
+
     // Collecting member
     public function member(): HasOne
     {

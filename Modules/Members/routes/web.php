@@ -63,5 +63,6 @@ Route::prefix('admin/members')->middleware(['auth:sanctum', 'verified_email', 'i
         Route::get('/member/view/{id}', 'show');
         Route::get('/member/pdf/{id}', 'generatePDF');
         Route::get('/member/excel/{id}', 'generateExcel');
+        Route::post('/member/update', 'update')->name('admin.member.update');
     });
 });

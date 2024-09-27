@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Country;
 use App\Models\User;
 use App\Notifications\SendOtp;
+use App\Rules\ReCaptcha;
 use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Modules\Members\Models\Member;
 use Modules\Members\Models\MemberContact;
 use Modules\Members\Models\MemberDetail;
@@ -99,12 +101,13 @@ class MembersController extends Controller
     {
         $this->validate($request, [
             'name' => 'required|string',
-            'email' => 'required|unique:users,email'
+            'email' => 'required|unique:users,email',
+            'password' => ['required', 'confirmed', Password::min(8)->numbers()->letters()->symbols()],
+            'g-recaptcha-response' => ['required', new ReCaptcha]
         ]);
 
         $input = $request->all();
 
-        $input['password'] = Hash::make(Str::random(10));
         $user = User::create($input);
 
         $user->assignRole(['Member']);
@@ -417,16 +420,16 @@ class MembersController extends Controller
             $spouse_avatarName = 'av'.$spouse_user->id.'_'.time().'.'.$request->spouse_avatar->extension(); 
             $request->spouse_avatar->storeAs('public/images', $spouse_avatarName);
 
-            $spouse_civil_id_front_name = 'cvf'.$user->id.'_'.time().'.'.$request->spouse_photo_civil_id_front->extension(); 
+            $spouse_civil_id_front_name = 'cvf'.$spouse_user->id.'_'.time().'.'.$request->spouse_photo_civil_id_front->extension(); 
             $request->spouse_photo_civil_id_front->storeAs('public/images', $spouse_civil_id_front_name);
 
-            $spouse_civil_id_back_name = 'cvb'.$user->id.'_'.time().'.'.$request->spouse_photo_civil_id_back->extension(); 
+            $spouse_civil_id_back_name = 'cvb'.$spouse_user->id.'_'.time().'.'.$request->spouse_photo_civil_id_back->extension(); 
             $request->spouse_photo_civil_id_back->storeAs('public/images', $spouse_civil_id_back_name);
 
-            $spouse_passport_front_name = 'ppf'.$user->id.'_'.time().'.'.$request->spouse_photo_passport_front->extension(); 
+            $spouse_passport_front_name = 'ppf'.$spouse_user->id.'_'.time().'.'.$request->spouse_photo_passport_front->extension(); 
             $request->spouse_photo_passport_front->storeAs('public/images', $spouse_passport_front_name);
 
-            $spouse_passport_back_name = 'ppb'.$user->id.'_'.time().'.'.$request->spouse_photo_passport_back->extension(); 
+            $spouse_passport_back_name = 'ppb'.$spouse_user->id.'_'.time().'.'.$request->spouse_photo_passport_back->extension(); 
             $request->spouse_photo_passport_back->storeAs('public/images', $spouse_passport_back_name);
 
             // Spouse Member details

@@ -11,6 +11,7 @@ body, html{
     margin: 0 !important;
     padding: 0;
     background-color: #f8f8f8;
+    display: block;
 }
 a{
     &:hover{
@@ -23,9 +24,58 @@ a{
 .form-group{
     margin-bottom: 1rem;
 }
+.form-title-divider{
+    margin:2rem 0 2rem 0;
+    border-bottom: 4px solid #ddd;
+}
+.form-section-title{
+    background-color: #eba337;
+    color: #fff;
+    font-weight: 600;
+    padding:0.4rem 1rem;
+    margin: 1rem 0;
+}
+.form-section-subtitle{
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0.5rem 0;
+}
+.form-label{
+    font-weight: 600;
+}
 .asterisk{
     color: crimson;
 }
+.control-col{
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    .country-code{
+        width: 160px;
+        margin-right: 1rem;
+        font-size: 0.8em;
+    }
+    .form-control{
+        flex: 1;
+    }
+    .form-text{
+        flex: 1 0 100%;
+    }
+}
+.list-profile-photo{
+    width:40px ;
+    border-radius: 4px;
+}
+.form-family-details{
+    padding: 0.5rem;
+    background-color: #eee;
+    border-radius: 6px;
+    display: none;
+    .control-col{
+        margin-bottom: 1rem;
+    }
+}
+
 .btn{
     &.sidebar-toggle{
         padding: 0.2rem;
@@ -340,6 +390,9 @@ a{
             display: flex;
             align-items: center;
             justify-content: flex-end;
+            .btn{
+                color: $color-primary;
+            }
         }
         .relations{
             background-color: #edf3f5;
@@ -366,6 +419,13 @@ a{
                 .details{
                     padding: 0;
                     padding-left: 1rem;
+                    a{
+                        text-decoration: none;
+                        color: inherit;
+                        &:hover{
+                            color: $color-primary;
+                        }
+                    }
                     .mid{
                         font-weight: 600;
                     }
@@ -457,11 +517,8 @@ a{
             >.info{
                 flex: 1;
             }
-            >.actions{
-                flex: 1;
-                display: flex;
-                justify-content: flex-end;
-                align-items: flex-start;
+            .profile-actions{
+                display: none;
             }
         }
     }
@@ -487,6 +544,60 @@ a{
         }
         .pf-aside{
             flex: 1;
+        }
+    }
+    @include xs{
+        flex-direction: column;
+        align-items: flex-start;
+        >.pf-main{
+            width: 100%;
+        }
+        >.pf-aside{
+            padding: 0.5rem;
+            .profile-actions{
+                display: none;
+            }
+        }
+        .pf-face{
+            flex-direction: column;
+            align-items: center;
+            padding:1rem 0;
+            .photo{
+                width: 80px;
+                height: 80px;
+            }
+            .col-left{
+                padding: 0;
+                width: 100%;
+                flex-direction: column;
+                .profile-actions{
+                    display: block;
+                    .action-buttons{
+                        justify-content: center;
+                    }
+                }
+                .info{
+                    text-align: center;
+                    .pf-info-item{
+                        text-align: center;
+                        justify-content: center;
+                    }
+                    .pf-name{
+                        font-size: 1rem !important;
+                    }
+                }
+            }
+        }
+        .pf-content{
+            .pf-tab{
+                .nav{
+                    padding: 0.5rem;
+                    justify-content: center;
+                }
+                .tab-content{
+                    padding: 0.5rem;
+                }
+            }
         }
     }
 }
@@ -547,6 +658,19 @@ a{
             background-color: #f7e2a6;
         }
     }
+    @include xs{
+        border-radius: 0;
+        width: 100%;
+        border-left: none;
+        border-right: none;
+        .box-content{
+            width: 100%;
+            justify-content: center;
+            .value{
+                font-size: 0.8em;
+            }
+        }
+    }
 }
 .action-buttons{
     margin: 0;
@@ -580,6 +704,9 @@ a{
         flex-direction: column;
         row-gap: 1rem;
     }
+    @include xs{
+        flex-direction: column;
+    }
 }
 .card{
     border-color: $border-color;
@@ -587,6 +714,9 @@ a{
     .card-header{
         background-color: #fff;
         border-bottom-color: $border-color;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         .title{
             font-weight: 600;
         }
@@ -620,13 +750,12 @@ a{
     .label{
         color: $color-grey-600;
         font-size: 0.875rem;
-        flex: 1 0 20%;
         min-width: 150px;
     }
     .value{
         color: #071437;
         font-size: 0.875rem;
-        flex: 1 0 80%;
+        flex: 1;
         display: flex;
         align-items: center;
         column-gap: 0.5rem;
@@ -704,6 +833,14 @@ a{
         .description{
             font-size: 0.9em;
         }
+        .remark{
+            font-size: 0.8em;
+        }
+        &.saved,&.submitted{
+            .description, .remark{
+                display: none;
+            }
+        }
         &::before{
             content: '\f058';
             font-family: 'Font Awesome 5 Free';
@@ -732,7 +869,7 @@ a{
         &.active{
             .title{color: #222;}
             .description{color: #666;}
-            .remark{ color: #222; font-size: 0.8em;}
+            .remark{ color: #222;}
             &::before{
                 color: green;
             }

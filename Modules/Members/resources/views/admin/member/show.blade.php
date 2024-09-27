@@ -31,7 +31,7 @@
                         @endif
                     @endforeach
                 </div>
-                
+                @include('members::admin.includes.profile.actions')
             </div>
         </div>
         <div class="pf-content">
@@ -53,35 +53,22 @@
                             <div class="col-sub">
                                 <div class="card">
                                     <div class="card-header">
-                                        <div class="title">Membership Details</div>
-                                    </div>
-                                    <div class="card-body">
-                                        <ul class="list-basic">
-                                            <li>
-                                                <span class="label">Membership ID</span>
-                                                <div class="value"><strong>{{ $member->membership->mid ? $member->membership->mid : 'NA' }}</strong></div>
-                                            </li>
-                                            <li>
-                                                <span class="label">Membership Type</span>
-                                                <div class="value">{{ ucfirst($member->membership->type) }}</div>
-                                            </li>
-                                            
-                                            <li>
-                                                <span class="label">Membership Status</span>
-                                                <div class="value {{ $member->membership->status =='active' ? 'text-success' : 'text-danger' }}">{{ ucfirst($member->membership->status) }}</div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-header">
-                                        <div class="title">Kuwait Address</div>
+                                        <div class="title">Local Address</div>
+                                        <button type="button" class="btn btn-xs icon" data-bs-toggle="modal" data-bs-target="#editAddress">
+                                            <i class="icon" data-feather="edit-2"></i>
+                                        </button>
+                                        @include('members::admin.member.edit.address')
                                     </div>
                                     <div class="card-body">
                                         <table class="list-basic">
                                             <tbody>
                                                 <tr>
-                                                    <td colspan="2">{{ $member->localAddress->line_1 }}</td>
+                                                    <td class="label">Governorate</td>
+                                                    <td class="value">{{ $member->localAddress->governorate }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label">Area</td>
+                                                    <td class="value">{{ $member->localAddress->line_1 }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="label">Building</td>
@@ -106,6 +93,9 @@
                                 <div class="card">
                                     <div class="card-header">
                                         <div class="title">India Address</div>
+                                        <button type="button" class="btn btn-xs icon" data-bs-toggle="modal" data-bs-target="#editAddress">
+                                            <i class="icon" data-feather="edit-2"></i>
+                                        </button>
                                     </div>
                                     <div class="card-body">
                                         {{ $member->permanentAddress->line_1 }}<br />
@@ -153,6 +143,10 @@
                                 <div class="card">
                                     <div class="card-header">
                                         <div class="title">Basic Info</div>
+                                        <button type="button" class="btn btn-xs icon" data-bs-toggle="modal" data-bs-target="#editBasics">
+                                            <i class="icon" data-feather="edit-2"></i>
+                                        </button>
+                                        @include('members::admin.member.edit.basic')
                                     </div>
                                     <div class="card-body">
                                         <table class="list-basic">
@@ -181,7 +175,9 @@
                                                     <td class="label">Civil ID</td>
                                                     <td class="value">
                                                         {{ $member->details->civil_id }}
-                                                        <a href="#" class="link" data-bs-toggle="modal" data-bs-target="#civilIdProof"><i class="icon" data-feather="file-text"></i></a>
+                                                        @if($member->details->photo_civil_id_front || $member->details->photo_civil_id_back)
+                                                            <a href="#" class="link" data-bs-toggle="modal" data-bs-target="#civilIdProof"><i class="icon" data-feather="file-text"></i></a>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -199,6 +195,10 @@
                                 <div class="card">
                                     <div class="card-header">
                                         <div class="title">Personal Info</div>
+                                        <button type="button" class="btn btn-xs icon" data-bs-toggle="modal" data-bs-target="#editPersonal">
+                                            <i class="icon" data-feather="edit-2"></i>
+                                        </button>
+                                        @include('members::admin.member.edit.personal')
                                     </div>
                                     <div class="card-body">
                                         <table class="list-basic">
@@ -208,6 +208,10 @@
                                                     <td class="value">{{ ucfirst($member->gender) }}</td>
                                                 </tr>
                                                 <tr>
+                                                    <td class="label">Blood Group</td>
+                                                    <td class="value">{{ ucfirst($member->blood_group) }}</td>
+                                                </tr>
+                                                <tr>
                                                     <td class="label">Date of birth</td>
                                                     <td class="value">{{ date('M d, Y', strtotime($member->details->dob)) }}</td>
                                                 </tr>
@@ -215,15 +219,23 @@
                                                     <td class="label">Passport No.</td>
                                                     <td class="value">
                                                         {{ $member->details->passport_no }}
-                                                        <a href="#" class="link" data-bs-toggle="modal" data-bs-target="#passportProof"><i class="icon" data-feather="file-text"></i></a>
+                                                        @if($member->details->photo_passport_front || $member->details->photo_passport_back)
+                                                            <a href="#" class="link" data-bs-toggle="modal" data-bs-target="#passportProof"><i class="icon" data-feather="file-text"></i></a>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td class="label">Passport Expiry</td>
                                                     <td class="value">
                                                         {{ date('M d, Y', strtotime($member->details->passport_expiry)) }}
-                                                        <a href="#" class="link" data-bs-toggle="modal" data-bs-target="#passportProof"><i class="icon" data-feather="file-text"></i></a>
+                                                        @if($member->details->photo_passport_front || $member->details->photo_passport_back)
+                                                            <a href="#" class="link" data-bs-toggle="modal" data-bs-target="#passportProof"><i class="icon" data-feather="file-text"></i></a>
+                                                        @endif
                                                     </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="label">Company Address</td>
+                                                    <td class="value">{{ $member->details->company_address }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="label">Company</td>
@@ -247,50 +259,57 @@
         </div>
     </div>
     <div class="pf-aside">
-        <div class="actions">
-            <ul class="action-buttons">
-                @can('membership_request.export')
-                @if($member->active)
-                    <li>
-                        <a href="#" class="btn btn-xs btn-primary" data-bs-toggle="modal" data-bs-target="#idCardModal"><i class="icon" data-feather="credit-card"></i> ID Card</a>
-                    </li>
+        @include('members::admin.includes.profile.actions')
+        @if($statuses != null)
+            <div class="card card-warning">
+                <div class="card-header">
+                    <div class="title">Membership Status</div>
+                </div>
+                <div class="card-body">
+                    <ul class="request-status-list">
+                        @foreach ($statuses as $status)
+                            <li class="{{ $status->checked ? 'active' : '' }}{{$status->slug == 'rejected' ? '-rejected' : ''}} {{ strtolower($status->name)}}" >
+                                <div class="title">{{ $status->name }}</div>
+                                <div class="description">{{ $status->description }}</div>
+                                @if($status->remark)<div class="remark"><strong>Remark:</strong>{{ $status->remark }}</div>@endif
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+                @if($request_action)
+                    <div class="card-footer">
+                        @include('members::admin.includes.membership.request.action')
+                    </div>
                 @endif
-                <li>
-                    <a href="#" class="btn btn-xs btn-outline-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="icon" data-feather="file"></i> Export</a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a href="/admin/members/member/pdf/{{ $member->user->id }}" class="dropdown-item">Export to PDF</a></li>
-                        <li><a href="/admin/members/member/excel/{{ $member->user->id }}" class="dropdown-item">Export to Excel</a></li>
-                    </ul>
-                </li>
-                @endcan
-                <li>
-                    <a href="#" class="btn btn-xs btn-outline-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="icon" data-feather="more-vertical"></i></a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a href="#" class="dropdown-item disabled">Edit Profile</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-        <div class="card card-warning">
+            </div>
+        @endif
+        <div class="card">
             <div class="card-header">
-                <div class="title">Membership Status</div>
+                <div class="title">Membership Details</div>
+                <!--
+                <button type="button" class="btn btn-xs icon" data-bs-toggle="modal" data-bs-target="#editMembership">
+                    <i class="icon" data-feather="edit-2"></i>
+                </button> 
+                -->
+                @include('members::admin.member.edit.membership')
             </div>
             <div class="card-body">
-                <ul class="request-status-list">
-                    @foreach ($statuses as $status)
-                        <li class={{ $status->checked ? 'active' : '' }}{{$status->slug == 'rejected' ? '-rejected' : ''}}>
-                            <div class="title">{{ $status->name }}</div>
-                            <div class="description">{{ $status->description }}</div>
-                            <div class="remark">{{ $status->remark }}</div>
-                        </li>
-                    @endforeach
+                <ul class="list-basic">
+                    <li>
+                        <span class="label">Membership ID</span>
+                        <div class="value"><strong>{{ $member->membership->mid ? $member->membership->mid : 'NA' }}</strong></div>
+                    </li>
+                    <li>
+                        <span class="label">Membership Type</span>
+                        <div class="value">{{ ucfirst($member->membership->type) }}</div>
+                    </li>
+                    
+                    <li>
+                        <span class="label">Membership Status</span>
+                        <div class="value {{ $member->membership->status =='active' ? 'text-success' : 'text-danger' }}">{{ ucfirst($member->membership->status) }}</div>
+                    </li>
                 </ul>
             </div>
-            @if($request_action)
-                <div class="card-footer">
-                    @include('members::admin.includes.membership.request.action')
-                </div>
-            @endif
         </div>
         <div class="card">
             <div class="card-header">

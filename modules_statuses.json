@@ -1,3 +1,4 @@
 {
-    "Members": true
+    "Members": true,
+    "Imports": true
 }

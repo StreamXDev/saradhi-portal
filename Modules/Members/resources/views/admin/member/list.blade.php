@@ -24,7 +24,7 @@
                     <div class="col status"><span class="label">Status</span> {{ ucfirst($member->membership->status) }} </div>
                 </div>
                 <div class="actions">
-                    <a href="/admin/members/member/view/{{ $member->user->id }}"><i class="fa-solid fa-eye"></i></a>
+                    <a href="/admin/members/member/view/{{ $member->user->id }}" class="btn"><i class="fa-solid fa-eye"></i></a>
                 </div>
             </div>
             <div class="relations" id="mid{{ $member->membership->mid }}">
@@ -32,7 +32,7 @@
                 <div class="item">
                     <div class="relationship">{{ $relation->relationship->name }}</div>
                     <div class="details">
-                        <div class="col name">{{ $relation->relatedTo->name }}</span></div>
+                        <a href="/admin/members/member/view/{{ $relation->relatedTo->user_id }}" class="col name">{{ $relation->relatedTo->name }}</span></a>
                     </div>
                 </div>
                 @empty

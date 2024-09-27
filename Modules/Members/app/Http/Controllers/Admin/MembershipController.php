@@ -42,7 +42,7 @@ class MembershipController extends Controller
      */
     public function requests()
     {
-        $results = MembershipRequest::with(['member', 'details', 'user', 'member.relations.relationship'])->where('checked', 0)->get();
+        $results = MembershipRequest::with(['member', 'details', 'user', 'member.relations.relationship'])->where('checked', 0)->get()->sortByDesc('id');
         $requests = requestsByPermission($results);
         return view('members::admin.membership.request', compact('requests'));
     }

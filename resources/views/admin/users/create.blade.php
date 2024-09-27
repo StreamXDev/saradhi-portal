@@ -42,6 +42,12 @@
             </div>
             <div class="col-xs-12 col-sm-12 col-md-12">
                 <div class="form-group">
+                    <strong>Phone:</strong>
+                    <input type="tel" name="phone" placeholder="Phone" class="form-control">
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12">
+                <div class="form-group">
                     <strong>Password:</strong>
                     <input type="password" name="password" placeholder="Password" class="form-control">
                 </div>

@@ -152,39 +152,41 @@ if(! function_exists('requestStatusDisplay')){
 
         $statuses = MemberEnum::where('type', 'request_status')->orderBy('order', 'ASC')->get();
         $actives =  MembershipRequest::where('user_id', $user_id)->orderBy('id', 'ASC')->get();
-        foreach($actives as $active){
-            if($active->rejected != null){
-                for($i=0; $i < count($statuses); $i++){
-                    if($statuses[$i]->id == $active->rejected){
-                        //array_splice($statuses[$i], $i, 0 , $statuses[0]);
-                        $statuses[$i] = $statuses[0];
-                        //$i+1;
+        if($actives){
+            foreach($actives as $active){
+                if($active->rejected != null){
+                    for($i=0; $i < count($statuses); $i++){
+                        if($statuses[$i]->id == $active->rejected){
+                            //array_splice($statuses[$i], $i, 0 , $statuses[0]);
+                            $statuses[$i] = $statuses[0];
+                            //$i+1;
+                        }
                     }
                 }
             }
-        }
-        unset($statuses[0]);
-        foreach($statuses as $key => $value){
-            $statuses[$key]['checked'] = false;
-        }
-        foreach($statuses as $key => $value){
-            foreach($actives as $active){
-                if($value->id == $active->request_status_id  ||  $value->id == $active->request_status_id && $active->rejected ){ //add the request status history to the list
-                    $statuses[$key]['checked'] = true;
-                }
-                if($value->id == $active->request_status_id){ // adding remarks to the list
-                    $statuses[$key]['remark'] = $active->remark;
+            unset($statuses[0]);
+            foreach($statuses as $key => $value){
+                $statuses[$key]['checked'] = false;
+            }
+            foreach($statuses as $key => $value){
+                foreach($actives as $active){
+                    if($value->id == $active->request_status_id  ||  $value->id == $active->request_status_id && $active->rejected ){ //add the request status history to the list
+                        $statuses[$key]['checked'] = true;
+                    }
+                    if($value->id == $active->request_status_id){ // adding remarks to the list
+                        $statuses[$key]['remark'] = $active->remark;
+                    }
                 }
             }
+            $data = array();
+            foreach($statuses as $status){
+                $data[] = $status;
+                // if($status->slug == 'rejected'){
+                //     break;
+                // }
+            }
+            return $data;
         }
-        $return = array();
-        foreach($statuses as $status){
-            $return[] = $status;
-            // if($status->slug == 'rejected'){
-            //     break;
-            // }
-        }
-        return $return;
-        
+        return null;
     }
 }
