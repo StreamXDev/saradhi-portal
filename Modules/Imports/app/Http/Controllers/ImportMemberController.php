@@ -22,14 +22,14 @@ class ImportMemberController extends Controller
     {
         $last_exported  = Export::select('membership_id')->latest()->first();
 
-        //dd($last_exported);
-        
         if($last_exported){
-            $data = Membership::with('member')->where('id', '>', $last_exported->membership_id)->first();
+            $membership = Membership::with('member')->where('id', '>', $last_exported->membership_id)->limit(5)->get();
         }else{
-            $data = Membership::with('member')->first();
+            $membership = Membership::with('member')->limit(5)->get();
         }
 
-        dd($data);
+        
+
+
     }
 }

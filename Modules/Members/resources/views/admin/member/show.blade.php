@@ -109,7 +109,7 @@
                                             <tbody>
                                                 <tr>
                                                     <td class="label">Contact</td>
-                                                    <td class="value">{{ $member->permanentAddress->contact }}</td>
+                                                    <td class="value">+{{ $member->permanentAddress->contact }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -324,7 +324,7 @@
                         </tr>
                         <tr>
                             <td class="label">Phone</td>
-                            <td class="value">+{{ $member->membership->introducer_phone_code }} {{ $member->membership->introducer_phone }}</td>
+                            <td class="value">+{{ $member->membership->introducer_phone_code }}{{ $member->membership->introducer_phone }}</td>
                         </tr>
                         <tr>
                             <td class="label">Membership ID</td>

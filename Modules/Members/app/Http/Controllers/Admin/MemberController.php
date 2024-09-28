@@ -209,14 +209,14 @@ class MemberController extends Controller
                 'paci' => $input['paci'],
             ]);
 
-            if($input['photo_civil_id_front']){
+            if(isset($input['photo_civil_id_front'])){
                 $civil_id_front_name = 'cvf'.$user_id.'_'.time().'.'.$request->photo_civil_id_front->extension(); 
                 $request->photo_civil_id_front->storeAs('public/images', $civil_id_front_name);
                 MemberDetail::where('user_id', $user_id)->update([
                     'photo_civil_id_front' => $civil_id_front_name,
                 ]);
             }
-            if($input['photo_civil_id_back']){
+            if(isset($input['photo_civil_id_back'])){
                 $civil_id_back_name = 'cvb'.$user_id.'_'.time().'.'.$request->photo_civil_id_back->extension(); 
                 $request->photo_civil_id_back->storeAs('public/images', $civil_id_back_name);
                 MemberDetail::where('user_id', $user_id)->update([
@@ -236,14 +236,14 @@ class MemberController extends Controller
                 'company' => $input['company'],
                 'company_address' => $input['company_address'],
             ]);
-            if($input['photo_passport_front']){
+            if(isset($input['photo_passport_front'])){
                 $passport_front_name = 'ppf'.$user_id.'_'.time().'.'.$request->photo_passport_front->extension(); 
                 $request->photo_passport_front->storeAs('public/images', $passport_front_name);
                 MemberDetail::where('user_id', $user_id)->update([
                     'photo_passport_front' => $passport_front_name,
                 ]);
             }
-            if($input['photo_passport_back']){
+            if(isset($input['photo_passport_back'])){
                 $passport_back_name = 'ppb'.$user_id.'_'.time().'.'.$request->photo_passport_back->extension(); 
                 $request->photo_passport_back->storeAs('public/images', $passport_back_name);
                 MemberDetail::where('user_id', $user_id)->update([
