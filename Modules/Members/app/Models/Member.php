@@ -19,7 +19,8 @@ class Member extends Model
         'name',
         'gender',
         'blood_group',
-        'photo', 
+        'photo',
+        'active'
     ];
 
     //User
@@ -54,7 +55,7 @@ class Member extends Model
     {
         return $this->hasMany(MemberRelation::class, 'member_id', 'id');
     }
-
+    
     public function requests(): HasMany
     {
         return $this->hasMany(MembershipRequest::class, 'user_id', 'user_id');

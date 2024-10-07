@@ -64,27 +64,27 @@
                                             <tbody>
                                                 <tr>
                                                     <td class="label">Governorate</td>
-                                                    <td class="value">{{ $member->localAddress->governorate }}</td>
+                                                    <td class="value">@isset($member->localAddress->governorate) {{ $member->localAddress->governorate }} @endisset</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="label">Area</td>
-                                                    <td class="value">{{ $member->localAddress->line_1 }}</td>
+                                                    <td class="value">@isset($member->localAddress->line_1) {{ $member->localAddress->line_1 }} @endisset</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="label">Building</td>
-                                                    <td class="value">{{ $member->localAddress->building }}</td>
+                                                    <td class="value">@isset($member->localAddress->building) {{ $member->localAddress->building }} @endisset</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="label">Flat</td>
-                                                    <td class="value">{{ $member->localAddress->flat }}</td>
+                                                    <td class="value">@isset($member->localAddress->flat) {{ $member->localAddress->flat }} @endisset</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="label">Floor</td>
-                                                    <td class="value">{{ $member->localAddress->floor }}</td>
+                                                    <td class="value">@isset($member->localAddress->floor) {{ $member->localAddress->floor }} @endisset</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="label">Unit</td>
-                                                    <td class="value">{{ $member->details->member_unit->name }}</td>
+                                                    <td class="value">@isset($member->details->member_unit->name) {{ $member->details->member_unit->name }} @endisset</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -98,18 +98,20 @@
                                         </button>
                                     </div>
                                     <div class="card-body">
-                                        {{ $member->permanentAddress->line_1 }}<br />
-                                        @if ($member->permanentAddress->line_2 != null ) {{ $member->permanentAddress->line_2 }} <br /> @endif
-                                        @if ($member->permanentAddress->city != null ) {{ $member->permanentAddress->city }} <br /> @endif
-                                        @if ($member->permanentAddress->district != null ) {{ $member->permanentAddress->district }} <br /> @endif
-                                        @if ($member->permanentAddress->region != null ) {{ $member->permanentAddress->region }} <br /> @endif
-                                        @if ($member->permanentAddress->country != null ) {{ $member->permanentAddress->country }} <br /> @endif
-                                        @if ($member->permanentAddress->zip != null ) {{ $member->permanentAddress->zip }} <br /> @endif
+                                        @if($member->permanentAddress !== null)
+                                            {{ $member->permanentAddress->line_1 }}<br />
+                                            @if ($member->permanentAddress->line_2 != null ) {{ $member->permanentAddress->line_2 }} <br /> @endif
+                                            @if ($member->permanentAddress->city != null ) {{ $member->permanentAddress->city }} <br /> @endif
+                                            @if ($member->permanentAddress->district != null ) {{ $member->permanentAddress->district }} <br /> @endif
+                                            @if ($member->permanentAddress->region != null ) {{ $member->permanentAddress->region }} <br /> @endif
+                                            @if ($member->permanentAddress->country != null ) {{ $member->permanentAddress->country }} <br /> @endif
+                                            @if ($member->permanentAddress->zip != null ) {{ $member->permanentAddress->zip }} <br /> @endif
+                                        @endif
                                         <table class="list-basic">
                                             <tbody>
                                                 <tr>
                                                     <td class="label">Contact</td>
-                                                    <td class="value">+{{ $member->permanentAddress->contact }}</td>
+                                                    <td class="value">@isset($member->permanentAddress->contact) +{{ $member->permanentAddress->contact }} @endisset</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -165,11 +167,11 @@
                                                 </tr>
                                                 <tr>
                                                     <td class="label">Whatsapp</td>
-                                                    <td class="value">+{{ $member->details->whatsapp_code }} {{ $member->details->whatsapp }}</td>
+                                                    <td class="value">@if($member->details->whatsapp !== null)+{{ $member->details->whatsapp_code }} {{ $member->details->whatsapp }}@endif</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="label">Emergency No.</td>
-                                                    <td class="value">+{{ $member->details->emergency_phone_code }} {{ $member->details->emergency_phone }}</td>
+                                                    <td class="value">@if($member->details->emergency_phone_code)+{{ $member->details->emergency_phone_code }} {{ $member->details->emergency_phone }}@endif</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="label">Civil ID</td>
@@ -260,7 +262,7 @@
     </div>
     <div class="pf-aside">
         @include('members::admin.includes.profile.actions')
-        @if($statuses != null)
+        @if($statuses !== null && $request_action !== null)
             <div class="card card-warning">
                 <div class="card-header">
                     <div class="title">Membership Status</div>

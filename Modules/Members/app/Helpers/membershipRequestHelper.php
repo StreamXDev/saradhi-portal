@@ -14,6 +14,9 @@ use Modules\Members\Models\MembershipRequest;
 if (! function_exists('requestByPermission')) {
     function requestByPermission($request)
     {
+        if(!isset($request->request_status_id)){
+            return null;
+        }
         $user = Auth::user();
         $permitted = false;
         if($user->can('membership_request.verification.verify')){

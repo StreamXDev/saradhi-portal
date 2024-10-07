@@ -12,6 +12,7 @@ class Membership extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [
+        'mid',
         'user_id',
         'start_date',
         'updated_date',
@@ -21,11 +22,12 @@ class Membership extends Model
         'joined_as',
         'introducer_name',
         'introducer_phone',
+        'introducer_phone_code',
         'introducer_mid',
         'introducer_unit',
     ];
 
-    public function members(): BelongsTo
+    public function member(): BelongsTo
     {
         return $this->belongsTo(Member::class, 'user_id', 'user_id');
     }

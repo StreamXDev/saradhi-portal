@@ -62,7 +62,7 @@
                     <div class="col-md-6">
                         <label for="permanent_address_line_1" class="form-label">Address</label>
                         <div class="control-col">
-                            <textarea name="permanent_address_line_1" id="permanent_address_line_1" cols="20" rows="4" class="form-control">{{ $member->permanentAddress->line_1 }}</textarea>
+                            <textarea name="permanent_address_line_1" id="permanent_address_line_1" cols="20" rows="4" class="form-control"> @isset($member->permanentAddress->line_1) {{ $member->permanentAddress->line_1 }} @endisset</textarea>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -71,7 +71,7 @@
                             <div class="control-col">
                                 <select name="permanent_address_district" id="permanent_address_district" class="form-select">
                                     @foreach ($district_kerala as $district)
-                                        <option value="{{ $district['slug'] }}" @selected($member->permanentAddress->district == $district['slug'])>{{ $district['name'] }}</option>
+                                        <option value="{{ $district['slug'] }}" @isset($member->permanentAddress->district) @selected($member->permanentAddress->district == $district['slug']) @endisset>{{ $district['name'] }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -82,11 +82,11 @@
                                 <select name="permanent_address_country_code" id="permanent_address_contry_code" class="form-select country-code">
                                     @foreach ($countries as $country)
                                         @if($country->code == 'in')
-                                            <option value="{{ $country->calling_code }}" @selected($member->permanentAddress->country == $country->name )>{{ $country->name }} (+{{ $country->calling_code}})</option>
+                                            <option value="{{ $country->calling_code }}" @isset($member->permanentAddress->country) @selected($member->permanentAddress->country == $country->name ) @endisset>{{ $country->name }} (+{{ $country->calling_code}})</option>
                                         @endif
                                     @endforeach
                                 </select>
-                                <input type="tel" name="permanent_address_contact" id="permanent_address_contact" class="form-control" value="{{ $member->permanentAddress->contact }}">
+                                <input type="tel" name="permanent_address_contact" id="permanent_address_contact" class="form-control" value="@isset($member->permanentAddress->contact){{ $member->permanentAddress->contact }} @endisset">
                             </div>
                         </div>
                     </div>

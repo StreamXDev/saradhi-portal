@@ -10,6 +10,7 @@ class MemberLocalAddress extends Model
 
     protected $fillable = [
         'user_id',
+        'governorate',
         'line_1',
         'building',
         'flat',

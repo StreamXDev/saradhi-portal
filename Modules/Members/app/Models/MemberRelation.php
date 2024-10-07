@@ -15,6 +15,7 @@ class MemberRelation extends Model
     protected $fillable = [
         'member_id',
         'related_member_id',
+        'related_dependent_id',
         'relationship_id',
         'active'
     ];

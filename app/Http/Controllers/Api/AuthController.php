@@ -32,8 +32,9 @@ class AuthController extends BaseController
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
+            'email' => 'required|email|unique:users,email',
             'phone' => 'digits:10|unique:users,phone',
-            'email' => 'required|email|unique:users,email'
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
         
         if($validator->fails()){
@@ -41,7 +42,7 @@ class AuthController extends BaseController
         }
 
         $input = $request->all();
-        $input['password'] = Hash::make(Str::random(10));
+        $input['password'] = Hash::make($input['password']);
         $user = User::create($input);
 
         if(isset($request->type) && $request->type == 'member' && Module::has('Members')){

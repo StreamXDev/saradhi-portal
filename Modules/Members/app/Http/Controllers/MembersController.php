@@ -7,7 +7,6 @@ use App\Models\Country;
 use App\Models\User;
 use App\Notifications\SendOtp;
 use App\Rules\ReCaptcha;
-use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,10 +17,8 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Modules\Members\Models\Member;
-use Modules\Members\Models\MemberContact;
 use Modules\Members\Models\MemberDetail;
 use Modules\Members\Models\MemberEnum;
-use Modules\Members\Models\MemberIntroduce;
 use Modules\Members\Models\MemberLocalAddress;
 use Modules\Members\Models\MemberPermanentAddress;
 use Modules\Members\Models\MemberRelation;
@@ -116,8 +113,7 @@ class MembersController extends Controller
         $member ['name'] = $user->name;
         Member::create($member);
 
-        // Sending OTP
-        
+        // Sending OTP 
         $this->sendEmailOtp($request);
 
         return $user;
@@ -322,8 +318,10 @@ class MembersController extends Controller
                 'photo_civil_id_front' => $civil_id_front_name,
                 'photo_civil_id_back' => $civil_id_back_name,
                 'dob' => $input['dob'],
-                'whatsapp' => $input['whatsapp_country_code'].$input['whatsapp'],
-                'emergency_phone' => $input['emergency_country_code'].$input['emergency_phone'],
+                'whatsapp' => $input['whatsapp'],
+                'whatsapp_code' => $input['whatsapp_country_code'],
+                'emergency_phone' => $input['emergency_phone'],
+                'emergency_phone_code' => $input['emergency_country_code'],
                 'company' => $input['company'],
                 'profession' => $input['profession'],
                 'company_address' => $input['company_address'],
@@ -365,6 +363,7 @@ class MembersController extends Controller
         // Create contacts table entry
         MemberLocalAddress::create([
             'user_id' => $user->id,
+            'governorate' => $input['governorate'],
             'line_1' => $input['local_address_area'],
             'building' => $input['local_address_building'],
             'flat' => $input['local_address_flat'],
@@ -401,7 +400,6 @@ class MembersController extends Controller
         
         // Adding spouse if membership type is family
         if($input['type'] == 'family'){
-    
             $userInput['name'] = $input['spouse_name'];
             $userInput['email'] = $input['spouse_email'];
             $userInput['password'] = Hash::make(Str::random(10));

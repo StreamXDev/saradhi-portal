@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('member_dependents', function (Blueprint $table) {
+        Schema::create('imports', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->nullable()->constrained();
+            $table->foreignId('dependent_id')->nullable()->constrained()->references('id')->on('member_dependents');
+            $table->boolean('imported')->default(0);
+            $table->string('remark')->nullable();
             $table->timestamps();
         });
     }
@@ -22,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('member_dependents');
+        Schema::dropIfExists('imports');
     }
 };

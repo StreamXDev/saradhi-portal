@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('member_dependents', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('member_details', function (Blueprint $table) {
+            $table->string('whatsapp')->nullable()->change();
         });
     }
 
@@ -22,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('member_dependents');
+        Schema::table('member_details', function (Blueprint $table) {
+            $table->string('whatsapp')->nullable(false)->change();
+        });
     }
 };
