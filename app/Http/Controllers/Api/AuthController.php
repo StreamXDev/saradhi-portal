@@ -86,7 +86,7 @@ class AuthController extends BaseController
                 $data['emailVerified'] = true;
                 return $this->sendResponse($data, 'User logged in successfully.');
             }else{
-                $data['error'] = 'Your email not verified not verified';
+                $data['error'] = 'Your email not verified';
                 return $this->sendError('Email not verified.', $data);
             }
         } 
