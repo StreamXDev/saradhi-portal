@@ -78,7 +78,7 @@ class AuthController extends BaseController
         ]);
         
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());       
+            return $this->sendError('Validation Error.', $validator->errors(), 400);       
         }
         if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){ 
             $user = Auth::user(); 
@@ -95,11 +95,11 @@ class AuthController extends BaseController
                 return $this->sendResponse($data, 'User logged in successfully.');
             }else{
                 $data['error'] = 'Your email not verified';
-                return $this->sendError('Email not verified.', $data);
+                return $this->sendError('Email not verified.', $data, 403);
             }
         } 
         $data['error'] = 'Username or password does not match';
-        return $this->sendError('Username or password does not match', $data);
+        return $this->sendError('Username or password does not match', $data, 403);
     }
 
     /**
