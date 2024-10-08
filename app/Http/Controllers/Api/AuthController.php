@@ -28,7 +28,7 @@ class AuthController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function register(Request $request): JsonResponse
+    public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -70,7 +70,7 @@ class AuthController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function login(Request $request): JsonResponse
+    public function login(Request $request)
     {
         if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){ 
             $user = Auth::user(); 
@@ -83,13 +83,17 @@ class AuthController extends BaseController
                     'username' => $user->username,
                     'phone' => $user->phone,
                 ];
-
+                $data['emailVerified'] = true;
                 return $this->sendResponse($data, 'User logged in successfully.');
             }else{
-                return $this->sendError('Email not verified.', ['error'=>'Email not verified']);
+                $data = [
+                    'emailVerified'=> false,
+                    'error' => 'Your email not verified not verified'
+                ];
+                return $this->sendError('Email not verified.', $data);
             }
         } 
-        return $this->sendError('Unauthorized.', ['error'=>'Unauthorized']);
+        return $this->sendError('Username or password does not match', ['error'=>'Username or password does not match']);
     }
 
     /**

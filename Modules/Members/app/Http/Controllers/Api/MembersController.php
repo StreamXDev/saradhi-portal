@@ -97,8 +97,9 @@ class MembersController extends BaseController
         $data = [
             'user' => $user,
             'member' => $member,
-            'logged_in' => false,
-            'verify_email_otp' => true
+            'loggedIn' => false,
+            'emailVerified' => false,
+            'otpSent'=> true,
         ];
         return $this->sendResponse($data);
     }
