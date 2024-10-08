@@ -2,7 +2,7 @@
 
 namespace Modules\Members\Http\Controllers\Api;
 
-use App\Http\Controllers\API\BaseController as BaseController;
+use App\Http\Controllers\Api\BaseController;
 use App\Models\Country;
 use App\Models\User;
 use App\Notifications\SendOtp;

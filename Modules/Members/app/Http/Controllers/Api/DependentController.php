@@ -2,13 +2,13 @@
 
 namespace Modules\Members\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\BaseController;
 use App\Models\Country;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Modules\Members\Models\MemberEnum;
 
-class DependentController extends Controller
+class DependentController extends BaseController
 {
     
     public function createDependent()
