@@ -23,11 +23,6 @@ Route::controller(EmailVerificationController::class)->group(function(){
 
 Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::get('/test', function (){
-        
-        //$user = Auth::user();
-
         return 'tttt';
     });
-
-
 });

@@ -23,7 +23,7 @@ Route::prefix('member')->group(function () {
         Route::get('register', 'create');
         Route::post('register', 'store')->name('member.register');
         Route::get('verify_email_otp', 'createEmailOtpForm')->name('member.verify_email_otp');
-        Route::post('verify_email_otp', 'verifyEmailOtp')->name('member.verify_email_otp');
+        Route::post('verify_email_otp', 'verifyEmailOtp');
         Route::post('resend_email_otp', 'resendEmailOtp')->name('member.resend_email_otp');
     });
 });

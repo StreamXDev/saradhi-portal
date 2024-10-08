@@ -15,5 +15,5 @@ use Modules\Imports\Http\Controllers\ImportsController;
 */
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('imports', ImportsController::class)->names('imports');
+    //Route::apiResource('imports', ImportsController::class)->names('imports');
 });

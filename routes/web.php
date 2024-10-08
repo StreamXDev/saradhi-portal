@@ -20,7 +20,7 @@ Auth::routes(['verify' => true]);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('/register', [App\Http\Controllers\HomeController::class, 'index'])->name('home'); // overriding default register link
+Route::get('/register', [App\Http\Controllers\HomeController::class, 'index'])->name('register'); // overriding default register link
 
 Route::controller(SocialAuthController::class)->group(function(){
     Route::get('auth/google', 'googleRedirect')->name('auth.google');
