@@ -10,7 +10,7 @@ Auth::routes(['verify' => true]);
 
 Route::controller(AuthController::class)->group(function(){
     Route::post('register', 'register');
-    Route::post('login', 'login');
+    Route::post('user_login', 'login');
     Route::post('social_login', 'socialLogin');
     Route::post('send_otp', 'sendOtp');
     Route::post('verify_otp', 'verifyOtp');
