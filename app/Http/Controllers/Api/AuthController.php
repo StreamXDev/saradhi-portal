@@ -74,7 +74,7 @@ class AuthController extends BaseController
     {
         if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){ 
             $user = Auth::user(); 
-
+            $data['emailVerified'] = false;
             if($user->email_verified_at !== NULL){
                 $data['token'] =  $user->createToken('Saradhi')->plainTextToken; 
                 $data['user'] = [
@@ -86,14 +86,12 @@ class AuthController extends BaseController
                 $data['emailVerified'] = true;
                 return $this->sendResponse($data, 'User logged in successfully.');
             }else{
-                $data = [
-                    'emailVerified'=> false,
-                    'error' => 'Your email not verified not verified'
-                ];
+                $data['error'] = 'Your email not verified not verified';
                 return $this->sendError('Email not verified.', $data);
             }
         } 
-        return $this->sendError('Username or password does not match', ['error'=>'Username or password does not match']);
+        $data['error'] = 'Username or password does not match';
+        return $this->sendError('Username or password does not match', $data);
     }
 
     /**
