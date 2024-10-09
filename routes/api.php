@@ -8,12 +8,14 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes(['verify' => true]);
 
-Route::controller(AuthController::class)->group(function(){
-    Route::post('register', 'register');
-    Route::post('user_login', 'login');
-    Route::post('social_login', 'socialLogin');
-    Route::post('send_otp', 'sendOtp');
-    Route::post('verify_otp', 'verifyOtp');
+Route::prefix('auth')->group(function(){
+    Route::controller(AuthController::class)->group(function(){
+        Route::post('register', 'register');
+        Route::post('user_login', 'login');
+        Route::post('social_login', 'socialLogin');
+        Route::post('send_otp', 'sendOtp');
+        Route::post('verify_otp', 'verifyOtp');
+    });
 });
 
 Route::controller(EmailVerificationController::class)->group(function(){

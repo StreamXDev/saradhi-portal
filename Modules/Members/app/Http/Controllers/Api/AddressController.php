@@ -55,7 +55,7 @@ class AddressController extends BaseController
         }
         
         if ($validator->fails()) {
-            return $this->sendError('Validation Error.', $validator->errors()); 
+            return $this->sendError('Validation Error', $validator->errors()); 
         }
         
         try{
@@ -127,7 +127,7 @@ class AddressController extends BaseController
         }
 
         if ($validator->fails()) {
-            return $this->sendError('Validation Error.', $validator->errors()); 
+            return $this->sendError('Validation Error', $validator->errors()); 
         }
 
         $address = MemberLocalAddress::findOrFail($input['id']);

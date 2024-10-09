@@ -19,7 +19,6 @@ use Modules\Members\Http\Middleware\VerifyProfileStatus;
 */
 Route::prefix('member')->group(function () {
     Route::controller(MembersController::class)->group(function() {
-        Route::post('register', 'createMember');
         Route::post('verify_email_otp', 'verifyEmailOtp');
         Route::post('resend_email_otp', 'resendEmailOtp');
     });

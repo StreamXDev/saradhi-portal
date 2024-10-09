@@ -67,44 +67,6 @@ class MembersController extends BaseController
     }
 
     /**
-     * Creating user and adding member a new member
-    */
-    public function createMember(Request $request)
-    {
-        
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'email' => 'required|unique:users,email',
-            'password' => ['required', 'confirmed', Password::min(8)->numbers()->letters()->symbols()],
-            //'g-recaptcha-response' => ['required', new ReCaptcha]
-        ]);
-        if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());     
-        }
-        $input = $request->all();
-        $user = User::create($input);
-        $user->assignRole(['Member']);
-        $member_data ['user_id'] = $user->id;
-        $member_data ['name'] = $user->name;
-        $member = Member::create($member_data);
-        // Sending OTP 
-        $token = $user->email === 'prejith021@gmail.com' ? 5432 : rand(1000, 9999);
-        $otp = $user->otp()->firstOrCreate([], [
-            'token' => $token,
-        ]);
-        $otp->load('authable');
-        $user->notify(new SendOtp($otp));
-        $data = [
-            'user' => $user,
-            'member' => $member,
-            'loggedIn' => false,
-            'emailVerified' => false,
-            'otpSent'=> true,
-        ];
-        return $this->sendResponse($data);
-    }
-
-    /**
      * Sending Login OTP to email
      * 
      * @return \Illuminate\Http\Response
@@ -116,7 +78,7 @@ class MembersController extends BaseController
         ]);
         $data = $request->all();
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());       
+            return $this->sendError('Validation Error', $validator->errors());       
         }
         $user = User::where('email', $data['email'])->firstOrFail();
         $token = $data['email'] == 'prejith021@gmail.com' ? 5432 : rand(1000, 9999);
@@ -139,7 +101,7 @@ class MembersController extends BaseController
             ]);
             $data = $request->all();
             if($validator->fails()){
-                return $this->sendError('Validation Error.', $validator->errors());     
+                return $this->sendError('Validation Error', $validator->errors());     
             }
             $user = User::where('email', $data['email'])->with('otp')->firstOrFail();
             if($user->otp == null){
@@ -241,7 +203,7 @@ class MembersController extends BaseController
         }
         $validator = Validator::make($request->all(), ...$this->validationRules($request));
         if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());       
+            return $this->sendError('Validation Error', $validator->errors());       
         }
         $avatarName = 'av'.$user->id.'_'.time().'.'.$request->avatar->extension(); 
         $request->avatar->storeAs('public/images', $avatarName);
