@@ -161,6 +161,7 @@ class AuthController extends BaseController
             $otp->load('authable');
             $user->notify(new SendOtp($otp));
             $success['otp_sent'] = true;
+            $success['email'] = $input['email'];
             return $this->sendResponse($success, 'OTP sent successfully.');
         }catch (\Exception $e) {
             return $this->sendError('Something went wrong', $e, 403);
