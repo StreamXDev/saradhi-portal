@@ -59,7 +59,7 @@ class AuthController extends BaseController
             $data = [
                 'emailVerified' => false,
                 'optSent' => true,
-                'token' => $user->createToken('Saradhi')->plainTextToken,
+                'token' => $user->createToken(env('APP_NAME'))->plainTextToken,
                 'user' => [
                     'name' => $user->name,
                     'email' => $user->email,
@@ -91,7 +91,7 @@ class AuthController extends BaseController
         if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){ 
             $user = Auth::user(); 
             $data['emailVerified'] = $user->email_verified_at !== NULL ? true : false;
-            $data['token'] =  $user->createToken('Saradhi')->plainTextToken; 
+            $data['token'] =  $user->createToken(env('APP_NAME'))->plainTextToken; 
             $data['user'] = [
                 'name' => $user->name,
                 'email' => $user->email,
@@ -142,22 +142,29 @@ class AuthController extends BaseController
      * @return \Illuminate\Http\Response
      */
     
-    public function sendOtp(Request $request)
+    public function resendOtp(Request $request)
     {
-        $data = $request->validate(
-            [
-                'email' => ['bail', 'required', 'email', Rule::exists(User::class, 'email')],
-            ]
-        );
-        $user = User::where('email', $data['email'])->firstOrFail();
-        $token = $data['email'] == 'prejith021@gmail.com' ? 5432 : rand(1000, 9999);
-        $otp = $user->otp()->firstOrCreate([], [
-            'token' => $token,
+        $validator = Validator::make($request->all(), [
+            'email' => ['bail', 'required', 'email', Rule::exists(User::class, 'email')]
         ]);
-        $otp->load('authable');
-        $user->notify(new SendOtp($otp));
-        $success['otp_sent'] = true;
-        return $this->sendResponse($success, 'OTP sent successfully.');
+        if($validator->fails()){
+            return $this->sendError('Required fields are empty or incorrect', $validator->errors(), 400);       
+        };
+        $input = $request->all();
+        try{
+            $user = User::where('email', $input['email'])->firstOrFail();
+            // Sending OTP 
+            $token = $user->email === 'prejith021@gmail.com' ? 5432 : rand(1000, 9999);
+            $otp = $user->otp()->firstOrCreate([], [
+                'token' => $token,
+            ]);
+            $otp->load('authable');
+            $user->notify(new SendOtp($otp));
+            $success['otp_sent'] = true;
+            return $this->sendResponse($success, 'OTP sent successfully.');
+        }catch (\Exception $e) {
+            return $this->sendError('Something went wrong', $e, 403);
+        }
     }
 
     /**
@@ -167,40 +174,36 @@ class AuthController extends BaseController
      */
     public function verifyOtp(Request $request)
     {
-        $data = $request->validate(
-            [
-                'email' => ['bail', 'required', 'email', Rule::exists(User::class, 'email')],
-                'otp' => 'bail|required|integer'
-            ]
-        );
-
-        $user = User::where('email', $data['email'])->with('otp')->firstOrFail();
-
+        $validator = Validator::make($request->all(), [
+            'email' => ['bail', 'required', 'email', Rule::exists(User::class, 'email')],
+            'otp' => 'bail|required|integer'
+        ]);
+        if($validator->fails()){
+            return $this->sendError('Required fields are empty or incorrect', $validator->errors(), 400);       
+        };
+        $input = $request->all();
+        $user = User::where('email', $input['email'])->with('otp')->firstOrFail();
         if($user->otp == null){
             return $this->sendError('Unauthorized', ['error'=>'Otp not available. Request new one and try again.'], 403);
         }
-
-        if($user->otp->token === (int) $data['otp']){
-
+        if($user->otp->token === (int) $input['otp']){
             // Verifying email if not done already(Using in registration time).
             if($user->email_verified_at == null){
                 $user->email_verified_at = now();
                 $user->save();
             }
-            
             $user->otp()->delete();
-
-            $data['token'] = $user->createToken(env('APP_NAME'))->plainTextToken;
+            $data['emailVerified'] = true;
+            $data['token'] =  $user->createToken(env('APP_NAME'))->plainTextToken; 
             $data['user'] = [
                 'name' => $user->name,
                 'email' => $user->email,
                 'username' => $user->username,
                 'phone' => $user->phone,
             ];
-            
-            return $this->sendResponse($data, 'User logged in successfully.');
+            return $this->sendResponse($data, 'User logged in successfully');
         }else{
-            return $this->sendError('Unauthorized', ['error'=>'Unauthorized'], 403);
+            return $this->sendError('Unauthorized', ['error'=>'Invalid OTP'], 403);
         }
     }
     
