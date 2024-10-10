@@ -6,7 +6,6 @@ use App\Http\Controllers\Api\BaseController;
 use App\Models\Country;
 use App\Models\User;
 use App\Notifications\SendOtp;
-use App\Rules\ReCaptcha;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +24,7 @@ use Modules\Members\Models\MemberRelation;
 use Modules\Members\Models\Membership;
 use Modules\Members\Models\MembershipRequest;
 use Modules\Members\Models\MemberUnit;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class MembersController extends BaseController
 {
@@ -56,12 +56,15 @@ class MembersController extends BaseController
     public function showProfile()
     {
         $user = Auth::user();
-        $member = Member::where('user_id', $user->id)->first();
-        $member_request = MembershipRequest::where('user_id', $user->id)->latest()->first();
-        $statuses = $member_request->request_status;
+        $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'relations.relatedTo.user', 'requests', 'committees', 'trustee'])->where('user_id' , $user->id)->first();
+        $statuses = requestStatusDisplay($user->id);
+        $current_status = MembershipRequest::where('user_id', $user->id)->latest('id')->first();
+        $idQr = QrCode::size(300)->generate(json_encode(['Name' =>  $member->name,  'Membership ID' => $member->membership->mid, 'Civil ID' => $member->details->civil_id]));
         $data = [
             'member' => $member,
-            'statuses' => $statuses
+            'statuses' => $statuses,
+            'current_status' => $current_status,
+            'idQr' => $idQr
         ];
         return $this->sendResponse($data);
     }
