@@ -64,7 +64,9 @@ class MembersController extends BaseController
             'member' => $member,
             'statuses' => $statuses,
             'current_status' => $current_status,
-            'idQr' => $idQr
+            'idQr' => $idQr,
+            'is_member' => true,
+            'profile_completed' => true
         ];
         return $this->sendResponse($data);
     }

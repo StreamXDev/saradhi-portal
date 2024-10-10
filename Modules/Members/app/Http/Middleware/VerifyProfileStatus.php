@@ -35,13 +35,13 @@ class VerifyProfileStatus
                 if ($request->is('api/*')) {
                     //No details, returning error
                     $response = [
-                        'success' => false,
                         'message' => 'Member details not added',
                         'is_member' => true,
                         'profile_completed' => false,
                     ];
-                    return response()->json($response, 403);
+                    return response()->json($response, 200);
                 }
+                
                 return redirect('/member/detail');
 
             }else{
