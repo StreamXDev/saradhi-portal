@@ -35,13 +35,14 @@ class VerifyProfileStatus
                 if ($request->is('api/*')) {
                     //No details, returning error
                     $response = [
+                        'success' => true,
                         'message' => 'Member details not added',
                         'is_member' => true,
                         'profile_completed' => false,
                     ];
                     return response()->json($response, 200);
                 }
-                
+
                 return redirect('/member/detail');
 
             }else{
@@ -51,24 +52,23 @@ class VerifyProfileStatus
 
                 if ($request->is('api/*')) {
                     $response = [
-                        'success' => false,
+                        'success' => true,
                         'message' => $request_status->request_status->description,
                         'is_member' => true,
-                        'profile_completed' => true,
-                        
+                        'profile_completed' => true,    
                     ];
-                    return response()->json($response, 403);
+                    return response()->json($response, 200);
                 }
                 return redirect('/member/profile/pending');
             }
         }else{
             if ($request->is('api/*')) {
                 $response = [
-                    'success' => false,
+                    'success' => true,
                     'message' => 'Not a member',
                     'is_member' => false
                 ];
-                return response()->json($response, 401);
+                return response()->json($response, 200);
             }
             return redirect('home');
         }

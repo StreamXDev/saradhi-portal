@@ -36,7 +36,7 @@ class MembersController extends BaseController
      */
     function __construct()
     {
-        $this->middleware('permission:profile.view', ['only' => ['showProfile']]);
+        $this->middleware('permission:profile.view', ['only' => ['showProfile, createDetails']]);
     }
 
     /**
@@ -76,6 +76,7 @@ class MembersController extends BaseController
      * 
      * @return \Illuminate\Http\Response
      */
+    /*
     private function sendEmailOtp(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -98,6 +99,7 @@ class MembersController extends BaseController
     /**
      * Verify email OTP
      */
+    /*
     public function verifyEmailOtp(Request $request){
         try{
             $validator = Validator::make($request->all(), [
@@ -139,6 +141,7 @@ class MembersController extends BaseController
     /**
      * Resending email OTP
      */
+    /*
     public function resendEmailOtp(Request $request)
     {
         $user = User::where('email', $request->email)->with('otp')->firstOrFail();
@@ -151,6 +154,7 @@ class MembersController extends BaseController
         $this->sendEmailOtp($request);
         return $this->sendResponse($data, 'User logged in successfully.');
     }
+ */
     
     /**
      * Send the form for creating a new resource.
