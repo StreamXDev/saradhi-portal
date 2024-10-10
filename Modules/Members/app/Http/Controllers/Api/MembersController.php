@@ -165,25 +165,25 @@ class MembersController extends BaseController
         $units = MemberUnit::select('id', 'slug', 'name')->where('active', 1)->get();
         $blood_groups = MemberEnum::select('id', 'slug', 'name')->where('type', 'blood_group')->get();
         $gender = array(
-            ['name'=>'Male', 'slug' => 'male'], 
-            ['name' => 'Female', 'slug' => 'female']
+            ['id' => 1, 'name'=>'Male', 'slug' => 'male'], 
+            ['id' => 2, 'name' => 'Female', 'slug' => 'female']
         );
         $district_kerala = array(
-            ['name' => 'Alappuzha', 'slug' => 'alappuzha'],
-            ['name' => 'Ernakulam', 'slug' => 'ernakulam'],
-            ['name' => 'Idukki', 'slug' => 'idukki'],
-            ['name' => 'Kannur', 'slug' => 'kannur'],
-            ['name' => 'Kasaragod', 'slug' => 'kasaragod'],
-            ['name' => 'Kollam', 'slug' => 'kollam'],
-            ['name' => 'Kottayam', 'slug' => 'kottayam'],
-            ['name' => 'Kozhikkode', 'slug' => 'kozhikkode'],
-            ['name' => 'Malappuram', 'slug' => 'malappuram'],
-            ['name' => 'Palakkad', 'slug' => 'palakkad'],
-            ['name' => 'Pathanamthitta', 'slug' => 'pathanamthitta'],
-            ['name' => 'Thiruvananthapuram', 'slug' => 'thriuvananthapuram'],
-            ['name' => 'Thrissur', 'slug' => 'thrissur'],
-            ['name' => 'Wayanada', 'slug' => 'wayanad'],
-            ['name' => 'Other', 'slug' => 'other'],
+            ['id' => 1, 'name' => 'Alappuzha', 'slug' => 'alappuzha'],
+            ['id' => 2, 'name' => 'Ernakulam', 'slug' => 'ernakulam'],
+            ['id' => 3, 'name' => 'Idukki', 'slug' => 'idukki'],
+            ['id' => 4, 'name' => 'Kannur', 'slug' => 'kannur'],
+            ['id' => 5, 'name' => 'Kasaragod', 'slug' => 'kasaragod'],
+            ['id' => 6, 'name' => 'Kollam', 'slug' => 'kollam'],
+            ['id' => 7, 'name' => 'Kottayam', 'slug' => 'kottayam'],
+            ['id' => 8, 'name' => 'Kozhikkode', 'slug' => 'kozhikkode'],
+            ['id' => 9, 'name' => 'Malappuram', 'slug' => 'malappuram'],
+            ['id' => 10, 'name' => 'Palakkad', 'slug' => 'palakkad'],
+            ['id' => 11, 'name' => 'Pathanamthitta', 'slug' => 'pathanamthitta'],
+            ['id' => 12, 'name' => 'Thiruvananthapuram', 'slug' => 'thriuvananthapuram'],
+            ['id' => 13, 'name' => 'Thrissur', 'slug' => 'thrissur'],
+            ['id' => 14, 'name' => 'Wayanad', 'slug' => 'wayanad'],
+            ['id' => 15, 'name' => 'Other', 'slug' => 'other'],
         );
         $data = [
             'countries' => $countries,
