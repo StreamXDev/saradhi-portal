@@ -333,6 +333,7 @@ class MembersController extends BaseController
                         'emergency_phone_code' => $input['spouse_emergency_phone_code'],
                         'passport_no' => $input['spouse_passport_no'],
                         'passport_expiry' => $input['spouse_passport_expiry'],
+                        'paci' => $input['spouse_paci'],
                         'sndp_branch' => $input['sndp_branch'],
                         'sndp_branch_number' => $input['sndp_branch_number'],
                         'sndp_union' => $input['sndp_union'],
@@ -447,29 +448,29 @@ class MembersController extends BaseController
 
         $messages = [
             'member_unit_id.required' => 'Unit is required',
-            'member_unit_id.exists' => 'Unit is not valid',
-            'phone.required' => 'Phone number is required',
-            'phone.unique' => 'This phone number is already used',
-            'calling_code.required' => 'Phone country code is required',
-            'whatsapp.required' => 'Whatsapp Number is required',
-            'whatsapp.numeric' => 'Whatsapp number should be a number',
-            'whatsapp_code.required' => 'Whatsapp country code is required',
-            'emergency_phone.required' => 'Emergency Phone Number is required',
-            'emergency_phone.numeric' => 'Emergency Phone number should be a number',
-            'emergency_phone_code.required' => 'Emergency phone country code is required',
+            'member_unit_id.exists' => 'Invalid valid',
+            'phone.required' => 'Phone is required',
+            'phone.unique' => 'phone already used',
+            'calling_code.required' => 'Required',
+            'whatsapp.required' => 'Whatsapp is required',
+            'whatsapp.numeric' => 'Should be a number',
+            'whatsapp_code.required' => 'Required',
+            'emergency_phone.required' => 'Emergency contact is required',
+            'emergency_phone.numeric' => 'Should be a number',
+            'emergency_phone_code.required' => 'Required',
             'gender.required' => 'Gender is required',
-            'dob.required' => 'Date of birth is required',
-            'dob.date_format' => 'Date of birth should be of format Y-m-d',
+            'dob.required' => 'DOB is required',
+            'dob.date_format' => 'Should be Y-m-d format',
             'blood_group.required' => 'Blood group is required',
             'civil_id.required' => 'Civil ID is required',
-            'civil_id.string' => 'Civil ID is not valid',
-            'passport_no.required' => 'Passport number is required',
-            'passport_expiry.required' => 'Passport expiry date is required',
-            'passport_expiry.date_format' => 'Passport expiry date should be of format Y-m-d',
+            'civil_id.string' => 'Invalid Civil ID',
+            'passport_no.required' => 'Passport no. is required',
+            'passport_expiry.required' => 'Expiry date is required',
+            'passport_expiry.date_format' => 'Should be Y-m-d format',
             'governorate.required' => 'Governorate is required',
-            'local_address_area.required' => 'Kuwait address area is required',
+            'local_address_area.required' => 'Area is required',
             'type.required' => 'Membership type is required',
-            'photo.required' => 'Your photo is required'
+            'photo.required' => 'Photo is required'
         ];
 
         if($request->type == 'family'){
@@ -489,25 +490,25 @@ class MembersController extends BaseController
             $rules['spouse_passport_expiry'] = ['required', 'date_format:Y-m-d'];
             $rules['spouse_photo'] = ['required'];
 
-            $messages['spouse_phone.required'] = 'Spouse Phone number is required';
-            $messages['spouse_phone.unique'] = 'Spouse This phone number is already used';
-            $messages['spouse_calling_code.required'] = 'Spouse phone country code is required';
-            $messages['spouse_whatsapp.required'] = 'Spouse Whatsapp Number is required';
-            $messages['spouse_whatsapp.numeric'] = 'Spouse Whatsapp number should be a number';
-            $messages['spouse_whatsapp_code.required'] = 'Spouse whatsapp country code is required';
-            $messages['spouse_emergency_phone.required'] = 'Spouse Emergency Phone Number is required';
-            $messages['spouse_emergency_phone.numeric'] = 'Spouse Emergency Phone number should be a number';
-            $messages['spouse_emergency_phone_code.required'] = 'Spouse emergency phone country code is required';
-            $messages['spouse_gender.required'] = 'Spouse Gender is required';
-            $messages['spouse_dob.required'] = 'Spouse Date of birth is required';
-            $messages['spouse_dob.date_format'] = 'Spouse Date of birth should be of format Y-m-d';
-            $messages['spouse_blood_group.required'] = 'Spouse blood group is required';
-            $messages['spouse_civil_id.required'] = 'Spouse Civil ID is required';
-            $messages['spouse_civil_id.string'] = 'Spouse Civil ID is not valid';
-            $messages['spouse_passport_no.required'] = 'Spouse Passport number is required';
-            $messages['spouse_passport_expiry.required'] = 'Spouse Passport expiry date is required';
-            $messages['spouse_passport_expiry.date_format'] = 'Spouse Passport expiry date should be of format Y-m-d';
-            $messages['spouse_photo.required'] = 'Spouse photo is required';
+            $messages['spouse_phone.required'] = 'Phone is required';
+            $messages['spouse_phone.unique'] = 'Number already used';
+            $messages['spouse_calling_code.required'] = 'Required';
+            $messages['spouse_whatsapp.required'] = 'Whatsapp is required';
+            $messages['spouse_whatsapp.numeric'] = 'Whatsapp number should be a number';
+            $messages['spouse_whatsapp_code.required'] = 'Required';
+            $messages['spouse_emergency_phone.required'] = 'Emergency Phone required';
+            $messages['spouse_emergency_phone.numeric'] = 'Should be a number';
+            $messages['spouse_emergency_phone_code.required'] = 'Required';
+            $messages['spouse_gender.required'] = 'Gender is required';
+            $messages['spouse_dob.required'] = 'DOB is required';
+            $messages['spouse_dob.date_format'] = 'Should be Y-m-d format';
+            $messages['spouse_blood_group.required'] = 'Blood group is required';
+            $messages['spouse_civil_id.required'] = 'Civil ID is required';
+            $messages['spouse_civil_id.string'] = 'Invalid Civil ID';
+            $messages['spouse_passport_no.required'] = 'Passport no. is required';
+            $messages['spouse_passport_expiry.required'] = 'Expiry date is required';
+            $messages['spouse_passport_expiry.date_format'] = 'Should be Y-m-d format';
+            $messages['spouse_photo.required'] = 'Photo is required';
         }
 
         return [
