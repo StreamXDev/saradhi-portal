@@ -246,7 +246,7 @@ class MembersController extends BaseController
             );
 
             // Updating members table (It has been created an entry when the time of registration)
-            $member = Member::where('user_id', $user->id)->update([
+            Member::where('user_id', $user->id)->update([
                 'gender' => $input['gender'],
                 'blood_group' => $input['blood_group']
             ]);
@@ -413,10 +413,13 @@ class MembersController extends BaseController
             DB::commit();
             $response = [
                 'success' => true,
-                'member' => $member,
+                'user' => $user,
                 'family_request' => $input['type'] === 'family' ? true : false,
                 'proof_pending' => true
             ];
+            if($input['type'] === 'family'){
+                $response['spouse'] = $spouse_user;
+            }
             return $this->sendResponse($response, 'Your member details added successfully.');
         }catch (\Exception $e) {
             DB::rollback();
@@ -448,7 +451,7 @@ class MembersController extends BaseController
 
         $messages = [
             'member_unit_id.required' => 'Unit is required',
-            'member_unit_id.exists' => 'Invalid valid',
+            'member_unit_id.exists' => 'Invalid Unit ID',
             'phone.required' => 'Phone is required',
             'phone.unique' => 'phone already used',
             'calling_code.required' => 'Required',
@@ -473,7 +476,7 @@ class MembersController extends BaseController
             'photo.required' => 'Photo is required'
         ];
 
-        if($request->type == 'family'){
+        if($request->type === 'family'){
             $rules['spouse_name'] = ['required', 'string'];
             $rules['spouse_email'] = ['required', Rule::unique(User::class, 'email')];
             $rules['spouse_phone'] = ['required', Rule::unique(User::class, 'phone')];
@@ -490,6 +493,9 @@ class MembersController extends BaseController
             $rules['spouse_passport_expiry'] = ['required', 'date_format:Y-m-d'];
             $rules['spouse_photo'] = ['required'];
 
+            $messages['spouse_name.required'] = 'Name is required';
+            $messages['spouse_email.required'] = 'Email is required';
+            $messages['spouse_email.unique'] = 'Email already registered';
             $messages['spouse_phone.required'] = 'Phone is required';
             $messages['spouse_phone.unique'] = 'Number already used';
             $messages['spouse_calling_code.required'] = 'Required';
