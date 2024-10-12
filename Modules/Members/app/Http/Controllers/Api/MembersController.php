@@ -232,15 +232,15 @@ class MembersController extends BaseController
                     'whatsapp_code' => $input['whatsapp_code'],
                     'emergency_phone' => $input['emergency_phone'],
                     'emergency_phone_code' => $input['emergency_phone_code'],
-                    'company' => $input['company'] ? $input['company'] : null,
-                    'profession' => $input['profession'] ? $input['profession'] : null,
-                    'company_address' => $input['company_address'] ? $input['company_address'] : null,
+                    'company' => isset($input['company']) ? $input['company'] : null,
+                    'profession' => isset($input['profession']) ? $input['profession'] : null,
+                    'company_address' => isset($input['company_address']) ? $input['company_address'] : null,
                     'passport_no' => $input['passport_no'],
                     'passport_expiry' => $input['passport_expiry'],
-                    'paci' => $input['paci'] ? $input['paci'] : null,
-                    'sndp_branch' => $input['sndp_branch'] ? $input['sndp_branch'] : null,
-                    'sndp_branch_number' => $input['sndp_branch_number'] ? $input['sndp_branch_number'] : null,
-                    'sndp_union' => $input['sndp_union'] ? $input['sndp_union'] : null,
+                    'paci' => isset($input['paci']) ? $input['paci'] : null,
+                    'sndp_branch' => isset($input['sndp_branch']) ? $input['sndp_branch'] : null,
+                    'sndp_branch_number' => isset($input['sndp_branch_number']) ? $input['sndp_branch_number'] : null,
+                    'sndp_union' => isset($input['sndp_union']) ? $input['sndp_union'] : null,
                     'completed' => 0
                 ]
             );
