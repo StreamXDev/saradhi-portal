@@ -232,15 +232,15 @@ class MembersController extends BaseController
                     'whatsapp_code' => $input['whatsapp_code'],
                     'emergency_phone' => $input['emergency_phone'],
                     'emergency_phone_code' => $input['emergency_phone_code'],
-                    'company' => $input['company'],
-                    'profession' => $input['profession'],
-                    'company_address' => $input['company_address'],
+                    'company' => $input['company'] ? $input['company'] : null,
+                    'profession' => $input['profession'] ? $input['profession'] : null,
+                    'company_address' => $input['company_address'] ? $input['company_address'] : null,
                     'passport_no' => $input['passport_no'],
                     'passport_expiry' => $input['passport_expiry'],
-                    'paci' => $input['paci'],
-                    'sndp_branch' => $input['sndp_branch'],
-                    'sndp_branch_number' => $input['sndp_branch_number'],
-                    'sndp_union' => $input['sndp_union'],
+                    'paci' => $input['paci'] ? $input['paci'] : null,
+                    'sndp_branch' => $input['sndp_branch'] ? $input['sndp_branch'] : null,
+                    'sndp_branch_number' => $input['sndp_branch_number'] ? $input['sndp_branch_number'] : null,
+                    'sndp_union' => $input['sndp_union'] ? $input['sndp_union'] : null,
                     'completed' => 0
                 ]
             );
@@ -258,13 +258,17 @@ class MembersController extends BaseController
             ]);
 
             // Create membership table entry
+            $introducer_country_code = $input['introducer_country_code'] ? $input['introducer_country_code'] : $input['calling_code'];
+            $introducer_phone = $input['introducer_phone'] ? $input['introducer_phone'] : null;
+            $permanent_cCod =  $input['permanent_address_country_code'] ?  $input['permanent_address_country_code'] : '91';
+            $permanent_phone = $input['permanent_address_contact'] ? $input['permanent_address_contact'] : null ;
             Membership::create([
                 'user_id' => $user->id,
                 'type' => $input['type'],
-                'introducer_name' => $input['introducer_name'],
-                'introducer_phone' => $input['introducer_country_code'].$input['introducer_phone'],
-                'introducer_mid' => $input['introducer_mid'],
-                'introducer_unit' => $input['introducer_unit'],
+                'introducer_name' => $input['introducer_name'] ? $input['introducer_name'] : null,
+                'introducer_phone' => $introducer_country_code.$introducer_phone,
+                'introducer_mid' => $input['introducer_mid'] ? $input['introducer_mid'] : null,
+                'introducer_unit' => $input['introducer_unit']? $input['introducer_unit'] : null,
             ]);
             
             // Create contacts table entry
@@ -272,18 +276,18 @@ class MembersController extends BaseController
                 'user_id' => $user->id,
                 'governorate' => $input['governorate'],
                 'line_1' => $input['local_address_area'],
-                'building' => $input['local_address_building'],
-                'flat' => $input['local_address_flat'],
-                'floor' => $input['local_address_floor'],
+                'building' => $input['local_address_building'] ? $input['local_address_building'] : null,
+                'flat' => $input['local_address_flat'] ? $input['local_address_flat'] : null,
+                'floor' => $input['local_address_floor'] ? $input['local_address_floor'] : null,
             ]);
             
             // Adding introducers details
             MemberPermanentAddress::create([
                 'user_id' => $user->id,
                 'line_1' => $input['permanent_address_line_1'],
-                'line_2' => $input['permanent_address_line_2'],
-                'district' => $input['permanent_address_district'],
-                'contact' => $input['permanent_address_country_code'].$input['permanent_address_contact'],
+                'line_2' => $input['permanent_address_line_2'] ? $input['permanent_address_line_2'] : null,
+                'district' => $input['permanent_address_district'] ? $input['permanent_address_district'] : null,
+                'contact' => $permanent_cCod.$permanent_phone,
             ]);
             // Adding entry to membership_request table, with 'saved' status;
             /*
@@ -333,10 +337,10 @@ class MembersController extends BaseController
                         'emergency_phone_code' => $input['spouse_emergency_phone_code'],
                         'passport_no' => $input['spouse_passport_no'],
                         'passport_expiry' => $input['spouse_passport_expiry'],
-                        'paci' => $input['spouse_paci'],
-                        'sndp_branch' => $input['sndp_branch'],
-                        'sndp_branch_number' => $input['sndp_branch_number'],
-                        'sndp_union' => $input['sndp_union'],
+                        'paci' => $input['spouse_paci'] ? $input['spouse_paci'] : null,
+                        'sndp_branch' => $input['sndp_branch'] ? $input['sndp_branch'] : null,
+                        'sndp_branch_number' => $input['sndp_branch_number'] ? $input['sndp_branch_number'] : null,
+                        'sndp_union' => $input['sndp_union'] ? $input['sndp_union'] : null,
                         'completed' => 0
                     ]
                 );
@@ -356,26 +360,27 @@ class MembersController extends BaseController
                 Membership::create([
                     'user_id' => $spouse_user->id,
                     'type' => $input['type'],
-                    'introducer_name' => $input['introducer_name'],
-                    'introducer_phone' => $input['introducer_country_code'].$input['introducer_phone'],
-                    'introducer_mid' => $input['introducer_mid'],
-                    'introducer_unit' => $input['introducer_unit'],
+                    'introducer_name' => $input['introducer_name'] ? $input['introducer_name'] : null,
+                    'introducer_phone' => $introducer_country_code.$introducer_phone,
+                    'introducer_mid' => $input['introducer_mid'] ? $input['introducer_mid'] : null,
+                    'introducer_unit' => $input['introducer_unit'] ? $input['introducer_unit'] : null,
                 ]);
                 // Create contacts table entry
                 MemberLocalAddress::create([
                     'user_id' => $spouse_user->id,
+                    'governorate' => $input['governorate'],
                     'line_1' => $input['local_address_area'],
-                    'building' => $input['local_address_building'],
-                    'flat' => $input['local_address_flat'],
-                    'floor' => $input['local_address_floor'],
+                    'building' => $input['local_address_building'] ? $input['local_address_building'] : null,
+                    'flat' => $input['local_address_flat'] ? $input['local_address_flat'] : null,
+                    'floor' => $input['local_address_floor'] ? $input['local_address_floor'] : null,
                 ]);
                 // Adding introducers details
                 MemberPermanentAddress::create([
                     'user_id' => $spouse_user->id,
                     'line_1' => $input['permanent_address_line_1'],
-                    'line_2' => $input['permanent_address_line_2'],
-                    'district' => $input['permanent_address_district'],
-                    'contact' => $input['permanent_address_country_code'].$input['permanent_address_contact'],
+                    'line_2' => $input['permanent_address_line_2'] ? $input['permanent_address_line_2'] : null,
+                    'district' => $input['permanent_address_district'] ? $input['permanent_address_district'] : null,
+                    'contact' => $permanent_cCod.$permanent_phone,
                 ]);
                 // Adding entry to membership_request table, with 'saved' status;
                 /*
