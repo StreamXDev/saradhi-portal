@@ -259,9 +259,9 @@ class MembersController extends BaseController
 
             // Create membership table entry
             $introducer_country_code = $input['introducer_country_code'] ? $input['introducer_country_code'] : $input['calling_code'];
-            $introducer_phone = $input['introducer_phone'] ? $input['introducer_phone'] : null;
+            $introducer_phone = $input['introducer_phone'] ? $input['introducer_phone'] : '';
             $permanent_cCod =  $input['permanent_address_country_code'] ?  $input['permanent_address_country_code'] : '91';
-            $permanent_phone = $input['permanent_address_contact'] ? $input['permanent_address_contact'] : null ;
+            $permanent_phone = $input['permanent_address_contact'] ? $input['permanent_address_contact'] : '' ;
             Membership::create([
                 'user_id' => $user->id,
                 'type' => $input['type'],
