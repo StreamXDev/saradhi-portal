@@ -19,19 +19,14 @@ class VerifyProfileStatus
         
         $user = auth()->user();
         $member = Member::where('user_id', $user->id)->first();
-        
         if($member){
-
             if($member->active){
                 return $next($request);
             }
-
-
             // Checking member profile details.
             $details = MemberDetail::where('user_id', $user->id)->first();
 
             if(!$details || !$details->completed){
-
                 if ($request->is('api/*')) {
                     //No details, returning error
                     $response = [
@@ -39,23 +34,21 @@ class VerifyProfileStatus
                         'message' => 'Member details not added',
                         'is_member' => true,
                         'profile_completed' => false,
+                        'active_membership' => false,
                     ];
                     return response()->json($response, 200);
                 }
-
                 return redirect('/member/detail');
-
             }else{
-
                 // Checking membership request status
                 $request_status = MembershipRequest::where('user_id', $user->id)->latest()->first();
-
                 if ($request->is('api/*')) {
                     $response = [
                         'success' => true,
                         'message' => $request_status->request_status->description,
                         'is_member' => true,
-                        'profile_completed' => true,    
+                        'profile_completed' => true,   
+                        'active_membership' => false, 
                     ];
                     return response()->json($response, 200);
                 }
@@ -71,7 +64,6 @@ class VerifyProfileStatus
                 return response()->json($response, 200);
             }
             return redirect('home');
-        }
-        
+        } 
     }
 }

@@ -25,7 +25,12 @@ class MemberRelation extends Model
         return $this->belongsTo(MemberEnum::class)->select('id', 'slug', 'name', 'description', 'order');
     }
 
-    public function relatedTo(): HasOne
+    public function member(): HasOne
+    {
+        return $this->hasOne(Member::class, 'id', 'member_id');
+    }
+
+    public function relatedMember(): HasOne
     {
         return $this->hasOne(Member::class, 'id', 'related_member_id');
     }

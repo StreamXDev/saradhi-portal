@@ -3,65 +3,33 @@
 namespace Modules\Members\Http\Controllers\Api;
 
 use App\Http\Controllers\Api\BaseController;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Modules\Imports\Models\Member;
+use Modules\Members\Models\MembershipRequest;
 
 class ProfileController extends BaseController
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function showProfile()
     {
-        return view('members::index');
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('members::create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request): RedirectResponse
-    {
-        //
-    }
-
-    /**
-     * Show the specified resource.
-     */
-    public function show($id)
-    {
-        return view('members::show');
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        return view('members::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id): RedirectResponse
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
-    {
-        //
+        $user = Auth::user();
+        $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'relations.relatedTo.user', 'requests', 'committees', 'trustee'])->where('user_id' , $user->id)->first();
+        $statuses = requestStatusDisplay($user->id);
+        $current_status = MembershipRequest::where('user_id', $user->id)->latest('id')->first();
+        $idQr = QrCode::size(300)->generate(json_encode(['Name' =>  $member->name,  'Membership ID' => $member->membership->mid, 'Civil ID' => $member->details->civil_id]));
+        $data = [
+            'member' => $member,
+            'statuses' => $statuses,
+            'current_status' => $current_status,
+            'idQr' => $idQr,
+            'is_member' => true,
+            'profile_completed' => true
+        ];
+        return $this->sendResponse($data);
     }
 }

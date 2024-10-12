@@ -54,6 +54,7 @@ class MembersController extends BaseController
     /**
      * Display a listing of the resource.
      */
+    /*
     public function showProfile()
     {
         $user = Auth::user();
@@ -71,6 +72,7 @@ class MembersController extends BaseController
         ];
         return $this->sendResponse($data);
     }
+        */
 
     /**
      * Sending Login OTP to email
@@ -289,26 +291,7 @@ class MembersController extends BaseController
                 'district' => isset($input['permanent_address_district']) ? $input['permanent_address_district'] : null,
                 'contact' => $permanent_cCod.$permanent_phone,
             ]);
-            // Adding entry to membership_request table, with 'saved' status;
-            /*
-            $status = MemberEnum::where('type', 'request_status')->where('slug', 'saved')->first();
-            MembershipRequest::create([
-                'user_id' => $user->id,
-                'request_status_id' => $status->id,
-                'checked' => 1, 
-                'updated_by' => $user->id,
-            ]);
             
-            // If form submitted as 'save & submit', add entry to membership_request table with 'submitted' status
-            if($request->input('action') == 'submit'){
-                $status = MemberEnum::where('type', 'request_status')->where('slug', 'submitted')->first();
-                MembershipRequest::create([
-                    'user_id' => $user->id,
-                    'request_status_id' => $status->id,
-                    'updated_by' => $user->id,
-                ]);
-            }
-            */
             // adding spouse
             // Adding spouse if membership type is family
             if($input['type'] === 'family'){
@@ -382,25 +365,7 @@ class MembersController extends BaseController
                     'district' => isset($input['permanent_address_district']) ? $input['permanent_address_district'] : null,
                     'contact' => $permanent_cCod.$permanent_phone,
                 ]);
-                // Adding entry to membership_request table, with 'saved' status;
-                /*
-                $status = MemberEnum::where('type', 'request_status')->where('slug', 'saved')->first();
-                MembershipRequest::create([
-                    'user_id' => $spouse_user->id,
-                    'request_status_id' => $status->id,
-                    'checked' => 1, 
-                    'updated_by' => $spouse_user->id,
-                ]);
-                // If form submitted as 'save & submit', add entry to membership_request table with 'submitted' status
-                if($request->input('action') == 'submit'){
-                    $status = MemberEnum::where('type', 'request_status')->where('slug', 'submitted')->first();
-                    MembershipRequest::create([
-                        'user_id' => $spouse_user->id,
-                        'request_status_id' => $status->id,
-                        'updated_by' => $spouse_user->id,
-                    ]);
-                }
-                */
+                
                 //Adding relationship
                 $relation = MemberEnum::where('type', 'relationship')->where('slug', 'spouse')->first();
                 $mainMember = Member::where('user_id',$user->id)->first();
@@ -420,12 +385,156 @@ class MembersController extends BaseController
                 'success' => true,
                 'user' => $user,
                 'family_request' => $input['type'] === 'family' ? true : false,
-                'proof_pending' => true
+                'proof_pending' => true,
+                'profile_completed' => false,
+                'active_membership' => false,
             ];
             if($input['type'] === 'family'){
                 $response['spouse'] = $spouse_user;
             }
             return $this->sendResponse($response, 'Your member details added successfully.');
+        }catch (\Exception $e) {
+            DB::rollback();
+            return $this->sendError('Failed adding member details', $e);
+        }
+    }
+
+    public function uploadProof(Request $request){
+        $user = Auth::user();
+
+        $existing_membership_data = Membership::where('user_id', $user->id)->first();
+        $existing_membership_request = MembershipRequest::where('user_id', $user->id)->latest()->first();
+        if($existing_membership_data){
+            return $this->sendError('Not allowed', 'You already a member', 405); 
+        }
+        if($existing_membership_request){
+            return $this->sendError('Already requested', 'Your membership '.strtolower($existing_membership_request->request_status->description), 405); 
+        }
+        
+        $primaryMember = Member::where('user_id', $user->id)->first();
+        $spouseUser = null;
+        $spouseMember = null;
+        $hasSpouse = MemberRelation::where('related_member_id', $primaryMember->id)->first();
+        if($hasSpouse){
+            $spouseMember = Member::where('member_id', $hasSpouse->member_id)->first();
+            $spouseUser = User::where('id', $spouseMember->user_id)->first();
+        }
+
+        if($hasSpouse){
+            $validator = Validator::make($request->all(), [
+                'photo_civil_id_front'    => ['required'],
+                'photo_civil_id_back'     => ['required'],
+                'photo_passport_front'    => ['required'],
+                'photo_passport_back'     => ['required'],
+                'spouse_photo_civil_id_front'    => ['required'],
+                'spouse_photo_civil_id_back'     => ['required'],
+                'spouse_photo_passport_front'    => ['required'],
+                'spouse_photo_passport_back'     => ['required'],
+            ]);
+        }else{
+            $validator = Validator::make($request->all(), [
+                'photo_civil_id_front'    => ['required'],
+                'photo_civil_id_back'     => ['required'],
+                'photo_passport_front'    => ['required'],
+                'photo_passport_back'     => ['required']
+            ]);
+        }
+        if($validator->fails()){
+            return $this->sendError('Validation Error', $validator->errors());       
+        }
+        
+        $input = $request->all();
+        DB::beginTransaction();
+        try {
+            // Storing files
+            $civil_id_front_name = 'cvf'.$user->id.'_'.time().'.'.$request->photo_civil_id_front->extension(); 
+            $civil_id_back_name = 'cvb'.$user->id.'_'.time().'.'.$request->photo_civil_id_back->extension(); 
+            $passport_front_name = 'ppf'.$user->id.'_'.time().'.'.$request->photo_passport_front->extension(); 
+            $passport_back_name = 'ppb'.$user->id.'_'.time().'.'.$request->photo_passport_back->extension(); 
+            Storage::put('public/images/'.$civil_id_front_name, base64_decode($input['photo_civil_id_front']));
+            Storage::put('public/images/'.$civil_id_back_name, base64_decode($input['photo_civil_id_back']));
+            Storage::put('public/images/'.$passport_front_name, base64_decode($input['photo_passport_front']));
+            Storage::put('public/images/'.$passport_back_name, base64_decode($input['photo_passport_back']));
+            //Adding proof data to Membership detail table
+            MemberDetail::updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'photo_civil_id_front' => $civil_id_front_name,
+                    'photo_civil_id_back' => $civil_id_back_name,
+                    'photo_passport_front' => $passport_front_name,
+                    'photo_passport_back' => $passport_back_name,
+                    'completed' => 1
+                ]
+            );
+            // Adding entry to membership_request table, with 'saved' status;
+            // 1. Adding SAVED status in Membership request table
+            $status = MemberEnum::where('type', 'request_status')->where('slug', 'saved')->first();
+            MembershipRequest::create([
+                'user_id' => $user->id,
+                'request_status_id' => $status->id,
+                'checked' => 1, 
+                'updated_by' => $user->id,
+            ]);
+            
+            // 2. Adding SUBMITTED status in Membership request table
+            $status = MemberEnum::where('type', 'request_status')->where('slug', 'submitted')->first();
+            MembershipRequest::create([
+                'user_id' => $user->id,
+                'request_status_id' => $status->id,
+                'updated_by' => $user->id,
+            ]);
+            
+            if($hasSpouse){
+                // Storing spouse files
+                $spouse_civil_id_front_name = 'cvf'.$spouseUser->id.'_'.time().'.'.$request->spouse_photo_civil_id_front->extension(); 
+                $spouse_civil_id_back_name = 'cvb'.$spouseUser->id.'_'.time().'.'.$request->spouse_photo_civil_id_back->extension(); 
+                $spouse_passport_front_name = 'ppf'.$spouseUser->id.'_'.time().'.'.$request->spouse_photo_passport_front->extension(); 
+                $spouse_passport_back_name = 'ppb'.$spouseUser->id.'_'.time().'.'.$request->spouse_photo_passport_back->extension(); 
+                Storage::put('public/images/'.$spouse_civil_id_front_name, base64_decode($input['spouse_photo_civil_id_front']));
+                Storage::put('public/images/'.$spouse_civil_id_back_name, base64_decode($input['spouse_photo_civil_id_back']));
+                Storage::put('public/images/'.$spouse_passport_front_name, base64_decode($input['spouse_photo_passport_front']));
+                Storage::put('public/images/'.$spouse_passport_back_name, base64_decode($input['spouse_photo_passport_back']));
+                // Updating spouse file data
+                MemberDetail::updateOrCreate(
+                    ['user_id' => $spouseUser->id],
+                    [
+                        'photo_civil_id_front' => $spouse_civil_id_front_name,
+                        'photo_civil_id_back' => $spouse_civil_id_back_name,
+                        'photo_passport_front' => $spouse_passport_front_name,
+                        'photo_passport_back' => $spouse_passport_back_name,
+                        'completed' => 1
+                    ]
+                );
+                // Adding entry to membership_request table, with 'saved' status;
+                // 1. Adding SAVED status in Membership request table
+                $status = MemberEnum::where('type', 'request_status')->where('slug', 'saved')->first();
+                MembershipRequest::create([
+                    'user_id' => $spouseUser->id,
+                    'request_status_id' => $status->id,
+                    'checked' => 1, 
+                    'updated_by' => $spouseUser->id,
+                ]);
+                
+                // 2. Adding SUBMITTED status in Membership request table
+                $status = MemberEnum::where('type', 'request_status')->where('slug', 'submitted')->first();
+                MembershipRequest::create([
+                    'user_id' => $spouseUser->id,
+                    'request_status_id' => $status->id,
+                    'updated_by' => $spouseUser->id,
+                ]);
+            }
+            DB::commit();
+            $response = [
+                'success' => true,
+                'user' => $user,
+                'proof_pending' => false,
+                'profile_completed' => true,
+                'active_membership' => false,
+            ];
+            if($hasSpouse){
+                $response['spouse'] = $spouseUser;
+            }
+            return $this->sendResponse($response, 'Your document proof successfully and the Membership request sent to verification');
         }catch (\Exception $e) {
             DB::rollback();
             return $this->sendError('Failed adding member details', $e);
