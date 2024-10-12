@@ -323,7 +323,7 @@ class MembersController extends BaseController
                 // Sending OTP
                 //Storing attachments
                 $spouse_avatarName = 'av'.$spouse_user->id.'_'.time().'.jpg';
-                //Storage::put('public/images/'.$avatarName, base64_decode($input['spouse_photo']));
+                Storage::put('public/images/'.$avatarName, base64_decode($input['spouse_photo']));
                 // Spouse Member details
                 MemberDetail::updateOrCreate(
                     ['user_id' => $spouse_user->id],
