@@ -245,7 +245,176 @@ class MembersController extends BaseController
                 ]
             );
 
+            // Updating members table (It has been created an entry when the time of registration)
+            Member::where('user_id', $user->id)->update([
+                'gender' => $input['gender'],
+                'blood_group' => $input['blood_group']
+            ]);
+            //Updating users table - phone number and avatar
+            User::where('id', $user->id)->update([
+                'phone' => $input['phone'],
+                'calling_code' => $input['calling_code'],
+                'avatar' => $avatarName,
+            ]);
+
+            // Create membership table entry
+            $introducer_country_code = isset($input['introducer_country_code']) ? $input['introducer_country_code'] : $input['calling_code'];
+            $introducer_phone = isset($input['introducer_phone']) ? $input['introducer_phone'] : '';
+            $permanent_cCod =  isset($input['permanent_address_country_code']) ?  $input['permanent_address_country_code'] : '91';
+            $permanent_phone = isset($input['permanent_address_contact']) ? $input['permanent_address_contact'] : '' ;
+            Membership::create([
+                'user_id' => $user->id,
+                'type' => $input['type'],
+                'introducer_name' => isset($input['introducer_name']) ? $input['introducer_name'] : null,
+                'introducer_phone' => $introducer_country_code.$introducer_phone,
+                'introducer_mid' => isset($input['introducer_mid']) ? $input['introducer_mid'] : null,
+                'introducer_unit' => isset($input['introducer_unit']) ? $input['introducer_unit'] : null,
+            ]);
             
+            // Create contacts table entry
+            MemberLocalAddress::create([
+                'user_id' => $user->id,
+                'governorate' => $input['governorate'],
+                'line_1' => $input['local_address_area'],
+                'building' => isset($input['local_address_building']) ? $input['local_address_building'] : null,
+                'flat' => isset($input['local_address_flat']) ? $input['local_address_flat'] : null,
+                'floor' => isset($input['local_address_floor']) ? $input['local_address_floor'] : null,
+            ]);
+            
+            // Adding introducers details
+            MemberPermanentAddress::create([
+                'user_id' => $user->id,
+                'line_1' => $input['permanent_address_line_1'],
+                'line_2' => isset($input['permanent_address_line_2']) ? $input['permanent_address_line_2'] : null,
+                'district' => isset($input['permanent_address_district']) ? $input['permanent_address_district'] : null,
+                'contact' => $permanent_cCod.$permanent_phone,
+            ]);
+            // Adding entry to membership_request table, with 'saved' status;
+            /*
+            $status = MemberEnum::where('type', 'request_status')->where('slug', 'saved')->first();
+            MembershipRequest::create([
+                'user_id' => $user->id,
+                'request_status_id' => $status->id,
+                'checked' => 1, 
+                'updated_by' => $user->id,
+            ]);
+            
+            // If form submitted as 'save & submit', add entry to membership_request table with 'submitted' status
+            if($request->input('action') == 'submit'){
+                $status = MemberEnum::where('type', 'request_status')->where('slug', 'submitted')->first();
+                MembershipRequest::create([
+                    'user_id' => $user->id,
+                    'request_status_id' => $status->id,
+                    'updated_by' => $user->id,
+                ]);
+            }
+            */
+            // adding spouse
+            // Adding spouse if membership type is family
+            if($input['type'] === 'family'){
+                $userInput['name'] = $input['spouse_name'];
+                $userInput['email'] = $input['spouse_email'];
+                $userInput['password'] = Hash::make(Str::random(10));
+                $spouse_user = User::create($userInput);
+                $spouse_user->assignRole(['Member']);
+                $spouse ['user_id'] = $spouse_user->id;
+                $spouse ['name'] = $spouse_user->name;
+                $spouse_member = Member::create($spouse);
+                // Sending OTP
+                //Storing attachments
+                $spouse_avatarName = 'av'.$spouse_user->id.'_'.time().'.jpg';
+                //Storage::put('public/images/'.$avatarName, base64_decode($input['spouse_photo']));
+                // Spouse Member details
+                MemberDetail::updateOrCreate(
+                    ['user_id' => $spouse_user->id],
+                    [
+                        'member_unit_id' => $input['member_unit_id'],
+                        'civil_id' => $input['spouse_civil_id'],
+                        'dob' => $input['spouse_dob'],
+                        'whatsapp' => $input['spouse_whatsapp'],
+                        'whatsapp_code' => $input['spouse_whatsapp_code'],
+                        'emergency_phone' => $input['spouse_emergency_phone'],
+                        'emergency_phone_code' => $input['spouse_emergency_phone_code'],
+                        'passport_no' => $input['spouse_passport_no'],
+                        'passport_expiry' => $input['spouse_passport_expiry'],
+                        'paci' => isset($input['spouse_paci']) ? $input['spouse_paci'] : null,
+                        'sndp_branch' => isset($input['sndp_branch']) ? $input['sndp_branch'] : null,
+                        'sndp_branch_number' => isset($input['sndp_branch_number']) ? $input['sndp_branch_number'] : null,
+                        'sndp_union' => isset($input['sndp_union']) ? $input['sndp_union'] : null,
+                        'completed' => 0
+                    ]
+                );
+                // Updating members table (Already created an entry when registering username)
+                Member::where('user_id', $spouse_user->id)->update([
+                    'gender' => $input['spouse_gender'],
+                    'blood_group' => $input['spouse_blood_group'],
+                    'type' => 'spouse'
+                ]);
+                //Updating users table - phone number and avatar
+                User::where('id', $spouse_user->id)->update([
+                    'phone' => $input['spouse_phone'],
+                    'calling_code' => $input['spouse_calling_code'],
+                    'avatar' => $spouse_avatarName,
+                ]);
+                // Create membership table entry
+                Membership::create([
+                    'user_id' => $spouse_user->id,
+                    'type' => $input['type'],
+                    'introducer_name' => isset($input['introducer_name']) ? $input['introducer_name'] : null,
+                    'introducer_phone' => $introducer_country_code.$introducer_phone,
+                    'introducer_mid' => isset($input['introducer_mid']) ? $input['introducer_mid'] : null,
+                    'introducer_unit' => isset($input['introducer_unit']) ? $input['introducer_unit'] : null,
+                ]);
+                // Create contacts table entry
+                MemberLocalAddress::create([
+                    'user_id' => $spouse_user->id,
+                    'governorate' => $input['governorate'],
+                    'line_1' => $input['local_address_area'],
+                    'building' => isset($input['local_address_building']) ? $input['local_address_building'] : null,
+                    'flat' => isset($input['local_address_flat']) ? $input['local_address_flat'] : null,
+                    'floor' => isset($input['local_address_floor']) ? $input['local_address_floor'] : null,
+                ]);
+                // Adding introducers details
+                MemberPermanentAddress::create([
+                    'user_id' => $spouse_user->id,
+                    'line_1' => $input['permanent_address_line_1'],
+                    'line_2' => isset($input['permanent_address_line_2']) ? $input['permanent_address_line_2'] : null,
+                    'district' => isset($input['permanent_address_district']) ? $input['permanent_address_district'] : null,
+                    'contact' => $permanent_cCod.$permanent_phone,
+                ]);
+                // Adding entry to membership_request table, with 'saved' status;
+                /*
+                $status = MemberEnum::where('type', 'request_status')->where('slug', 'saved')->first();
+                MembershipRequest::create([
+                    'user_id' => $spouse_user->id,
+                    'request_status_id' => $status->id,
+                    'checked' => 1, 
+                    'updated_by' => $spouse_user->id,
+                ]);
+                // If form submitted as 'save & submit', add entry to membership_request table with 'submitted' status
+                if($request->input('action') == 'submit'){
+                    $status = MemberEnum::where('type', 'request_status')->where('slug', 'submitted')->first();
+                    MembershipRequest::create([
+                        'user_id' => $spouse_user->id,
+                        'request_status_id' => $status->id,
+                        'updated_by' => $spouse_user->id,
+                    ]);
+                }
+                */
+                //Adding relationship
+                $relation = MemberEnum::where('type', 'relationship')->where('slug', 'spouse')->first();
+                $mainMember = Member::where('user_id',$user->id)->first();
+                MemberRelation::create([
+                    'member_id' => $mainMember->id,
+                    'related_member_id' => $spouse_member->id,
+                    'relationship_id' => $relation->id,
+                ]);
+                MemberRelation::create([
+                    'member_id' => $spouse_member->id,
+                    'related_member_id' => $mainMember->id,
+                    'relationship_id' => $relation->id,
+                ]);
+            }
             DB::commit();
             $response = [
                 'success' => true,
@@ -254,7 +423,7 @@ class MembersController extends BaseController
                 'proof_pending' => true
             ];
             if($input['type'] === 'family'){
-                //$response['spouse'] = $spouse_user;
+                $response['spouse'] = $spouse_user;
             }
             return $this->sendResponse($response, 'Your member details added successfully.');
         }catch (\Exception $e) {
