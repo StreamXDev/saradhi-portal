@@ -342,6 +342,7 @@
         </div>
     </div>
 </div>
+
 @include('members::admin.includes.membership.request.proof')
 <!-- Modal -->
 <div class="modal fade" id="idCardModal" tabindex="-1" aria-labelledby="idCardModalLabel" aria-hidden="true">

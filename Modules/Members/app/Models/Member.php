@@ -9,8 +9,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Member extends Model
 {
-
+    //protected $connection = 'mysql';
     protected $appends = ['is_trustee'];
+    
 
     protected $fillable = [
         'user_id',
@@ -75,5 +76,4 @@ class Member extends Model
     {
         return $this->trustee !== null;
     }
-
 }
