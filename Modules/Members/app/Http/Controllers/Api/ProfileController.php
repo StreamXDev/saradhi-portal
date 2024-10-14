@@ -140,7 +140,7 @@ class ProfileController extends BaseController
                 'whatsapp_code', 'whatsapp', 'emergency_phone_code', 'emergency_phone', 'dob', 'civil_id', 'paci', 'passport_no', 'passport_expiry', 'company', 'profession', 'company_address', 'sndp_branch', 'sndp_branch_number', 'sndp_unit'
             ]));
 
-            $this->showProfile();
+            return $this->showProfile();
         }else{
             return $this->sendError('Not allowed', 'Requested member ('.$input['name'].') does not found. Please try again', 405); 
         }
