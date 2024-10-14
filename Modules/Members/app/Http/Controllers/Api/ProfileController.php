@@ -71,13 +71,13 @@ class ProfileController extends BaseController
             'avatar'    => 'required',
             'name'    => 'required|string',
             'calling_code'    => 'required',
-            'phone'    => ['required', Rule::unique(User::class)],
             'whatsapp_code'    => 'required',
             'whatsapp'    => 'required|numeric',
             'emergency_phone_code'    => 'required',
             'emergency_phone'    => 'required|numeric',
             'blood_group'    => 'required|string',
             'dob'    => 'required|date_format:Y-m-d',
+            'gender' => 'required|string',
             'civil_id'    => 'required|string',
             'passport_no'    => 'required|string',
             'passport_expiry'    => 'required|date_format:Y-m-d',
@@ -88,7 +88,6 @@ class ProfileController extends BaseController
             'avatar.required'    => 'Photo is required',
             'name.required'    => 'Name is required field',
             'calling_code.required'    => 'Required field',
-            'phone.required'    => 'Phone is required',
             'whatsapp_code.required'    => 'Required field',
             'whatsapp.required'    => 'Whatsapp is required',
             'emergency_phone_code.required'    => 'Required field',
@@ -96,6 +95,7 @@ class ProfileController extends BaseController
             'blood_group.required'    => 'Required field',
             'dob.required'    => 'Required field',
             'dob.date_format'    => 'Should be Y-m-d format',
+            'gender.required'    => 'Required field',
             'civil_id.required'    => 'Required field',
             'passport_no.required'    => 'Required field',
             'passport_expiry.required'    => 'Required field',
@@ -110,6 +110,13 @@ class ProfileController extends BaseController
         if($member && $member->active){
             $user = User::where('id', $input['user_id'])->first();
             $details = MemberDetail::where('user_id', $input['user_id']->id)->first();
+
+            $validator = Validator::make($request->all(), [
+                'phone' => 'required|unique:users,phone,'.$user->phone
+            ],[
+                'phone.required'    => 'Phone is required',
+                'phone.unique'    => 'Phone no. has already been taken',
+            ]);
 
             $existing_avatar = $user->avatar;
             $new_avatar = $input['avatar'];
@@ -127,7 +134,7 @@ class ProfileController extends BaseController
                 'name','avatar','calling_code','phone'
             ]));
             $member->update(Arr::only($input, [
-                'name', 'blood_group'
+                'name', 'blood_group', 'gender'
             ]));
             $details->update(Arr::only($input, [
                 'whatsapp_code', 'whatsapp', 'emergency_phone_code', 'emergency_phone', 'dob', 'civil_id', 'paci', 'passport_no', 'passport_expiry', 'company', 'profession', 'company_address', 'sndp_branch', 'sndp_branch_number', 'sndp_unit'

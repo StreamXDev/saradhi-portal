@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
         $user = User::where('email', 'shanoob.sekhar@gmail.com')->first();
         if (is_null($user)) {
             $user = new User();
-            $user->name = "Shanoob";
+            $user->name = "Shanoob Sekhar";
             $user->email = "shanoob.sekhar@gmail.com";
             $user->username = 'superadmin';
             $user->password = Hash::make('abc@123');
