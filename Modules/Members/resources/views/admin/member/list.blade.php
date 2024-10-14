@@ -46,6 +46,8 @@
     </ul>
     {!! $members->withQueryString()->links('pagination::bootstrap-5') !!}
 </div>
+
+
 @endsection
 @section('page_scripts')
 <script>

@@ -5,18 +5,15 @@ namespace Modules\Members\Http\Controllers\Api;
 use App\Http\Controllers\Api\BaseController;
 use App\Models\Country;
 use App\Models\User;
-use App\Notifications\SendOtp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Modules\Members\Models\Member;
-use Modules\Members\Models\MemberContact;
 use Modules\Members\Models\MemberDetail;
 use Modules\Members\Models\MemberEnum;
 use Modules\Members\Models\MemberLocalAddress;
@@ -25,7 +22,6 @@ use Modules\Members\Models\MemberRelation;
 use Modules\Members\Models\Membership;
 use Modules\Members\Models\MembershipRequest;
 use Modules\Members\Models\MemberUnit;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class MembersController extends BaseController
 {
@@ -40,125 +36,6 @@ class MembersController extends BaseController
         $this->middleware('permission:profile.view', ['only' => ['showProfile, createDetails']]);
     }
 
-    /**
-     * Display profile verification pending page (The page shows after a new membership request)
-     */
-    public function profilePending()
-    {
-        $user = Auth::user();
-        $pending = MembershipRequest::where('user_id', $user->id)->get();
-        return $this->sendResponse($pending);
-    }
-
-
-    /**
-     * Display a listing of the resource.
-     */
-    /*
-    public function showProfile()
-    {
-        $user = Auth::user();
-        $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'relations.relatedTo.user', 'requests', 'committees', 'trustee'])->where('user_id' , $user->id)->first();
-        $statuses = requestStatusDisplay($user->id);
-        $current_status = MembershipRequest::where('user_id', $user->id)->latest('id')->first();
-        $idQr = QrCode::size(300)->generate(json_encode(['Name' =>  $member->name,  'Membership ID' => $member->membership->mid, 'Civil ID' => $member->details->civil_id]));
-        $data = [
-            'member' => $member,
-            'statuses' => $statuses,
-            'current_status' => $current_status,
-            'idQr' => $idQr,
-            'is_member' => true,
-            'profile_completed' => true
-        ];
-        return $this->sendResponse($data);
-    }
-        */
-
-    /**
-     * Sending Login OTP to email
-     * 
-     * @return \Illuminate\Http\Response
-     */
-    /*
-    private function sendEmailOtp(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'email' => ['bail', 'required', 'email', Rule::exists(User::class, 'email')]
-        ]);
-        $data = $request->all();
-        if($validator->fails()){
-            return $this->sendError('Validation Error', $validator->errors());       
-        }
-        $user = User::where('email', $data['email'])->firstOrFail();
-        $token = $data['email'] == 'prejith021@gmail.com' ? 5432 : rand(1000, 9999);
-        $otp = $user->otp()->firstOrCreate([], [
-            'token' => $token,
-        ]);
-        $otp->load('authable');
-        $user->notify(new SendOtp($otp));
-        return true;
-    }
-
-    /**
-     * Verify email OTP
-     */
-    /*
-    public function verifyEmailOtp(Request $request){
-        try{
-            $validator = Validator::make($request->all(), [
-                'email' => ['bail', 'required', 'email', Rule::exists(User::class, 'email')],
-                'otp' => 'bail|required|integer'
-            ]);
-            $data = $request->all();
-            if($validator->fails()){
-                return $this->sendError('Validation Error', $validator->errors());     
-            }
-            $user = User::where('email', $data['email'])->with('otp')->firstOrFail();
-            if($user->otp == null){
-                return $this->sendError('Unauthorized.', ['error'=>'Otp not available. Request new one and try again.']);
-            }
-            if($user->otp->token === (int) $data['otp']){
-                // Verifying email if not done already(Using in registration time).
-                if($user->email_verified_at == null){
-                    $user->email_verified_at = now();
-                    $user->save();
-                }
-                $user->otp()->delete();
-                $data['token'] = $user->createToken(env('APP_NAME'))->plainTextToken;
-                $data['user'] = [
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'username' => $user->username,
-                    'phone' => $user->phone,
-                ];
-                return $this->sendResponse($data, 'User logged in successfully.');
-            }else{
-                return $this->sendError('Invalid OTP','The OTP is invalid. Please try again');
-            }
-        }catch (\Exception $e) {
-            DB::rollback();
-            return $this->sendError('Failed', $e);
-        }
-    }
-
-    /**
-     * Resending email OTP
-     */
-    /*
-    public function resendEmailOtp(Request $request)
-    {
-        $user = User::where('email', $request->email)->with('otp')->firstOrFail();
-        $data = [
-            'success' => true
-        ];
-        if ($user->hasVerifiedEmail()) {
-            return $this->sendResponse($data, 'Email already verified');
-        }
-        $this->sendEmailOtp($request);
-        return $this->sendResponse($data, 'User logged in successfully.');
-    }
- */
-    
     /**
      * Send the form for creating a new resource.
      */
@@ -198,7 +75,6 @@ class MembersController extends BaseController
         return $this->sendResponse($data);
     }
 
-
     /**
      * Send the form for creating a new resource.
      */
@@ -218,7 +94,7 @@ class MembersController extends BaseController
             return $this->sendError('Validation Error', $validator->errors(), 403);       
         }
         $input = $request->all();
-        $avatarName = 'av'.$user->id.'_'.time().'.jpg';
+        $avatarName = 'av'.$user->id.'_'.time().'.'.mime2ext($input['photo_mime']);
         Storage::put('public/images/'.$avatarName, base64_decode($input['photo']));
         $input['avatar'] = $avatarName;
         DB::beginTransaction();
@@ -305,8 +181,8 @@ class MembersController extends BaseController
                 $spouse_member = Member::create($spouse);
                 // Sending OTP
                 //Storing attachments
-                $spouse_avatarName = 'av'.$spouse_user->id.'_'.time().'.jpg';
-                Storage::put('public/images/'.$avatarName, base64_decode($input['spouse_photo']));
+                $spouse_avatarName = 'av'.$spouse_user->id.'_'.time().'.'.mime2ext($input['spouse_photo_mime']);
+                Storage::put('public/images/'.$spouse_avatarName, base64_decode($input['spouse_photo']));
                 // Spouse Member details
                 MemberDetail::updateOrCreate(
                     ['user_id' => $spouse_user->id],
@@ -399,18 +275,14 @@ class MembersController extends BaseController
         }
     }
 
-    public function uploadProof(Request $request){
+    public function uploadProof(Request $request)
+    {
         $user = Auth::user();
+        $existing_membership = Membership::where('user_id', $user->id)->first();
+        if(!$existing_membership){
+            return $this->sendError('Not allowed', 'You are not a member', 405); 
+        }
 
-        $existing_membership_data = Membership::where('user_id', $user->id)->first();
-        $existing_membership_request = MembershipRequest::where('user_id', $user->id)->latest()->first();
-        if($existing_membership_data){
-            return $this->sendError('Not allowed', 'You already a member', 405); 
-        }
-        if($existing_membership_request){
-            return $this->sendError('Already requested', 'Your membership '.strtolower($existing_membership_request->request_status->description), 405); 
-        }
-        
         $primaryMember = Member::where('user_id', $user->id)->first();
         $spouseUser = null;
         $spouseMember = null;
@@ -430,6 +302,15 @@ class MembersController extends BaseController
                 'spouse_photo_civil_id_back'     => ['required'],
                 'spouse_photo_passport_front'    => ['required'],
                 'spouse_photo_passport_back'     => ['required'],
+            ],[
+                'photo_civil_id_front.required'    => 'Required field',
+                'photo_civil_id_back.required'     => 'Required field',
+                'photo_passport_front.required'    => 'Required field',
+                'photo_passport_back.required'     => 'Required field',
+                'spouse_photo_civil_id_front.required'    => 'Required field',
+                'spouse_photo_civil_id_back.required'     => 'Required field',
+                'spouse_photo_passport_front.required'    => 'Required field',
+                'spouse_photo_passport_back.required'     => 'Required field',
             ]);
         }else{
             $validator = Validator::make($request->all(), [
@@ -437,6 +318,11 @@ class MembersController extends BaseController
                 'photo_civil_id_back'     => ['required'],
                 'photo_passport_front'    => ['required'],
                 'photo_passport_back'     => ['required']
+            ],[
+                'photo_civil_id_front.required'    => 'Required field',
+                'photo_civil_id_back.required'     => 'Required field',
+                'photo_passport_front.required'    => 'Required field',
+                'photo_passport_back.required'     => 'Required field'
             ]);
         }
         if($validator->fails()){
@@ -636,7 +522,5 @@ class MembersController extends BaseController
             $messages
         ];
     }
-
-
     
 }

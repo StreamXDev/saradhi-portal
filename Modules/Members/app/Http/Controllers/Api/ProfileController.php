@@ -3,9 +3,17 @@
 namespace Modules\Members\Http\Controllers\Api;
 
 use App\Http\Controllers\Api\BaseController;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Modules\Members\Models\Member;
+use Modules\Members\Models\MemberDetail;
+use Modules\Members\Models\Membership;
 use Modules\Members\Models\MembershipRequest;
 
 class ProfileController extends BaseController
@@ -46,5 +54,88 @@ class ProfileController extends BaseController
             'current_status' => $current_status,
         ];
         return $this->sendResponse($data);
+    }
+
+
+    public function updateProfile(Request $request)
+    {
+        $logged_user = Auth::user();
+        $logged_user_membership = Membership::where('user_id', $logged_user->id)->first();
+        if(!$logged_user_membership){
+            return $this->sendError('Not allowed', 'You are not a member', 405); 
+        }
+
+        $validator = Validator::make($request->all(), [
+            'profile_type'    => 'required',
+            'user_id'    => 'required',
+            'avatar'    => 'required',
+            'name'    => 'required|string',
+            'calling_code'    => 'required',
+            'phone'    => ['required', Rule::unique(User::class)],
+            'whatsapp_code'    => 'required',
+            'whatsapp'    => 'required|numeric',
+            'emergency_phone_code'    => 'required',
+            'emergency_phone'    => 'required|numeric',
+            'blood_group'    => 'required|string',
+            'dob'    => 'required|date_format:Y-m-d',
+            'civil_id'    => 'required|string',
+            'passport_no'    => 'required|string',
+            'passport_expiry'    => 'required|date_format:Y-m-d',
+            
+        ],[
+            'profile_type.required'    => 'Profile type is required',
+            'user_id.required'    => 'Required field',
+            'avatar.required'    => 'Photo is required',
+            'name.required'    => 'Name is required field',
+            'calling_code.required'    => 'Required field',
+            'phone.required'    => 'Phone is required',
+            'whatsapp_code.required'    => 'Required field',
+            'whatsapp.required'    => 'Whatsapp is required',
+            'emergency_phone_code.required'    => 'Required field',
+            'emergency_phone.required'    => 'Emergency No. is required',
+            'blood_group.required'    => 'Required field',
+            'dob.required'    => 'Required field',
+            'dob.date_format'    => 'Should be Y-m-d format',
+            'civil_id.required'    => 'Required field',
+            'passport_no.required'    => 'Required field',
+            'passport_expiry.required'    => 'Required field',
+            'passport_expiry.date_format'    => 'Should be Y-m-d format',
+        ]);
+        if($validator->fails()){
+            return $this->sendError('Validation Error', $validator->errors());       
+        }
+
+        $input = $request->all();
+        $member = Member::where('user_id', $input['user_id']->id)->first();
+        if($member && $member->active){
+            $user = User::where('id', $input['user_id'])->first();
+            $details = MemberDetail::where('user_id', $input['user_id']->id)->first();
+
+            $existing_avatar = $user->avatar;
+            $new_avatar = $input['avatar'];
+            
+            if($new_avatar !== $existing_avatar){
+                if(Storage::exists('public/images/'.$existing_avatar)){
+                    Storage::delete('public/images/'.$existing_avatar);
+                }
+                $avatarName = 'av'.$user->id.'_'.time().'.'.mime2ext($input['avatar_mime']);
+                Storage::put('public/images/'.$avatarName, base64_decode($input['avatar']));
+                $input['avatar'] = $avatarName;
+            }
+
+            $user->update(Arr::only($input, [
+                'name','avatar','calling_code','phone'
+            ]));
+            $member->update(Arr::only($input, [
+                'name', 'blood_group'
+            ]));
+            $details->update(Arr::only($input, [
+                'whatsapp_code', 'whatsapp', 'emergency_phone_code', 'emergency_phone', 'dob', 'civil_id', 'paci', 'passport_no', 'passport_expiry', 'company', 'profession', 'company_address', 'sndp_branch', 'sndp_branch_number', 'sndp_unit'
+            ]));
+
+            $this->showProfile();
+        }else{
+            return $this->sendError('Not allowed', 'Requested member ('.$input['name'].') does not found. Please try again', 405); 
+        }
     }
 }
