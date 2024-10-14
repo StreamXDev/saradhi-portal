@@ -109,7 +109,7 @@ class ProfileController extends BaseController
         $member = Member::where('user_id', $input['user_id'])->first();
         if($member && $member->active){
             $user = User::where('id', $input['user_id'])->first();
-            $details = MemberDetail::where('user_id', $input['user_id']->id)->first();
+            $details = MemberDetail::where('user_id', $input['user_id'])->first();
 
             $validator = Validator::make($request->all(), [
                 'phone' => 'required|unique:users,phone,'.$user->phone
