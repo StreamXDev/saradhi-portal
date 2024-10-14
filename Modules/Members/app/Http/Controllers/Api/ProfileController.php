@@ -29,8 +29,6 @@ class ProfileController extends BaseController
     public function updateProfile(Request $request)
     {
         $logged_user = Auth::user();
-        $ss = mime2ext($request->avatar_mime);
-        return $this->sendResponse(['data' => $ss]);
         $logged_user_membership = Membership::where('user_id', $logged_user->id)->first();
         if(!$logged_user_membership){
             return $this->sendError('Not allowed', 'You are not a member', 405); 
@@ -92,7 +90,7 @@ class ProfileController extends BaseController
             $existing_avatar = $user->avatar;
             $new_avatar = $input['avatar'];
             
-            if($new_avatar !== $existing_avatar){
+            if(isset($input['avatar_mime'])){ // if avatar_mime, the avatar file is new
                 if(Storage::exists('public/images/'.$existing_avatar)){
                     Storage::delete('public/images/'.$existing_avatar);
                 }
