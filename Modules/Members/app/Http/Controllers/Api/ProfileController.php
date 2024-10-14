@@ -90,7 +90,7 @@ class ProfileController extends BaseController
             $existing_avatar = $user->avatar;
             $new_avatar = $input['avatar'];
             
-            if(isset($input['avatar_mime'])){ // if avatar_mime, the avatar file is new
+            if(isset($input['avatar_mime']) && $input['avatar_mime']){ // if avatar_mime, the avatar file is new
                 if(Storage::exists('public/images/'.$existing_avatar)){
                     Storage::delete('public/images/'.$existing_avatar);
                 }
