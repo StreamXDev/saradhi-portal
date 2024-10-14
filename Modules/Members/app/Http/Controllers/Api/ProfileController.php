@@ -97,6 +97,8 @@ class ProfileController extends BaseController
                 $avatarName = 'av'.$user->id.'_'.time().'.'.mime2ext($input['avatar_mime']);
                 Storage::put('public/images/'.$avatarName, base64_decode($input['avatar']));
                 $input['avatar'] = $avatarName;
+            }else{
+                $input['avatar'] = basename($input['avatar']);
             }
 
             $user->update(Arr::only($input, [
