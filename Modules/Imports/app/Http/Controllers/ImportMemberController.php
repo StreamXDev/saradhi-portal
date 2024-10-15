@@ -83,28 +83,20 @@ class ImportMemberController extends Controller
                     }else{
                         // creating user
                         if($importedMember->email === 'shanoob.sekhar@gmail.com' || $importedMember->email === 'ajikr66@gmail.com' || $importedMember->email === 'dinukamal@hotmail.com'){
-                            $user = User::where('email', $importedMember->email)->first();
-                            $new_member = Member::where('user_id',$user->id)->first();
-                            $user_data = [
-                                'phone' => $importedMember->mobile,
-                                'calling_code' => $importedMember->calling_code,
-                            ];
-                            $member_data = [
-                                'type' => $importedMember->type->code,
-                                'gender' => $importedMember->gender->code,
-                                'blood_group' => $importedMember->details->blood_group->name,
-                                'active' => 1
-                            ];
+                            $user_toUpdate = User::where('email', $importedMember->email)->first();
+                            $new_member_toUpdate = Member::where('user_id',$user_toUpdate->id)->first();
                             User::where('email', $importedMember->email)->update([
                                 'phone' => $importedMember->mobile,
                                 'calling_code' => $importedMember->calling_code,
                             ]);
-                            Member::where('user_id',$user->id)->update([
+                            Member::where('user_id',$user_toUpdate->id)->update([
                                 'type' => $importedMember->type->code,
                                 'gender' => $importedMember->gender->code,
                                 'blood_group' => $importedMember->details->blood_group->name,
                                 'active' => 1
                             ]);
+                            $user = User::where('email', $importedMember->email)->first();
+                            $new_member = Member::where('user_id',$user_toUpdate->id)->first();
                         }else{
                             $user_data = [
                                 'name' => ucwords($importedMember->name),
