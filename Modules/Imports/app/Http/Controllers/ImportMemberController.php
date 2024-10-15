@@ -246,7 +246,7 @@ class ImportMemberController extends Controller
                 }else{
                     // create dependent
                     $mid = $importedMember->membership->mid;
-                    $existing_members_with_mid = Membership::with('member')->where('mid', $mid)->get();
+                    $existing_members_with_mid = Membership::with('member')->where('mid', $mid)->orderBy('member.id', 'asc')->get();
                     $primary_member = null;
                     foreach($existing_members_with_mid as $existing_membership){
                         if($existing_membership->member->type == 'primary'){
