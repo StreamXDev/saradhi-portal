@@ -36,6 +36,13 @@ class MemberRelation extends Model
         return $this->hasOne(Member::class, 'id', 'related_member_id');
     }
 
+    public function relatedDependent(): HasOne
+    {
+        return $this->hasOne(MemberDependent::class, 'id', 'related_dependent_id');
+    }
+
+
+
     public function relatedTo(): HasOne
     {
         return $this->hasOne(Member::class, 'id', 'related_member_id');

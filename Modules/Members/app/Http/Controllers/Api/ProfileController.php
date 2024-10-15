@@ -122,7 +122,7 @@ class ProfileController extends BaseController
     protected function getProfileData()
     {
         $user = Auth::user();
-        $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'relations.relatedMember.user', 'relations.relatedMember.membership', 'relations.relatedMember.details', 'requests', 'committees', 'trustee'])->where('user_id' , $user->id)->first();
+        $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'relations.relatedMember.user', 'relations.relatedMember.membership', 'relations.relatedMember.details', 'relations.relatedDependent', 'requests', 'committees', 'trustee'])->where('user_id' , $user->id)->first();
         $statuses = requestStatusDisplay($user->id);
         $current_status = MembershipRequest::where('user_id', $user->id)->latest('id')->first();
         $pending_approval = $current_status && $current_status->request_status->slug === 'confirmed' ? false : true;
@@ -132,17 +132,22 @@ class ProfileController extends BaseController
         $member->membership->qrCode = 'data:image/png;base64, ' . base64_encode($idQr);
         $member->user->avatar = url('storage/images/'. $member->user->avatar);
 
-        /*
+        
         if($member->relations){
             foreach($member->relations as $key => $relative){
-                $member->relations[$key]->relatedMember->user->avatar = url('storage/images/'. $member->relations[$key]->relatedMember->user->avatar);
-                if($relative->relatedMember->active){
-                    $spouseIdQr = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->relations[$key]->relatedMember->name,  'Membership ID' => $member->relations[$key]->relatedMember->membership->mid, 'Civil ID' => $member->relations[$key]->relatedMember->details->civil_id]));
-                    $member->relations[$key]->relatedMember->membership->qrCode = 'data:image/png;base64, ' . base64_encode($spouseIdQr);
+                if($relative->related_member_id){
+                    $member->relations[$key]->relatedMember->user->avatar = url('storage/images/'. $member->relations[$key]->relatedMember->user->avatar);
+                    if($relative->relatedMember->active){
+                        $spouseIdQr = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->relations[$key]->relatedMember->name,  'Membership ID' => $member->relations[$key]->relatedMember->membership->mid, 'Civil ID' => $member->relations[$key]->relatedMember->details->civil_id]));
+                        $member->relations[$key]->relatedMember->membership->qrCode = 'data:image/png;base64, ' . base64_encode($spouseIdQr);
+                    }
+                }else if($relative->related_dependent_id){
+                    $member->relations[$key]->relatedDependent->avatar = url('storage/images/'. $member->relations[$key]->relatedDependent->avatar);
                 }
+                
             }
         }
-        */
+        
         
         $data = [
             'member' => $member,
