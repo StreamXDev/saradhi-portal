@@ -32,7 +32,7 @@
                 <div class="item">
                     <div class="relationship">{{ $relation->relationship->name }}</div>
                     <div class="details">
-                        <!-- <a href="/admin/members/member/view/{{ //$relation->relatedTo->user_id }}" class="col name">{{ //$relation->relatedTo->name }}</span></a> -->
+                        <!-- <a href="/admin/members/member/view///$relation->relatedTo->user_id }}" class="col name"> //$relation->relatedTo->name }}</span></a> -->
                     </div>
                 </div>
                 @empty
