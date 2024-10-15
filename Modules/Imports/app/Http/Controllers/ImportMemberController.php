@@ -74,7 +74,7 @@ class ImportMemberController extends Controller
                     // ----------------- Creating User ------------------- //
                     // Checking User exists
                     $user_exists = User::where('email', $importedMember->email)->first();
-                    if($user_exists){
+                    if($user_exists && $user_exists->email !== 'shanoob.sekhar@gmail.com' || $user_exists->email === 'ajikr66@gmail.com' || $user_exists->email === 'dinukamal@hotmail.com'){
                         $remark = 'The email already used for: '.$user_exists->name.'('.$user_exists->id.')';
                     }else{
                         // creating user
