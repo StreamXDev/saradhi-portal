@@ -86,7 +86,7 @@ class ImportMemberController extends Controller
                             $user = User::where('email', 'shanoob.sekhar@gmail.com')->first();
                             $new_member = Member::where('user_id',$user->id)->first();
                             $user_data = [
-                                'phone' => str_pad(mt_rand(1,99999999),8,'0',STR_PAD_LEFT),
+                                'phone' => $importedMember->mobile,
                                 'calling_code' => $importedMember->calling_code,
                             ];
                             $member_data = [
@@ -95,8 +95,16 @@ class ImportMemberController extends Controller
                                 'blood_group' => $importedMember->details->blood_group->name,
                                 'active' => 1
                             ];
-                            $user->update($user_data);
-                            $new_member->update($user_data);
+                            User::where('email', $importedMember->email)->update([
+                                'phone' => $importedMember->mobile,
+                                'calling_code' => $importedMember->calling_code,
+                            ]);
+                            Member::where('user_id',$user->id)->update([
+                                'type' => $importedMember->type->code,
+                                'gender' => $importedMember->gender->code,
+                                'blood_group' => $importedMember->details->blood_group->name,
+                                'active' => 1
+                            ]);
                         }else{
                             $user_data = [
                                 'name' => ucwords($importedMember->name),
