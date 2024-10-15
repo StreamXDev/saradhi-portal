@@ -83,8 +83,8 @@ class ImportMemberController extends Controller
                     }else{
                         // creating user
                         if($importedMember->email === 'shanoob.sekhar@gmail.com' || $importedMember->email === 'ajikr66@gmail.com' || $importedMember->email === 'dinukamal@hotmail.com'){
-                            $superadmin = User::where('email', 'shanoob.sekhar@gmail.com')->first();
-                            $superMember = Member::where('user_id',$superadmin->id)->first();
+                            $user = User::where('email', 'shanoob.sekhar@gmail.com')->first();
+                            $new_member = Member::where('user_id',$user->id)->first();
                             $user_data = [
                                 'phone' => str_pad(mt_rand(1,99999999),8,'0',STR_PAD_LEFT),
                                 'calling_code' => $importedMember->calling_code,
@@ -95,8 +95,8 @@ class ImportMemberController extends Controller
                                 'blood_group' => $importedMember->details->blood_group->name,
                                 'active' => 1
                             ];
-                            $superadmin->update($user_data);
-                            $superMember->update($user_data);
+                            $user->update($user_data);
+                            $new_member->update($user_data);
                         }else{
                             $user_data = [
                                 'name' => ucwords($importedMember->name),
