@@ -78,7 +78,7 @@ class ImportMemberController extends Controller
                         $remark = 'The email already used for: '.$user_exists->name.'('.$user_exists->id.')';
                     }else{
                         // creating user
-                        if($importedMember->email === 'shanoob.sekhar@gmail.com'){
+                        if($importedMember->email === 'shanoob.sekhar@gmail.com' || $importedMember->email === 'ajikr66@gmail.com' || $importedMember->email === 'dinukamal@hotmail.com'){
                             $superadmin = User::where('email', 'shanoob.sekhar@gmail.com')->first();
                             $superMember = Member::where('user_id',$superadmin->id)->first();
                             $user_data = [
@@ -210,7 +210,8 @@ class ImportMemberController extends Controller
                             //$parent_primary_member = Import::where('membership_id', $new_member_membership_id)->where('type','primary')->first();
                             //$parent_mid =  $parent_primary_member->mid;
                             $mid = $new_membership->mid;
-                            $existing_members_with_mid = Membership::with('member')->where('mid', $mid)->orderBy('member.id', 'asc')->get();
+                            $existing_members_with_mid = Membership::with('member')->where('mid', $mid)->get();
+
                             foreach($existing_members_with_mid as $existing_membership){
                                 // check relation if added already
                                 $existing_relation_against_member_id = MemberRelation::where('member_id', $existing_membership->member->id)->where('related_member_id', $new_member->id)->first();
@@ -246,7 +247,7 @@ class ImportMemberController extends Controller
                 }else{
                     // create dependent
                     $mid = $importedMember->membership->mid;
-                    $existing_members_with_mid = Membership::with('member')->where('mid', $mid)->orderBy('member.id', 'asc')->get();
+                    $existing_members_with_mid = Membership::with('member')->where('mid', $mid)->get();
                     $primary_member = null;
                     foreach($existing_members_with_mid as $existing_membership){
                         if($existing_membership->member->type == 'primary'){
