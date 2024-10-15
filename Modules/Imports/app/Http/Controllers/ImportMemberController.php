@@ -83,7 +83,7 @@ class ImportMemberController extends Controller
                     }else{
                         // creating user
                         if($importedMember->email === 'shanoob.sekhar@gmail.com' || $importedMember->email === 'ajikr66@gmail.com' || $importedMember->email === 'dinukamal@hotmail.com'){
-                            $user = User::where('email', 'shanoob.sekhar@gmail.com')->first();
+                            $user = User::where('email', $importedMember->email)->first();
                             $new_member = Member::where('user_id',$user->id)->first();
                             $user_data = [
                                 'phone' => $importedMember->mobile,
