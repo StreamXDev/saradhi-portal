@@ -210,7 +210,7 @@ class ImportMemberController extends Controller
                             //$parent_primary_member = Import::where('membership_id', $new_member_membership_id)->where('type','primary')->first();
                             //$parent_mid =  $parent_primary_member->mid;
                             $mid = $new_membership->mid;
-                            $existing_members_with_mid = Membership::with('member')->where('mid', $mid)->get();
+                            $existing_members_with_mid = Membership::with('member')->where('mid', $mid)->orderBy('member.id', 'asc')->get();
                             foreach($existing_members_with_mid as $existing_membership){
                                 // check relation if added already
                                 $existing_relation_against_member_id = MemberRelation::where('member_id', $existing_membership->member->id)->where('related_member_id', $new_member->id)->first();
