@@ -148,14 +148,6 @@ class ImportMemberController extends Controller
                         ];
                         MemberDetail::create($memberDetails_data);
 
-                        // Adding local Addresses
-                        $indian_address = false;
-                        foreach ($importedMember->addresses as $key => $address) {
-                            if ($address->type->code === 'indian') {
-                                $indian_address = true;
-                            }
-                        }
-
                         foreach($importedMember->addresses as $address){
                             if($address->type->code == 'local'){
                                 $local_address_data = [
@@ -173,22 +165,21 @@ class ImportMemberController extends Controller
                         // Adding Indian Addresses
                         foreach($importedMember->addresses as $address){
                             if($address->type->code == 'indian'){
-                                if($indian_address){
-                                    $permanent_address_data = [
-                                        'user_id' => $user->id,
-                                        'line_1' => $address->address_1,
-                                        'line_2' => $address->address_2,
-                                        'city' => $address->city,
-                                        'country' => $address->country->name,
-                                        'region' => $address->region->name,
-                                        'zip' => $address->zip
-                                    ];
-                                }else{
-                                    $permanent_address_data = [
-                                        'user_id' => $user->id,
-                                        'line_1' => $address->address_1,
-                                    ];
-                                }
+                                $permanent_address_data = [
+                                    'user_id' => $user->id,
+                                    'line_1' => $address->address_1,
+                                    'line_2' => $address->address_2,
+                                    'city' => $address->city,
+                                    'country' => $address->country->name,
+                                    'region' => $address->region->name,
+                                    'zip' => $address->zip
+                                ];
+                                MemberPermanentAddress::create($permanent_address_data);
+                            }else{
+                                $permanent_address_data = [
+                                    'user_id' => $user->id,
+                                    'line_1' => $address->address_1,
+                                ];
                                 MemberPermanentAddress::create($permanent_address_data);
                             }
                         }
