@@ -28,7 +28,7 @@
                 <tbody>
                     @foreach ($members as $key => $member)    
                     <tr>
-                        <td>{{ $members->firstItem() + $key }}</td>
+                        <td>{{ $members->total() - $members->firstItem() - $key + 1 }}</td>
                         <td>
                             <div style="width:50px; height:50px; border-radius:50%; display:block; overflow:hidden">
                                 @if($member->user->avatar)
