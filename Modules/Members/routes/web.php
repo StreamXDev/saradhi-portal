@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\admin\DashboardController;
 use Illuminate\Support\Facades\Route;
+use Modules\Members\Http\Controllers\Admin\CommitteeController;
 use Modules\Members\Http\Controllers\Admin\MemberController;
 use Modules\Members\Http\Controllers\Admin\MembershipController;
 use Modules\Members\Http\Controllers\MembersController;
@@ -64,5 +65,12 @@ Route::prefix('admin/members')->middleware(['auth:sanctum', 'verified_email', 'i
         Route::get('/member/pdf/{id}', 'generatePDF');
         Route::get('/member/excel/{id}', 'generateExcel');
         Route::post('/member/update', 'update')->name('admin.member.update');
+    });
+});
+
+Route::prefix('admin/committee')->middleware(['auth:sanctum', 'verified_email', 'is_admin'])->group(function() {
+    Route::controller(CommitteeController::class)->group(function(){
+        Route::get('/', 'index');
+        Route::get('/create', 'create');
     });
 });

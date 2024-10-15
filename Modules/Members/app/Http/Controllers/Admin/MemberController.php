@@ -7,12 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Country;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use Modules\Members\Models\Member;
 use Modules\Members\Models\MemberDetail;
@@ -23,6 +20,7 @@ use Modules\Members\Models\Membership;
 use Modules\Members\Models\MembershipRequest;
 use Modules\Members\Models\MemberUnit;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+
 class MemberController extends Controller
 {
     /**

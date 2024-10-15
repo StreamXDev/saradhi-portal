@@ -83,13 +83,13 @@ class ImportMemberController extends Controller
                         // creating user
                         if($importedMember->email === 'shanoob.sekhar@gmail.com' || $importedMember->email === 'ajikr66@gmail.com' || $importedMember->email === 'dinukamal@hotmail.com' || $importedMember->email === 'jayanssivan@gmail.com'){
                             $user_toUpdate = User::where('email', $importedMember->email)->first();
-                            $new_member_toUpdate = Member::where('user_id',$user_toUpdate->id)->first();
                             User::where('email', $importedMember->email)->update([
-                                'name' => ucwords($importedMember->name),
+                                'name' => ucwords(strtolower($importedMember->name)),
                                 'phone' => $importedMember->mobile,
                                 'calling_code' => $importedMember->calling_code,
                             ]);
                             Member::where('user_id',$user_toUpdate->id)->update([
+                                'name' => ucwords(strtolower($importedMember->name)),
                                 'type' => $importedMember->type->code,
                                 'gender' => $importedMember->gender->code,
                                 'blood_group' => $importedMember->details->blood_group->name,
@@ -99,7 +99,7 @@ class ImportMemberController extends Controller
                             $new_member = Member::where('user_id',$user_toUpdate->id)->first();
                         }else{
                             $user_data = [
-                                'name' => ucwords($importedMember->name),
+                                'name' => ucwords(strtolower($importedMember->name)),
                                 'email' => $importedMember->email,
                                 'password' => Hash::make(Str::random(10)),
                                 'phone' => str_pad(mt_rand(1,99999999),8,'0',STR_PAD_LEFT),
@@ -112,7 +112,7 @@ class ImportMemberController extends Controller
                             $member_data = [
                                 'user_id' => $user->id,
                                 'type' => $importedMember->type->code,
-                                'name' => $importedMember->name,
+                                'name' => ucwords(strtolower($importedMember->name)),
                                 'gender' => $importedMember->gender->code,
                                 'blood_group' => $importedMember->details->blood_group->name,
                                 'active' => 1

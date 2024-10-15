@@ -263,6 +263,9 @@ a{
     }
 }
 .page-title{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     .title{
         font-size: 1.2rem;
         font-weight: 600;

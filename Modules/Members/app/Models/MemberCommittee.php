@@ -5,6 +5,7 @@ namespace Modules\Members\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class MemberCommittee extends Model
 {
@@ -19,9 +20,9 @@ class MemberCommittee extends Model
         'active'
     ];
 
-    public function units(): BelongsTo
+    public function unit(): HasOne
     {
-        return $this->belongsTo(MemberUnit::class)->select('id', 'code', 'name');
+        return $this->hasOne(MemberUnit::class, 'id' , 'member_unit_id');
     }
     
     public function committee_type(): BelongsTo
