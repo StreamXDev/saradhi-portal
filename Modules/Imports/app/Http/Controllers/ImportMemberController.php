@@ -56,9 +56,9 @@ class ImportMemberController extends Controller
         $last_exported  = Export::select('membership_id')->latest()->first();
 
         if($last_exported){
-            $importedMemberships = ImportMembership::with('primary_member', 'type', 'status', 'members', 'members.details', 'members.contacts', 'members.addresses', 'members.addresses.country', 'members.addresses.region', 'members.type', 'members.gender', 'members.membership', 'members.membership.unit', 'members.trustee')->where('id', '>', $last_exported->membership_id)->limit(1)->get();
+            $importedMemberships = ImportMembership::with('primary_member', 'type', 'status', 'members', 'members.details', 'members.contacts', 'members.addresses', 'members.addresses.country', 'members.addresses.region', 'members.type', 'members.gender', 'members.membership', 'members.membership.unit', 'members.trustee')->where('id', '>', $last_exported->membership_id)->limit(10)->get();
         }else{
-            $importedMemberships = ImportMembership::with('primary_member', 'type', 'status', 'members', 'members.details', 'members.contacts', 'members.addresses', 'members.addresses.country', 'members.addresses.region', 'members.type', 'members.gender', 'members.membership', 'members.membership.unit', 'members.trustee')->limit(1)->get();
+            $importedMemberships = ImportMembership::with('primary_member', 'type', 'status', 'members', 'members.details', 'members.contacts', 'members.addresses', 'members.addresses.country', 'members.addresses.region', 'members.type', 'members.gender', 'members.membership', 'members.membership.unit', 'members.trustee')->limit(10)->get();
         }
         
         //dd($importedMemberships);
@@ -86,6 +86,7 @@ class ImportMemberController extends Controller
                             $user_toUpdate = User::where('email', $importedMember->email)->first();
                             $new_member_toUpdate = Member::where('user_id',$user_toUpdate->id)->first();
                             User::where('email', $importedMember->email)->update([
+                                'name' => ucwords($importedMember->name),
                                 'phone' => $importedMember->mobile,
                                 'calling_code' => $importedMember->calling_code,
                             ]);
