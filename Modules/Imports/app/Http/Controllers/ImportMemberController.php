@@ -21,6 +21,7 @@ use Modules\Members\Models\MemberRelation;
 use Modules\Members\Models\Membership;
 use Modules\Members\Models\MemberTrustee;
 use Modules\Members\Models\MemberUnit;
+use stdClass;
 
 class ImportMemberController extends Controller
 {
@@ -29,7 +30,24 @@ class ImportMemberController extends Controller
      */
     public function index()
     {
-        return view('imports::index');
+        
+        $members = Import::with('user')->orderBy('id','desc')->paginate(25);
+        foreach($members as $key => $member){
+            if($member->user === null){
+                $dependent = MemberDependent::where('id', $member->dependent_id)->first();
+                $user = new stdClass();
+                $user->avatar = $dependent->avatar;
+                $user->name = $dependent->name;
+                $user->email = $dependent->email;
+                
+                $members[$key]['user'] = $user ;
+                $members[$key]['mid'] = $dependent->parent_mid;
+                $members[$key]['parent_user_id'] = $dependent->parent_user_id;
+                $members[$key]['dependent'] = $dependent;
+            }
+        }
+        //dd($members);
+        return view('imports::index', compact('members'));
     }
 
 
@@ -38,9 +56,9 @@ class ImportMemberController extends Controller
         $last_exported  = Export::select('membership_id')->latest()->first();
 
         if($last_exported){
-            $importedMemberships = ImportMembership::with('primary_member', 'type', 'status', 'members', 'members.details', 'members.contacts', 'members.addresses', 'members.addresses.country', 'members.addresses.region', 'members.type', 'members.gender', 'members.membership', 'members.membership.unit', 'members.trustee')->where('id', '>', $last_exported->membership_id)->limit(1)->get();
+            $importedMemberships = ImportMembership::with('primary_member', 'type', 'status', 'members', 'members.details', 'members.contacts', 'members.addresses', 'members.addresses.country', 'members.addresses.region', 'members.type', 'members.gender', 'members.membership', 'members.membership.unit', 'members.trustee')->where('id', '>', $last_exported->membership_id)->limit(20)->get();
         }else{
-            $importedMemberships = ImportMembership::with('primary_member', 'type', 'status', 'members', 'members.details', 'members.contacts', 'members.addresses', 'members.addresses.country', 'members.addresses.region', 'members.type', 'members.gender', 'members.membership', 'members.membership.unit', 'members.trustee')->limit(1)->get();
+            $importedMemberships = ImportMembership::with('primary_member', 'type', 'status', 'members', 'members.details', 'members.contacts', 'members.addresses', 'members.addresses.country', 'members.addresses.region', 'members.type', 'members.gender', 'members.membership', 'members.membership.unit', 'members.trustee')->limit(20)->get();
         }
         
         //dd($importedMemberships);
@@ -51,6 +69,7 @@ class ImportMemberController extends Controller
                 $remark = null;
 
                 DB::beginTransaction();
+                $relation_types = MemberEnum::where('type', 'relationship')->get()->toArray();
                 if($importedMember->sub_id == null){ //If the member is not a child
                     // ----------------- Creating User ------------------- //
                     // Checking User exists
@@ -59,45 +78,62 @@ class ImportMemberController extends Controller
                         $remark = 'The email already used for: '.$user_exists->name.'('.$user_exists->id.')';
                     }else{
                         // creating user
-                        $user_data = [
-                            'name' => $importedMember->name,
-                            'email' => $importedMember->email,
-                            'password' => Hash::make(Str::random(10)),
-                            'phone' => $importedMember->mobile,
-                            'calling_code' => $importedMember->calling_code,
-                            'email_verified_at' => now()
-                        ];
-                        $user = User::create($user_data);
-                        $user->assignRole(['Member']);
+                        if($importedMember->email === 'shanoob.sekhar@gmail.com'){
+                            $superadmin = User::where('email', 'shanoob.sekhar@gmail.com')->first();
+                            $superMember = Member::where('user_id',$superadmin->id)->first();
+                            $user_data = [
+                                'phone' => str_pad(mt_rand(1,99999999),8,'0',STR_PAD_LEFT),
+                                'calling_code' => $importedMember->calling_code,
+                            ];
+                            $member_data = [
+                                'type' => $importedMember->type->code,
+                                'gender' => $importedMember->gender->code,
+                                'blood_group' => $importedMember->details->blood_group->name,
+                                'active' => 1
+                            ];
+                            $superadmin->update($user_data);
+                            $superMember->update($user_data);
+                        }else{
+                            $user_data = [
+                                'name' => $importedMember->name,
+                                'email' => $importedMember->email,
+                                'password' => Hash::make(Str::random(10)),
+                                'phone' => str_pad(mt_rand(1,99999999),8,'0',STR_PAD_LEFT),
+                                'calling_code' => $importedMember->calling_code,
+                                'email_verified_at' => now()
+                            ];
+                            $user = User::create($user_data);
+                            $user->assignRole(['Member']);
+                            // Adding Member
+                            $member_data = [
+                                'user_id' => $user->id,
+                                'type' => $importedMember->type->code,
+                                'name' => $importedMember->name,
+                                'gender' => $importedMember->gender->code,
+                                'blood_group' => $importedMember->details->blood_group->name,
+                                'active' => 1
+                            ];
+                            $new_member = Member::create($member_data);
+                        }
+                        
 
                         // adding avatar
                         if($importedMember->details->photo){
-                            $avatar = 'av'.$user->id.'_'.time().'.jpg';
+                            $avatar = 'av'.$user->id.'_'.time().'.'.mime2ext($importedMember->details->photo_mime);
                             Storage::put('public/images/'.$avatar, base64_decode($importedMember->details->photo));
                             User::where('id', $user->id)->update([
                                 'avatar' => $avatar,
                             ]);
                         }
-
-                        // Adding Member
-                        $member_data = [
-                            'user_id' => $user->id,
-                            'type' => $importedMember->type->code,
-                            'name' => $importedMember->name,
-                            'gender' => $importedMember->gender->code,
-                            'blood_group' => $importedMember->details->blood_group->name,
-                            'active' => 1
-                        ];
-                        $new_member = Member::create($member_data);
-
                         // Adding member details
                         $unit = null;
                         if($importedMember->membership->unit){
                             $unit = MemberUnit::where('slug', $importedMember->membership->unit->code)->first();
+                            
                         }
                         $memberDetails_data = [
                             'user_id' => $user->id,
-                            'member_unit_id' => $unit->id,
+                            'member_unit_id' => isset($unit) ? $unit->id : 1,
                             'civil_id' => $importedMember->civil_id,
                             'dob' => $importedMember->details->dob,
                             'company' => $importedMember->details->company,
@@ -166,21 +202,53 @@ class ImportMemberController extends Controller
                         }
 
                         // Adding relationship
-                        $this->add_relationship($new_member, $new_membership);
+                        //$this->add_relationship($new_member, $new_membership);
+                        
+                        /*---------------------------------------------------------- Relationship ----------------------------------- */
+                        if($new_member->type !== 'primary'){
+                            //$new_member_membership_id = $importedMember->membership_id;
+                            //$parent_primary_member = Import::where('membership_id', $new_member_membership_id)->where('type','primary')->first();
+                            //$parent_mid =  $parent_primary_member->mid;
+                            $mid = $new_membership->mid;
+                            $existing_members_with_mid = Membership::with('member')->where('mid', $mid)->get();
+                            foreach($existing_members_with_mid as $existing_membership){
+                                // check relation if added already
+                                $existing_relation_against_member_id = MemberRelation::where('member_id', $existing_membership->member->id)->where('related_member_id', $new_member->id)->first();
+                                if(!$existing_relation_against_member_id){
+                                    $relationship_id = $this->get_relationship_id($new_member, $relation_types, $existing_membership);
+                                    if($existing_membership->member->id !== $new_member->id){
+                                        MemberRelation::create([
+                                            'member_id' => $existing_membership->member->id,
+                                            'related_member_id' => $new_member->id,
+                                            'relationship_id' => $relationship_id['first_relation']
+                                        ]);
+                                        MemberRelation::create([
+                                            'member_id' => $new_member->id,
+                                            'related_member_id' => $existing_membership->member->id,
+                                            'relationship_id' => $relationship_id['second_relation']
+                                        ]);
+                                    }
+                                }
+                            }
+                        }
+                        /*---------------------------------------------------------- Relationship ----------------------------------- */
 
                         $exported = true;
                         // adding status to imports table
                         Import::create([
                             'user_id' => $user->id,
                             'imported' => 1,
+                            'mid' => $importedMember->membership->mid,
+                            'membership_id' => $importedMember->membership_id,
+                            'type' => $importedMember->type->code,
                         ]);
                     }
                 }else{
                     // create dependent
                     $mid = $importedMember->membership->mid;
-                    $existing_member_with_mid = Membership::with('member')->where('mid', $mid)->get();
+                    $existing_members_with_mid = Membership::with('member')->where('mid', $mid)->get();
                     $primary_member = null;
-                    foreach($existing_member_with_mid as $existing_membership){
+                    foreach($existing_members_with_mid as $existing_membership){
                         if($existing_membership->member->type == 'primary'){
                             $primary_member = $existing_membership;
                         }
@@ -203,7 +271,7 @@ class ImportMemberController extends Controller
                     $dependent = MemberDependent::create($dependent_data);
                     // adding avatar
                     if($importedMember->details->photo){
-                        $avatar = 'av'.$dependent->id.'_'.time().'.jpg';
+                        $avatar = 'av'.$dependent->id.'_'.time().'.'.mime2ext($importedMember->details->photo_mime);
                         Storage::put('public/images/'.$avatar, base64_decode($importedMember->details->photo));
                         MemberDependent::where('id', $dependent->id)->update([
                             'avatar' => $avatar,
@@ -211,20 +279,73 @@ class ImportMemberController extends Controller
                     }
 
                     // adding relationship
-                    $this->add_relationship(false, false, $dependent);
+                    //$this->add_relationship(false, false, $dependent);
+                    /*---------------------------------------------------------- Relationship ----------------------------------- */
+                    $existing_members_with_mid = Membership::with('member')->where('mid', $dependent->parent_mid)->get();
+                    foreach($existing_members_with_mid as $existing_membership){
+                        $existing_relation_against_member_id = MemberRelation::where('member_id', $existing_membership->member->id)->where('related_dependent_id', $dependent->id)->first();
+                        
+                        if(!$existing_relation_against_member_id){
+                            $relationship_id = $this->get_relationship_id($dependent, $relation_types, $existing_membership);
+                            
+                            // if both are siblings, setting ids to dependent and related dependent columns
+                            MemberRelation::create([
+                                'member_id' => $existing_membership->member->id,
+                                'related_dependent_id' => $dependent->id,
+                                'relationship_id' => $relationship_id['first_relation']
+                            ]);
+                            MemberRelation::create([
+                                'dependent_id' => $dependent->id,
+                                'related_member_id' => $existing_membership->member->id,
+                                'relationship_id' => $relationship_id['second_relation']
+                            ]);
+                        }
+                    }
+
+                    $existing_dependent_with_mid = MemberDependent::where('parent_mid', $dependent->parent_mid)->get();
+                    if($existing_dependent_with_mid){
+                        foreach($existing_dependent_with_mid as $existing_dependent){
+                            $existing_relation_against_dependent_id = MemberRelation::where('dependent_id', $existing_dependent->id)->where('related_dependent_id', $dependent->id)->first();
+                            
+                            if(!$existing_relation_against_dependent_id){
+                                //$existing_membership->member->type
+                                $existing_dependent_type = array('member' => array('type' => 'child')); // hack for the 'get_relationship_id' function
+                                $relationship_id = $this->get_relationship_id($dependent, $relation_types, $existing_dependent, true);
+                                if($existing_dependent->id !== $dependent->id){
+                                    // if both are siblings, setting ids to dependent and related dependent columns
+                                    MemberRelation::create([
+                                        'dependent_id' => $existing_dependent->id,
+                                        'related_dependent_id' => $dependent->id,
+                                        'relationship_id' => $relationship_id['first_relation']
+                                    ]);
+                                    MemberRelation::create([
+                                        'dependent_id' => $dependent->id,
+                                        'related_dependent_id' => $existing_dependent->id,
+                                        'relationship_id' => $relationship_id['second_relation']
+                                    ]);
+                                }
+                            }
+                        }
+                    }
+                    /*---------------------------------------------------------- Relationship ----------------------------------- */
 
                     // adding status to imports table
                     Import::create([
                         'dependent_id' => $dependent->id,
                         'imported' => 1,
+                        'mid' => $importedMember->membership->mid,
+                        'membership_id' => $importedMember->membership_id,
+                        'type' => $importedMember->type->code,
                     ]);
 
 
                 }
-    
+                
                 Export::create([
-                    'mid' => $importedMember->id,
+                    'member_id' => $importedMember->id,
+                    'mid' => $importedMember->membership->mid,
                     'membership_id' => $importedMember->membership_id,
+                    'type' => $importedMember->type->code,
                     'name' => $importedMember->name,
                     'exported' => $exported,
                     'remark' => $remark
@@ -233,8 +354,8 @@ class ImportMemberController extends Controller
                 DB::commit();
             }
         }
-
-        return view('imports::index');
+        return redirect('/admin/import');
+        //return view('imports::index');
         
     }
 
@@ -294,6 +415,7 @@ class ImportMemberController extends Controller
             if($new_member->type !== 'primary'){
                 $mid = $new_membership->mid;
                 $existing_members_with_mid = Membership::with('member')->where('mid', $mid)->get();
+                dd($existing_members_with_mid);
                 foreach($existing_members_with_mid as $existing_membership){
                     // check relation if added already
                     $existing_relation_against_member_id = MemberRelation::where('member_id', $existing_membership->member->id)->where('related_member_id', $new_member->id);
@@ -317,18 +439,22 @@ class ImportMemberController extends Controller
         }
     }
 
-    protected function get_relationship_id($new_member, $relation_types, $existing_membership){
+    protected function get_relationship_id($new_member, $relation_types, $existing_membership, $dependent = false){
         $relationship_id = [];
         switch ($new_member->type){
             case 'spouse':
                 $relationship_id['first_relation'] = $relationship_id['second_relation'] = $relation_types[array_search('spouse', array_column($relation_types, 'slug'))]['id'];
                 break;
             case 'child':
-                if($existing_membership->member->type === 'child'){
-                    $relationship_id['first_relation'] = $relationship_id['second_relation'] = $relation_types[array_search('sibling', array_column($relation_types, 'slug'))]['id'];
-                }else if($existing_membership->member->type === 'primary' || $existing_membership->member->type === 'spouse'){
-                    $relationship_id['first_relation'] = $relation_types[array_search('parent', array_column($relation_types, 'slug'))]['id'];
-                    $relationship_id['second_relation'] = $relation_types[array_search('child', array_column($relation_types, 'slug'))]['id'];
+                if($dependent){
+                    if($existing_membership->type === 'child'){
+                        $relationship_id['first_relation'] = $relationship_id['second_relation'] = $relation_types[array_search('sibling', array_column($relation_types, 'slug'))]['id'];
+                    }
+                }else{
+                    if($existing_membership->member->type === 'primary' || $existing_membership->member->type === 'spouse'){
+                        $relationship_id['first_relation'] = $relation_types[array_search('parent', array_column($relation_types, 'slug'))]['id'];
+                        $relationship_id['second_relation'] = $relation_types[array_search('child', array_column($relation_types, 'slug'))]['id'];
+                    }
                 }
                 break;
         }

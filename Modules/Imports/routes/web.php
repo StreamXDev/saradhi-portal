@@ -16,6 +16,7 @@ use Modules\Imports\Http\Controllers\ImportMemberController;
 
 Route::prefix('admin/import')->middleware(['auth:sanctum', 'verified_email', 'is_admin'])->group(function() {
     Route::controller(ImportMemberController::class)->group(function(){
-        Route::get('/', 'import')->name('admin.import');
+        Route::get('/', 'index')->name('admin.import');
+        Route::get('do', 'import')->name('admin.do');
     });
 });

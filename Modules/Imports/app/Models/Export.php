@@ -11,6 +11,6 @@ class Export extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = ['mid', 'membership_id', 'name', 'exported', 'remark'];
+    protected $fillable = ['mid', 'member_id', 'membership_id', 'type', 'name', 'exported', 'remark'];
 
 }

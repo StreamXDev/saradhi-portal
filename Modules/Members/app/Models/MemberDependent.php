@@ -13,6 +13,8 @@ class MemberDependent extends Model
      */
     protected $fillable = [
         'parent_user_id',
+        'parent_mid',
+        'type',
         'name',
         'email',
         'calling_code',

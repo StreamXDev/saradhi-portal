@@ -30,10 +30,7 @@ class MemberController extends Controller
      */
     public function index()
     {
-        $members = Member::with(['details', 'user'])->where('active', 1)->paginate(20);
-        $sortedResult = $members->getCollection()->sortByDesc('id')->values();
-        $members->setCollection($sortedResult);
-        //dd($members);
+        $members = Member::with(['details', 'user'])->where('active', 1)->orderBy('id','asc')->paginate(20);
         return view('members::admin.member.list', compact('members'));
     }
 
