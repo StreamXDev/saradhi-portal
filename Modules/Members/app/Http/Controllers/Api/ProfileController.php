@@ -132,6 +132,7 @@ class ProfileController extends BaseController
         $member->membership->qrCode = 'data:image/png;base64, ' . base64_encode($idQr);
         $member->user->avatar = url('storage/images/'. $member->user->avatar);
 
+        /*
         if($member->relations){
             foreach($member->relations as $key => $relative){
                 $member->relations[$key]->relatedMember->user->avatar = url('storage/images/'. $member->relations[$key]->relatedMember->user->avatar);
@@ -141,6 +142,7 @@ class ProfileController extends BaseController
                 }
             }
         }
+        */
         
         $data = [
             'member' => $member,
