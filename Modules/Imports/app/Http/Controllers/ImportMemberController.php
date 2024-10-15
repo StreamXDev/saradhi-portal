@@ -73,10 +73,9 @@ class ImportMemberController extends Controller
                 if($importedMember->sub_id == null){ //If the member is not a child
                     // ----------------- Creating User ------------------- //
                     // Checking User exists
-                    if($importedMember->email !== 'shanoob.sekhar@gmail.com' || $importedMember->email === 'ajikr66@gmail.com' || $importedMember->email === 'dinukamal@hotmail.com'){
+                    $user_exists = User::where('email', $importedMember->email)->first();
+                    if($importedMember->email === 'shanoob.sekhar@gmail.com' || $importedMember->email === 'ajikr66@gmail.com' || $importedMember->email === 'dinukamal@hotmail.com'){
                         $user_exists = false;
-                    }else{
-                        $user_exists = User::where('email', $importedMember->email)->first();
                     }
                     if($user_exists){
                         $remark = 'The email already used for: '.$user_exists->name.'('.$user_exists->id.')';
