@@ -56,9 +56,9 @@ class ImportMemberController extends Controller
         $last_exported  = Export::select('membership_id')->where('exported', 1)->latest()->first();
 
         if($last_exported){
-            $importedMemberships = ImportMembership::with('primary_member', 'type', 'status', 'members', 'members.details', 'members.contacts', 'members.addresses', 'members.addresses.country', 'members.addresses.region', 'members.type', 'members.gender', 'members.membership', 'members.membership.unit', 'members.trustee')->where('id', '>', $last_exported->membership_id)->limit(10)->get();
+            $importedMemberships = ImportMembership::with('primary_member', 'type', 'status', 'members', 'members.details', 'members.contacts', 'members.addresses', 'members.addresses.country', 'members.addresses.region', 'members.type', 'members.gender', 'members.membership', 'members.membership.unit', 'members.trustee')->where('id', '>', $last_exported->membership_id)->limit(20)->get();
         }else{
-            $importedMemberships = ImportMembership::with('primary_member', 'type', 'status', 'members', 'members.details', 'members.contacts', 'members.addresses', 'members.addresses.country', 'members.addresses.region', 'members.type', 'members.gender', 'members.membership', 'members.membership.unit', 'members.trustee')->limit(10)->get();
+            $importedMemberships = ImportMembership::with('primary_member', 'type', 'status', 'members', 'members.details', 'members.contacts', 'members.addresses', 'members.addresses.country', 'members.addresses.region', 'members.type', 'members.gender', 'members.membership', 'members.membership.unit', 'members.trustee')->limit(20)->get();
         }
         
         //dd($importedMemberships);
