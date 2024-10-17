@@ -162,7 +162,7 @@ class ProfileController extends BaseController
         $data = [
             'member' => $member,
             'statuses' => $statuses,
-            'is_member' => true,
+            'is_member' => $member ? true : false,
             'profile_completed' => $profileCompleted,
             'active_membership' => $activeMembership,
             'pending_approval' => $pendingApproval,
