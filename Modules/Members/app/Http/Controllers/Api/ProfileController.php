@@ -139,6 +139,8 @@ class ProfileController extends BaseController
                     $proofPending = true;
                 }
             }
+        }else{
+            $proofPending = true; // in no details, proof also pending normally
         }
 
         $statuses = requestStatusDisplay($user->id);
