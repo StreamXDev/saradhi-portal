@@ -35,8 +35,8 @@ Route::middleware(['auth:sanctum','verified_email'])->prefix('member')->group(fu
         });
     });
     Route::controller(ProfileController::class)->prefix('profile')->group(function(){
+        Route::get('/', 'showProfile');
         Route::middleware(VerifyProfileStatus::class)->group(function () {
-            Route::get('/', 'showProfile');
             Route::post('update', 'updateProfile');
         });
     });

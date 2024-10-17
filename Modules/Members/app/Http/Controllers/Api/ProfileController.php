@@ -122,14 +122,21 @@ class ProfileController extends BaseController
     protected function getProfileData()
     {
         $user = Auth::user();
+        $idQr = false;
+        $profileCompleted = true;
+        $pendingApproval = true;
+        $activeMembership = false;
+        $currentStatus = null;
         $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'relations.relatedMember.user', 'relations.relatedMember.membership', 'relations.relatedMember.details', 'relations.relatedDependent', 'requests', 'committees', 'trustee'])->where('user_id' , $user->id)->first();
         $statuses = requestStatusDisplay($user->id);
-        $current_status = MembershipRequest::where('user_id', $user->id)->latest('id')->first();
-        $pending_approval = $current_status && $current_status->request_status->slug === 'confirmed' ? false : true;
+        $currentStatus = MembershipRequest::where('user_id', $user->id)->latest('id')->first();
+        if($currentStatus){
+            $pendingApproval = $currentStatus->request_status->slug === 'confirmed' ? false : true;
+        }
 
         //Member ID
-        $idQr = false;
         if($member->membership){
+            $activeMembership = $member->membership->status === 'active' ? true : false;
             $idQr = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->name,  'Membership ID' => $member->membership->mid, 'Civil ID' => $member->details->civil_id]));
             $member->membership->qrCode = 'data:image/png;base64, ' . base64_encode($idQr);
         }
@@ -156,10 +163,10 @@ class ProfileController extends BaseController
             'member' => $member,
             'statuses' => $statuses,
             'is_member' => true,
-            'profile_completed' => true,
-            'active_membership' => $member->membership->status === 'active' ? true : false,
-            'pending_approval' => $pending_approval,
-            'current_status' => $current_status,
+            'profile_completed' => $profileCompleted,
+            'active_membership' => $activeMembership,
+            'pending_approval' => $pendingApproval,
+            'current_status' => $currentStatus,
         ];
 
         return $data;
