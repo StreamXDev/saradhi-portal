@@ -128,8 +128,11 @@ class ProfileController extends BaseController
         $pending_approval = $current_status && $current_status->request_status->slug === 'confirmed' ? false : true;
 
         //Member ID
-        $idQr = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->name,  'Membership ID' => $member->membership->mid, 'Civil ID' => $member->details->civil_id]));
-        $member->membership->qrCode = 'data:image/png;base64, ' . base64_encode($idQr);
+        $idQr = false;
+        if($member->membership){
+            $idQr = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->name,  'Membership ID' => $member->membership->mid, 'Civil ID' => $member->details->civil_id]));
+            $member->membership->qrCode = 'data:image/png;base64, ' . base64_encode($idQr);
+        }
         $member->user->avatar = url('storage/images/'. $member->user->avatar);
 
         
