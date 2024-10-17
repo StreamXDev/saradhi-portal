@@ -124,7 +124,7 @@ class ProfileController extends BaseController
         $user = Auth::user();
         $idQr = false;
         $profileCompleted = true;
-        $pendingApproval = true;
+        $pendingApproval = false;
         $activeMembership = false;
         $currentStatus = null;
         $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'relations.relatedMember.user', 'relations.relatedMember.membership', 'relations.relatedMember.details', 'relations.relatedDependent', 'requests', 'committees', 'trustee'])->where('user_id' , $user->id)->first();
