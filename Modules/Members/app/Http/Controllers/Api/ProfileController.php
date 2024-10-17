@@ -127,7 +127,7 @@ class ProfileController extends BaseController
         $pendingApproval = false;
         $activeMembership = false;
         $currentStatus = null;
-        $proofPending = true;
+        $proofPending = false;
         
         $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'relations.relatedMember.user', 'relations.relatedMember.membership', 'relations.relatedMember.details', 'relations.relatedDependent', 'requests', 'committees', 'trustee'])->where('user_id' , $user->id)->first();
         
@@ -136,7 +136,7 @@ class ProfileController extends BaseController
             $profileCompleted =  true;
             if(!$member->membership){
                 if(!$member->details->photo_civil_id_front || $member->details->photo_civil_id_back || $member->details->photo_passport_front || $member->details->photo_passport_back){
-                    $proofPending = false;
+                    $proofPending = true;
                 }
             }
         }
