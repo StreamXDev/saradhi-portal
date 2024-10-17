@@ -123,17 +123,29 @@ class ProfileController extends BaseController
     {
         $user = Auth::user();
         $idQr = false;
-        $profileCompleted = true;
+        $profileCompleted = false;
         $pendingApproval = false;
         $activeMembership = false;
         $currentStatus = null;
+        $proofPending = true;
+        
         $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'relations.relatedMember.user', 'relations.relatedMember.membership', 'relations.relatedMember.details', 'relations.relatedDependent', 'requests', 'committees', 'trustee'])->where('user_id' , $user->id)->first();
+        
+        // Checking id card proof is uploaded; Use case: a member logged in and the member is just registered and added profile details, but not uploaded proof
+        if($member && $member->details){
+            $profileCompleted =  true;
+            if(!$member->membership){
+                if(!$member->details->photo_civil_id_front || $member->details->photo_civil_id_back || $member->details->photo_passport_front || $member->details->photo_passport_back){
+                    $proofPending = false;
+                }
+            }
+        }
+
         $statuses = requestStatusDisplay($user->id);
         $currentStatus = MembershipRequest::where('user_id', $user->id)->latest('id')->first();
         if($currentStatus){
             $pendingApproval = $currentStatus->request_status->slug === 'confirmed' ? false : true;
         }
-
         //Member ID
         if($member->membership){
             $activeMembership = $member->membership->status === 'active' ? true : false;
@@ -167,6 +179,7 @@ class ProfileController extends BaseController
             'active_membership' => $activeMembership,
             'pending_approval' => $pendingApproval,
             'current_status' => $currentStatus,
+            'proof_pending' => $proofPending
         ];
 
         return $data;
