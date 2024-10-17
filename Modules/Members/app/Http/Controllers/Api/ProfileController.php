@@ -23,7 +23,7 @@ class ProfileController extends BaseController
     public function showProfile()
     {
         $data = $this->getProfileData();
-        return $this->sendResponse($data);
+        return $this->sendResponse($data, 'Profile Details');
     }
 
     public function updateProfile(Request $request)
@@ -113,7 +113,7 @@ class ProfileController extends BaseController
 
 
             $data = $this->getProfileData();
-            return $this->sendResponse($data);
+            return $this->sendResponse($data, 'Profile Updated successfully');
         }else{
             return $this->sendError('Not allowed', 'Requested member ('.$input['name'].') does not found. Please try again', 405); 
         }
@@ -133,8 +133,8 @@ class ProfileController extends BaseController
         
         // Checking id card proof is uploaded; Use case: a member logged in and the member is just registered and added profile details, but not uploaded proof
         if($member && $member->details){
-            $profileCompleted =  $member->details->completed ? true : false;
-            if($profileCompleted && !$member->membership){
+            $profileCompleted =  true;
+            if($member->membership->status !== 'inactive'){
                 if(!$member->details->photo_civil_id_front || $member->details->photo_civil_id_back || $member->details->photo_passport_front || $member->details->photo_passport_back){
                     $proofPending = true;
                 }
@@ -174,14 +174,16 @@ class ProfileController extends BaseController
         
         
         $data = [
-            'member' => $member,
-            'statuses' => $statuses,
             'is_member' => $member ? true : false,
             'profile_completed' => $profileCompleted,
             'active_membership' => $activeMembership,
             'pending_approval' => $pendingApproval,
             'current_status' => $currentStatus,
-            'proof_pending' => $proofPending
+            'proof_pending' => $proofPending,
+            'family_request' => $member->membership->type === 'family' ? true : false,
+            'user' => $user,
+            'member' => $member,
+            'statuses' => $statuses,
         ];
 
         return $data;

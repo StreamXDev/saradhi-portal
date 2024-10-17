@@ -257,13 +257,67 @@ class MembersController extends BaseController
                 ]);
             }
             DB::commit();
+
+            $idQr = false;
+            $profileCompleted = false;
+            $pendingApproval = false;
+            $activeMembership = false;
+            $currentStatus = null;
+            $proofPending = false;
+            $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'relations.relatedMember.user', 'relations.relatedMember.membership', 'relations.relatedMember.details', 'relations.relatedDependent', 'requests', 'committees', 'trustee'])->where('user_id' , $user->id)->first();
+            // Checking id card proof is uploaded; Use case: a member logged in and the member is just registered and added profile details, but not uploaded proof
+            if($member && $member->details){
+                $profileCompleted =  true;
+                if($member->membership->status !== 'inactive'){
+                    if(!$member->details->photo_civil_id_front || $member->details->photo_civil_id_back || $member->details->photo_passport_front || $member->details->photo_passport_back){
+                        $proofPending = true;
+                    }
+                }
+            }else{
+                $proofPending = true; // in no details, proof also pending normally
+            }
+
+            $statuses = requestStatusDisplay($user->id);
+            $currentStatus = MembershipRequest::where('user_id', $user->id)->latest('id')->first();
+            if($currentStatus){
+                $pendingApproval = $currentStatus->request_status->slug === 'confirmed' ? false : true;
+            }
+            //Member ID
+            if($member->membership && $member->membership){
+                $activeMembership = $member->membership->status === 'active' ? true : false;
+                $idQr = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->name,  'Membership ID' => $member->membership->mid, 'Civil ID' => $member->details->civil_id]));
+                $member->membership->qrCode = 'data:image/png;base64, ' . base64_encode($idQr);
+            }
+            $member->user->avatar = url('storage/images/'. $member->user->avatar);
+
+            
+            if($member->relations){
+                foreach($member->relations as $key => $relative){
+                    if($relative->related_member_id){
+                        $member->relations[$key]->relatedMember->user->avatar = url('storage/images/'. $member->relations[$key]->relatedMember->user->avatar);
+                        if($relative->relatedMember->active){
+                            $spouseIdQr = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->relations[$key]->relatedMember->name,  'Membership ID' => $member->relations[$key]->relatedMember->membership->mid, 'Civil ID' => $member->relations[$key]->relatedMember->details->civil_id]));
+                            $member->relations[$key]->relatedMember->membership->qrCode = 'data:image/png;base64, ' . base64_encode($spouseIdQr);
+                        }
+                    }else if($relative->related_dependent_id){
+                        $member->relations[$key]->relatedDependent->avatar = url('storage/images/'. $member->relations[$key]->relatedDependent->avatar);
+                    }
+                    
+                }
+            }
+            
             $response = [
                 'success' => true,
-                'user' => $user,
-                'family_request' => $input['type'] === 'family' ? true : false,
-                'proof_pending' => true,
-                'profile_completed' => false,
+                'is_member' => true,
+                'profile_completed' => true, //Actually, all profile  data is entered but the proof is pending
                 'active_membership' => false,
+                'pending_approval' => false,
+                'current_status' => null,
+                'proof_pending' => true,
+                'family_request' => $member->membership->type === 'family' ? true : false,
+                'user' => $user,
+                'member' => $member,
+                'statuses' => $statuses,
             ];
             if($input['type'] === 'family'){
                 $response['spouse'] = $spouse_user;
