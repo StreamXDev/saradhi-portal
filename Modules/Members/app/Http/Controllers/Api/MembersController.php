@@ -483,9 +483,10 @@ class MembersController extends BaseController
 
     protected function validationRules($request)
     {
+        $user = Auth::user();
         $rules =  [
             'member_unit_id'    => ['required', Rule::exists(MemberUnit::class, 'id')],
-            'phone'             => ['required', Rule::unique(User::class)],
+            'phone'             => 'required|unique:users,phone,'.$user->id,
             'calling_code'      => ['required'],
             'whatsapp'          => ['required', 'numeric'],
             'whatsapp_code'     => ['required'],

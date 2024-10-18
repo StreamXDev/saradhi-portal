@@ -11,7 +11,7 @@
     <div style="display: flex; align-items:stretch; column-gap:2rem">
         <div style="flex: 1">
             <h4>Success</h4>
-            <div>{{ $members->links() }}</div>
+            <div class="pagination-container">{{ $members->links() }}</div>
             <table class="table">
                 <thead>
                     <tr>

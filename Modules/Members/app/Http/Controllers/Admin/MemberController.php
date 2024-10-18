@@ -28,24 +28,9 @@ class MemberController extends Controller
      */
     public function index()
     {
-        $members = Member::with(['details', 'user'])->where('active', 1)->orderBy('id','asc')->paginate(20);
+        $members = Member::with(['membership', 'details'])->where('active', 1)->orderBy('id','asc')->paginate(20);
+        //dd($members);
         return view('members::admin.member.list', compact('members'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('members::create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
     }
 
     /**
@@ -53,7 +38,9 @@ class MemberController extends Controller
      */
     public function show($id)
     {
-        $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'relations.relatedTo.user', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
+        
+        $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'relations.relatedMember.user', 'relations.relatedMember.membership', 'relations.relatedMember.details', 'relations.relatedDependent', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
+        //dd($member);
         $statuses = requestStatusDisplay($id);
         $current_status = MembershipRequest::where('user_id', $id)->latest('id')->first();
         $request_action = requestByPermission($current_status);
@@ -85,8 +72,26 @@ class MemberController extends Controller
             ['name' => 'Other', 'slug' => 'other'],
         );
 
-        $idQr = QrCode::size(300)->generate(json_encode(['Name' =>  $member->name,  'Membership ID' => $member->membership->mid, 'Civil ID' => $member->details->civil_id]));
-        //dd($member);
+        //Member ID
+        if($member->membership){
+            $member->membership['idQr'] = QrCode::size(300)->generate(json_encode(['Name' =>  $member->name,  'Membership ID' => $member->membership->mid, 'Civil ID' => $member->details->civil_id]));
+        }
+        if($member->relations){
+            foreach($member->relations as $key => $relative){
+                if($relative->related_member_id){
+                    if($relative->relatedMember->active){
+                        //$member->relations[$key]->relatedMember->membership['idQr'] = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->relations[$key]->relatedMember->name,  'Membership ID' => $member->relations[$key]->relatedMember->membership->mid, 'Civil ID' => $member->relations[$key]->relatedMember->details->civil_id]));
+                        $member->relations[$key]->relatedMember->membership['idQr'] = QrCode::size(300)->generate(json_encode(['Name' =>  $member->relations[$key]->relatedMember->name,  'Membership ID' => $member->relations[$key]->relatedMember->membership->mid, 'Civil ID' => $member->relations[$key]->relatedMember->details->civil_id]));
+                    }
+                }else if($relative->related_dependent_id){
+                    $member->relations[$key]->relatedDependent->avatar = url('storage/images/'. $member->relations[$key]->relatedDependent->avatar);
+                }
+                
+            }
+        }
+
+        dd($member);
+        
         return view('members::admin.member.show', compact('member', 'statuses', 'current_status', 'request_action', 'suggested_mid', 'countries', 'units', 'blood_groups', 'gender', 'district_kerala', 'idQr'));
     }
 
@@ -116,14 +121,6 @@ class MemberController extends Controller
         
         return Excel::download(new MemberExport($member), 'member.xlsx');
         
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        return view('members::edit');
     }
 
     /**
