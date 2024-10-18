@@ -22,6 +22,8 @@ use Modules\Members\Models\MemberRelation;
 use Modules\Members\Models\Membership;
 use Modules\Members\Models\MembershipRequest;
 use Modules\Members\Models\MemberUnit;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+
 
 class MembersController extends BaseController
 {
