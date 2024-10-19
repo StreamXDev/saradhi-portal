@@ -311,11 +311,11 @@ class MembersController extends BaseController
             $response = [
                 'success' => true,
                 'is_member' => true,
-                'profile_completed' => true, //Actually, all profile  data is entered but the proof is pending
-                'active_membership' => false,
-                'pending_approval' => false,
-                'current_status' => null,
-                'proof_pending' => true,
+                'profile_completed' => $profileCompleted,
+                'active_membership' => $activeMembership,
+                'pending_approval' => $pendingApproval,
+                'current_status' => $currentStatus,
+                'proof_pending' => $proofPending,
                 'family_request' => $member->membership->type === 'family' ? true : false,
                 'user' => $user,
                 'member' => $member,
@@ -389,14 +389,15 @@ class MembersController extends BaseController
         DB::beginTransaction();
         try {
             // Storing files
-            $civil_id_front_name = 'cvf'.$user->id.'_'.time().'.'.$request->photo_civil_id_front->extension(); 
-            $civil_id_back_name = 'cvb'.$user->id.'_'.time().'.'.$request->photo_civil_id_back->extension(); 
-            $passport_front_name = 'ppf'.$user->id.'_'.time().'.'.$request->photo_passport_front->extension(); 
-            $passport_back_name = 'ppb'.$user->id.'_'.time().'.'.$request->photo_passport_back->extension(); 
+            $civil_id_front_name = 'cvf'.$user->id.'_'.time().'.'.mime2ext($input['photo_civil_id_front']); 
+            $civil_id_back_name = 'cvb'.$user->id.'_'.time().'.'.mime2ext($input['photo_civil_id_back']); 
+            $passport_front_name = 'ppf'.$user->id.'_'.time().'.'.mime2ext($input['photo_passport_front']); 
+            $passport_back_name = 'ppb'.$user->id.'_'.time().'.'.mime2ext($input['photo_passport_back']); 
             Storage::put('public/images/'.$civil_id_front_name, base64_decode($input['photo_civil_id_front']));
             Storage::put('public/images/'.$civil_id_back_name, base64_decode($input['photo_civil_id_back']));
             Storage::put('public/images/'.$passport_front_name, base64_decode($input['photo_passport_front']));
             Storage::put('public/images/'.$passport_back_name, base64_decode($input['photo_passport_back']));
+
             //Adding proof data to Membership detail table
             MemberDetail::updateOrCreate(
                 ['user_id' => $user->id],
@@ -428,10 +429,10 @@ class MembersController extends BaseController
             
             if($hasSpouse){
                 // Storing spouse files
-                $spouse_civil_id_front_name = 'cvf'.$spouseUser->id.'_'.time().'.'.$request->spouse_photo_civil_id_front->extension(); 
-                $spouse_civil_id_back_name = 'cvb'.$spouseUser->id.'_'.time().'.'.$request->spouse_photo_civil_id_back->extension(); 
-                $spouse_passport_front_name = 'ppf'.$spouseUser->id.'_'.time().'.'.$request->spouse_photo_passport_front->extension(); 
-                $spouse_passport_back_name = 'ppb'.$spouseUser->id.'_'.time().'.'.$request->spouse_photo_passport_back->extension(); 
+                $spouse_civil_id_front_name = 'cvf'.$spouseUser->id.'_'.time().'.'.mime2ext($input['spouse_photo_civil_id_front']); 
+                $spouse_civil_id_back_name = 'cvb'.$spouseUser->id.'_'.time().'.'.mime2ext($input['spouse_photo_civil_id_back']); 
+                $spouse_passport_front_name = 'ppf'.$spouseUser->id.'_'.time().'.'.mime2ext($input['spouse_photo_passport_front']); 
+                $spouse_passport_back_name = 'ppb'.$spouseUser->id.'_'.time().'.'.mime2ext($input['spouse_photo_passport_back']); 
                 Storage::put('public/images/'.$spouse_civil_id_front_name, base64_decode($input['spouse_photo_civil_id_front']));
                 Storage::put('public/images/'.$spouse_civil_id_back_name, base64_decode($input['spouse_photo_civil_id_back']));
                 Storage::put('public/images/'.$spouse_passport_front_name, base64_decode($input['spouse_photo_passport_front']));
@@ -466,16 +467,23 @@ class MembersController extends BaseController
                 ]);
             }
             DB::commit();
+            
+            $pendingApproval = false;
+            $statuses = requestStatusDisplay($user->id);
+            $currentStatus = MembershipRequest::where('user_id', $user->id)->latest('id')->first();
+            if($currentStatus){
+                $pendingApproval = $currentStatus->request_status->slug === 'confirmed' ? false : true;
+            }
+            
             $response = [
                 'success' => true,
-                'user' => $user,
-                'proof_pending' => false,
                 'profile_completed' => true,
                 'active_membership' => false,
+                'pending_approval' => $pendingApproval,
+                'current_status' => $currentStatus,
+                'proof_pending' => false,
+                'statuses' => $statuses,
             ];
-            if($hasSpouse){
-                $response['spouse'] = $spouseUser;
-            }
             return $this->sendResponse($response, 'Your document proof successfully and the Membership request sent to verification');
         }catch (\Exception $e) {
             DB::rollback();
