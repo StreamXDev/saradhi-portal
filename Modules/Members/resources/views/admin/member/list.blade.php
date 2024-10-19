@@ -1,5 +1,11 @@
 @extends('layouts.admin')
-
+@section('page-style')
+<style>
+    .table tr td{
+        vertical-align: middle
+    }
+</style>
+@endsection
 @section('content')
 <div class="page-title">
     <div class="col">
@@ -39,7 +45,7 @@
                 <td>{{ ucfirst($member->membership->status) }}</td>
                 <td>
                     <div class="actions">
-                        <a href="/admin/members/member/view/{{ $member->user->id }}" class="btn"><i class="fa-solid fa-eye"></i></a>
+                        <a href="/admin/members/member/view/{{ $member->user->id }}/{{$members->currentPage()}}" class="btn"><i class="fa-solid fa-eye"></i></a>
                     </div>
                 </td>
             </tr>
@@ -48,8 +54,4 @@
     </table>
     <div class="pagination-container">{{ $members->links() }}</div>
 </div>
-
-
-@endsection
-@section('page_scripts')
 @endsection

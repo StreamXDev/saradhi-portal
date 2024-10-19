@@ -1,10 +1,13 @@
 @extends('layouts.admin')
 
 @section('content')
+@isset($prevPage)
+                        {{$prevPage}}
+                    @endisset
 <div class="profile-view pf-default">
     <div class="pf-main">
         <div class="pf-face">
-            <div class="photo">
+            <div class="photo photo-profile">
                 @if($member->user->avatar)
                     <img src="{{ url('storage/images/'. $member->user->avatar) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}" class="list-profile-photo" />
                 @else
@@ -18,14 +21,14 @@
                     <div class="pf-info-item"><i class="icon" data-feather="phone"></i>+{{ $member->user->calling_code }}{{ $member->user->phone }}</div>
                     <div class="pf-info-item"><span class="label">Membership ID: </span> <span class="value"><strong>{{ $member->membership->mid ? $member->membership->mid : 'NA' }}</strong></span></div>
                     @foreach ($member->relations as $relation)
-                        @if ($relation->relatedTo->type == 'primary')
+                        @if ($relation->relatedMember && $relation->relatedMember->type == 'primary')
                             <div class="member-relation-box">
                                 <div class="box-content">
-                                    <div class="image"><img src="{{ url('storage/images/'. $relation->relatedTo->user->avatar) }}" alt="{{ $relation->relatedTo->name }}" title="{{ $relation->relatedTo->name }}" class="list-profile-photo" /></div>
+                                    <div class="image"><img src="{{ url('storage/images/'. $relation->relatedMember->user->avatar) }}" alt="{{ $relation->relatedMember->name }}" title="{{ $relation->relatedMember->name }}" class="list-profile-photo" /></div>
                                     <div class="value">
-                                        {{ $member->name }} is {{$relation->relationship->slug }} of <strong>{{ $relation->relatedTo->name }}</strong>
+                                        {{ $member->name }} is {{$relation->relationship->slug }} of <strong>{{ $relation->relatedMember->name }}</strong>
                                     </div>
-                                    <a href="/admin/members/member/view/{{ $relation->relatedTo->user->id}}" class="btn btn-default">VIEW</a>
+                                    <a href="/admin/members/member/view/{{ $relation->relatedMember->user->id}}" class="btn btn-default">VIEW</a>
                                 </div>
                             </div>
                         @endif
@@ -255,7 +258,57 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="membership_tab_pane" role="tabpanel" aria-labelledby="membership_tab" tabindex="0">Membership</div>
-                    <div class="tab-pane fade" id="relation_tab_pane" role="tabpanel" aria-labelledby="relation_tab" tabindex="0">Relations</div>
+                    <div class="tab-pane fade" id="relation_tab_pane" role="tabpanel" aria-labelledby="relation_tab" tabindex="0">
+                        @if ($member->relations)
+                            <div class="relative-cards">
+                                @foreach ($member->relations as $relative)
+                                    @if($relative->relatedMember)
+
+                                        <div class="relative-card">
+                                            <div class="card-body">
+                                                <div class="photo photo-profile">
+                                                    @if($relative->relatedMember->user->avatar)
+                                                        <img src="{{ url('storage/images/'. $relative->relatedMember->user->avatar) }}" alt="{{ $relative->relatedMember->user->name }}" />
+                                                    @else
+                                                        <img src="{{ $relative->relatedMember->gender == 'male' ? url('images/avatar-male.jpeg') : url('images/avatar-female.png') }}" alt="">
+                                                    @endif
+                                                </div>
+                                                <div class="card-content">
+                                                    <div class="title">{{$relative->relatedMember->user->name}}</div>
+                                                    <div class="info">{{ ucfirst($relative->relationship->name)}}</div>
+                                                </div>
+                                            </div>
+                                            <div class="card-footer">
+                                                
+                                            </div>
+                                        </div>
+                                        
+                                    @elseif ($relative->relatedDependent)
+
+                                        <div class="relative-card">
+                                            <div class="card-body">
+                                                <div class="photo photo-profile">
+                                                    @if($relative->relatedDependent->avatar)
+                                                        <img src="{{ url('storage/images/'. $relative->relatedDependent->avatar) }}" alt="{{ $relative->relatedDependent->name }}" title="{{ $relative->relatedDependent->name }}"  />
+                                                    @else
+                                                        <img src="{{ $relative->relatedDependent->gender == 'male' ? url('images/avatar-male.jpeg') : url('images/avatar-female.png') }}" alt="">
+                                                    @endif
+                                                </div>
+                                                <div class="card-content">
+                                                    <div class="title">{{$relative->relatedDependent->name}}</div>
+                                                    <div class="info">{{ ucfirst($relative->relatedDependent->type)}}</div>
+                                                </div>
+                                            </div>
+                                            <div class="card-footer">
+                                                
+                                            </div>
+                                        </div>
+
+                                    @endif
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>

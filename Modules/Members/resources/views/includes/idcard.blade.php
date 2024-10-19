@@ -18,7 +18,7 @@
             <img src="{{ url('images/saradhi-logo-v.png') }}" alt="Sarahi Kuwait">
         </div>
         <div class="item qr">
-            {{ $idQr }}
+            {{ $member->membership->idQr }}
         </div>
     </div>
     <div class="footer">

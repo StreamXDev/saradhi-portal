@@ -485,19 +485,6 @@ table.list{
         display: flex;
         align-items: stretch;
         padding: 1.5rem;
-        .photo{
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 5px solid rgba(0,0,0,0.1);
-            img{
-                width: 100%;
-            }
-        }
         .pf-name{
             font-weight: 600;
             font-size: 1.2rem !important;
@@ -543,6 +530,7 @@ table.list{
                 .nav-link{
                     cursor: pointer;
                     color: #333;
+                    padding: 0.5rem 1rem;
                     &.active{
                         color: $color-primary;
                     }
@@ -610,6 +598,19 @@ table.list{
                 }
             }
         }
+    }
+}
+.photo-profile{
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 5px solid rgba(0,0,0,0.1);
+    img{
+        width: 100%;
     }
 }
 .proof-display{
@@ -986,6 +987,40 @@ table.list{
         .item{
             padding: 0.5rem;
             font-size: 0.8em;
+        }
+    }
+}
+
+.relative-cards{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 1rem;
+    row-gap: 1rem;
+    .relative-card{
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        .card-body{
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            .photo-profile{
+                width: 100px;
+                height: 100px;
+            }
+            .card-content{
+                padding: 1rem 0 0 0;
+                .title{
+                    font-size: 1.2em;
+                    font-weight: 600;
+                    text-align: center;
+                }
+                .info{
+                    text-align: center;
+                    font-size: 0.9em;
+                    color: #666;
+                }
+            }
         }
     }
 }

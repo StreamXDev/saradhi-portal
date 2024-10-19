@@ -61,7 +61,7 @@ Route::prefix('admin/members')->middleware(['auth:sanctum', 'verified_email', 'i
     });
     Route::controller(MemberController::class)->group(function(){
         Route::get('/', 'index');
-        Route::get('/member/view/{id}', 'show');
+        Route::get('/member/view/{id}/{prevPage?}', 'show');
         Route::get('/member/pdf/{id}', 'generatePDF');
         Route::get('/member/excel/{id}', 'generateExcel');
         Route::post('/member/update', 'update')->name('admin.member.update');

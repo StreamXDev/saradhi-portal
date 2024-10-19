@@ -134,7 +134,7 @@ class ProfileController extends BaseController
         // Checking id card proof is uploaded; Use case: a member logged in and the member is just registered and added profile details, but not uploaded proof
         if($member && $member->details){
             $profileCompleted =  true;
-            if($member->membership->status !== 'inactive'){
+            if($member->membership->status === 'inactive'){
                 if(!$member->details->photo_civil_id_front || $member->details->photo_civil_id_back || $member->details->photo_passport_front || $member->details->photo_passport_back){
                     $proofPending = true;
                 }

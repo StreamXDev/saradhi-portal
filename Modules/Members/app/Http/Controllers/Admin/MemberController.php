@@ -36,7 +36,7 @@ class MemberController extends Controller
     /**
      * Show the specified resource.
      */
-    public function show($id)
+    public function show($id, $prevPage = null)
     {
         
         $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'relations.relatedMember.user', 'relations.relatedMember.membership', 'relations.relatedMember.details', 'relations.relatedDependent', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
@@ -80,19 +80,18 @@ class MemberController extends Controller
             foreach($member->relations as $key => $relative){
                 if($relative->related_member_id){
                     if($relative->relatedMember->active){
-                        //$member->relations[$key]->relatedMember->membership['idQr'] = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->relations[$key]->relatedMember->name,  'Membership ID' => $member->relations[$key]->relatedMember->membership->mid, 'Civil ID' => $member->relations[$key]->relatedMember->details->civil_id]));
                         $member->relations[$key]->relatedMember->membership['idQr'] = QrCode::size(300)->generate(json_encode(['Name' =>  $member->relations[$key]->relatedMember->name,  'Membership ID' => $member->relations[$key]->relatedMember->membership->mid, 'Civil ID' => $member->relations[$key]->relatedMember->details->civil_id]));
                     }
                 }else if($relative->related_dependent_id){
-                    $member->relations[$key]->relatedDependent->avatar = url('storage/images/'. $member->relations[$key]->relatedDependent->avatar);
+                    $member->relations[$key]->relatedDependent->avatar = $member->relations[$key]->relatedDependent->avatar && url('storage/images/'. $member->relations[$key]->relatedDependent->avatar);
                 }
                 
             }
         }
-
+        $backTo = $prevPage ?  '/admin/members?page='.$prevPage : null;
         //dd($member);
         
-        return view('members::admin.member.show', compact('member', 'statuses', 'current_status', 'request_action', 'suggested_mid', 'countries', 'units', 'blood_groups', 'gender', 'district_kerala', 'idQr'));
+        return view('members::admin.member.show', compact('member', 'statuses', 'current_status', 'request_action', 'suggested_mid', 'countries', 'units', 'blood_groups', 'gender', 'district_kerala', 'backTo'));
     }
 
     /**

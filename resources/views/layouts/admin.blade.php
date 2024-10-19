@@ -22,11 +22,11 @@
         <div class="content-wrapper" id="content">
             <header class="header-main">
                 <button id="sidebar_toggle" class="btn sidebar-toggle"><i class="fa-solid fa-bars"></i></button>
-                <div class="title">
-                    <div class="logo">
-                        Logo
+                @if(isset($backTo) && $backTo !== null)
+                    <div>
+                        <a href="{{$backTo}}" class="btn btn-outline-default btn-page-back"><i class="fa-solid fa-chevron-left"></i> Back</a>
                     </div>
-                </div>
+                @endif
                 <div class="actions">
                     <div class="dropdown">
                         <a href="" class="avatar dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
