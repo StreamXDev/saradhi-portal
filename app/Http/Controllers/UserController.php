@@ -8,6 +8,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use stdClass;
 
 class UserController extends Controller
 {
@@ -34,9 +35,33 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $data = User::latest()->paginate(5);
+        //$data = User::latest()->paginate(20);
 
-        return view('admin.users.index', compact('data'))->with('i', ($request->input('page', 1) - 1) * 5);
+       // return view('admin.users.index', compact('data'))->with('i', ($request->input('page', 1) - 1) * 5);
+
+       list( $users, $filters) = $this->userSearch();
+       $users = $users->paginate();
+       return view('admin.users.index', compact('users', 'filters'));
+    }
+
+    public function userSearch()
+    {
+
+        $users = User::select('*');
+        $filters = collect(
+            ['search_by' => '']
+        );
+
+        if (request()->get('search_by') != null){
+            //dd(request()->get('search_by'));
+            $users->whereAny(['name','email','phone'], 'like', '%'.request()->get('search_by').'%');
+            $filters->put('search_by', request()->get('search_by'));
+        }
+
+        return [
+            $users,
+            $filters
+        ];
     }
 
     /**

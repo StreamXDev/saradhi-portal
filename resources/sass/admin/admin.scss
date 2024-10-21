@@ -23,6 +23,9 @@ a{
 }
 .form-group{
     margin-bottom: 1rem;
+    &.no-margin{
+        margin: 0;
+    }
 }
 .form-title-divider{
     margin:2rem 0 2rem 0;
@@ -267,13 +270,19 @@ a{
     align-items: center;
     justify-content: space-between;
     .title{
-        font-size: 1.2rem;
+        font-size: 1.4rem;
         font-weight: 600;
         margin: 0;
     }
     .sub-title{
         font-size: 0.8em;
         color: #666;
+    }
+}
+.box-title{
+    .title{
+        font-size: 1.2rem;
+        font-weight: 400;
     }
 }
 .page-content{

@@ -42,18 +42,21 @@
             }
         }
         .content-main{
-            background-color: #fff;
-            border-radius: 10px;
             min-height: calc(100vh - $header-height - 1rem);
-            @include app-box-1;
             .page-title{
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                padding:1.5rem 1.5rem 1rem 1.5rem;
+                margin-bottom: 1.5rem;
             }
-            .page-content{
-                padding: 1rem 1.5rem;
+            .page-content,.page-search{
+                padding: 1.5rem;
+                background-color: #fff;
+                border-radius: 10px;
+                @include app-box-1;
+            }
+            .page-search{
+                margin-bottom: 1rem;
             }
         }
     }

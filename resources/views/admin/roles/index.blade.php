@@ -40,15 +40,7 @@
                 @can('role.edit')
                     <a class="btn btn-primary btn-sm" href="{{ route('roles.edit',$role->id) }}"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
                 @endcan
-    
-                @can('role.delete')
-                <form method="POST" action="{{ route('roles.destroy', $role->id) }}" style="display:inline">
-                    @csrf
-                    @method('DELETE')
-    
-                    <button type="submit" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i> Delete</button>
-                </form>
-                @endcan
+
             </td>
         </tr>
         @endforeach
