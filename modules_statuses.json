@@ -1,4 +1,5 @@
 {
     "Members": true,
-    "Imports": true
+    "Imports": true,
+    "Events": true
 }

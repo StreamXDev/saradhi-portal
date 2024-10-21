@@ -10,6 +10,9 @@
             @if(Module::has('Members'))
                 @include('members::admin.sidebarmenu')
             @endif
+            @if(Module::has('Events'))
+                @include('events::admin.sidebarmenu')
+            @endif
             <!-- 
             @canany(['role.create', 'role.view','role.edit','role.delete','role.approve'])
                 <a href="/admin/roles" class="nav-link">Roles</a>

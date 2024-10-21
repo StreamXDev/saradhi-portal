@@ -43,7 +43,8 @@ class MembersController extends BaseController
      */
     public function createDetails()
     {
-        $countries = Country::with('regions')->where('active', 1)->get();
+        $countries = [];
+        //$countries = Country::with('regions')->where('active', 1)->get();
         $units = MemberUnit::select('id', 'slug', 'name')->where('active', 1)->get();
         $blood_groups = MemberEnum::select('id', 'slug', 'name')->where('type', 'blood_group')->get();
         $gender = array(
@@ -431,7 +432,7 @@ class MembersController extends BaseController
                 // Storing spouse files
                 $spouse_civil_id_front_name = 'cvf'.$spouseUser->id.'_'.time().'.'.mime2ext($input['spouse_photo_civil_id_front']); 
                 $spouse_civil_id_back_name = 'cvb'.$spouseUser->id.'_'.time().'.'.mime2ext($input['spouse_photo_civil_id_back']); 
-                $spouse_passport_front_name = 'ppf'.$spouseUser->id.'_'.time().'.'.mime2ext($input['spouse_photo_passport_front']); 
+                $spouse_passport_front_name = 'ppf'.$spouseUser->id.'_'.time().'.'.mime2ext($input['spouse_photo_passport_front']);  
                 $spouse_passport_back_name = 'ppb'.$spouseUser->id.'_'.time().'.'.mime2ext($input['spouse_photo_passport_back']); 
                 Storage::put('public/images/'.$spouse_civil_id_front_name, base64_decode($input['spouse_photo_civil_id_front']));
                 Storage::put('public/images/'.$spouse_civil_id_back_name, base64_decode($input['spouse_photo_civil_id_back']));
