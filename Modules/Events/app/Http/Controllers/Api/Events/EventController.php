@@ -102,6 +102,6 @@ class EventController extends BaseController
         $data = [
             'events' => $events
         ];
-        return $this->sendResponse($data, 'Address added successfully.');
+        return $this->sendResponse($data);
     }
 }

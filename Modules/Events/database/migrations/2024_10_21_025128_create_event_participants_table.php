@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('company')->nullable();
             $table->string('designation')->nullable();
             $table->string('unit')->nullable()->index();
-            $table->numeric('pack_count')->default(1);
-            $table->numeric('admit_count')->default(0);
+            $table->integer('pack_count')->default(1);
+            $table->integer('admit_count')->default(0);
             $table->boolean('admitted')->default(0);
             $table->dateTime('admitted_on')->nullable();
             $table->unsignedBigInteger('admitted_by')->nullable();
