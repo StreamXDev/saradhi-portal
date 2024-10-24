@@ -80,24 +80,17 @@ class EventController extends BaseController
                 
             }
             
-            $idQr = QrCode::format('png')->size(300)->generate(json_encode([
-                'qType' => 'event',
-                'pack' => $member_participants,
-                'packTotal' => $packTotal,
-                'packBalance' => 'total members - total attended',
-            ]));
-            $events[$key]['idQr'] = 'data:image/png;base64, ' . base64_encode($idQr);
-
             $packBalance = $packTotal;
             foreach($member_participants as $participant){
                 $packBalance -= (int)$participant['admitted'];
             }
-            $events[$key]['idQr'] = [
+            $idQr = QrCode::format('png')->size(300)->generate(json_encode([
                 'qType' => 'event',
                 'pack' => $member_participants,
                 'packTotal' => $packTotal,
                 'packBalance' => $packBalance,
-            ];
+            ]));
+            $events[$key]['idQr'] = 'data:image/png;base64, ' . base64_encode($idQr);
         }
         $data = [
             'events' => $events
