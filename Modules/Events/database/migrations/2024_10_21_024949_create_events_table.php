@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('location')->nullable();
             $table->string('thumb')->nullable();
             $table->string('cover')->nullable();
+            $table->boolean('invite_all_members')->default(1);
+
             $table->timestamps();
         });
     }

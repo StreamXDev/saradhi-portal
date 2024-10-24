@@ -20,13 +20,17 @@ return new class extends Migration
             $table->string('company')->nullable();
             $table->string('designation')->nullable();
             $table->string('unit')->nullable()->index();
+            $table->numeric('pack_count')->default(1);
+            $table->numeric('admit_count')->default(0);
             $table->boolean('admitted')->default(0);
-            $table->unsignedBigInteger('admitted_by')->nullable();
             $table->dateTime('admitted_on')->nullable();
+            $table->unsignedBigInteger('admitted_by')->nullable();
+            $table->unsignedBigInteger('created_by');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users'); 
             $table->foreign('admitted_by')->references('id')->on('users'); 
+            $table->foreign('created_by')->references('id')->on('users'); 
         });
     }
 

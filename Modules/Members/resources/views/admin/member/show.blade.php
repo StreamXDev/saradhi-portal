@@ -2,8 +2,8 @@
 
 @section('content')
 @isset($prevPage)
-                        {{$prevPage}}
-                    @endisset
+    {{$prevPage}}
+@endisset
 <div class="profile-view pf-default">
     <div class="pf-main">
         <div class="pf-face">
