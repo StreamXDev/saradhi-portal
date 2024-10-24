@@ -75,11 +75,25 @@
             </div>
 
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" id="screenshot">Download</button>
-        </div>
       </div>
     </div>
 </div>
+@endsection
+
+@section('page_scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.6.1/jquery.zoom.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+    $('#screenshot').click(function(){
+        var id = $(this).data('id');
+        var name = $(this).data('name');
+        var link = document.createElement('a');
+        html2canvas(document.getElementById('idCard_'+id)).then(function(canvas) {
+            var image = canvas.toDataURL();
+            link.setAttribute('download', name+'_'+id+'_Member-ID.png');
+            link.href = image;
+            link.click();
+        });
+    });
+</script>
 @endsection
