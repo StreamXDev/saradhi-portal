@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Events\Http\Controllers\EventsController;
+use Modules\Events\Http\Controllers\Api\Events\EventController;
 
 /*
  *--------------------------------------------------------------------------
@@ -14,6 +14,8 @@ use Modules\Events\Http\Controllers\EventsController;
  *
 */
 
-Route::middleware(['auth:sanctum'])->group(function () {
-    Route::apiResource('events', EventsController::class)->names('events');
+Route::prefix('admin/events')->middleware(['auth:sanctum', 'verified_email', 'is_admin'])->group(function() {
+    Route::controller(EventController::class)->group(function(){
+        Route::get('/', 'index');
+    });
 });

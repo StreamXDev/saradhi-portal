@@ -3,9 +3,12 @@
 <div class="page-title">
     <div>
         <h1 class="title">Invitiees</h1>
-        <div class="subtitle">Event: {{$event->title}}</div>
+        <div><small class="text-muted">Showing <strong>{{$invitees->currentPage()}}</strong> to <strong>{{$invitees->count()}}</strong> of <strong>{{$invitees->total()}}</strong> results for {{$event->title}}</small></div>
     </div>
-    <a href="/admin/events/{{$event->id}}/invitee/add" class="btn btn-xs btn-primary">Add Invitees</a>
+    <div>
+        <a href="/admin/events/view/{{$event->id}}" class="btn btn-xs btn-outline-primary">View Event</a>
+        <a href="/admin/events/{{$event->id}}/invitee/add" class="btn btn-xs btn-primary">Add Invitees</a>
+    </div>
 </div>
 <div class="page-content mb-2">
     <div class="count-boxes">
@@ -58,6 +61,7 @@
             @endforeach
         </tbody>
     </table>
+    <div class="pagination-container">{{ $invitees->links() }}</div>
 </div>
 
 <!-- Modal -->

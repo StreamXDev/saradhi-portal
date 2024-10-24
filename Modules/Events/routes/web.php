@@ -24,5 +24,8 @@ Route::prefix('admin/events')->middleware(['auth:sanctum', 'verified_email', 'is
         Route::get('/{id?}/invitees', 'invitees')->name('admin.events.invitees');
         Route::get('/{id?}/invitee/add', 'createInvitee')->name('admin.events.invitee.add');
         Route::post('/invitee/add', 'storeInvitee')->name('admin.events.invitee.add');
+        Route::get('/{id?}/volunteers', 'volunteers')->name('admin.events.volunteers');
+        Route::get('/{id?}/volunteer/add', 'createVolunteer')->name('admin.events.volunteer.add');
+        Route::post('/volunteer/add', 'storeVolunteer')->name('admin.events.volunteer.add');
     });
 });

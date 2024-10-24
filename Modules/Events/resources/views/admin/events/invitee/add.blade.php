@@ -5,7 +5,10 @@
         <h1 class="title">Add Invitiees</h1>
         <div class="subtitle">Event: {{$event->title}}</div>
     </div>
-    <a href="/admin/events/{{$event->id}}/invitees" class="btn btn-xs btn-primary">Invitees</a>
+    <div>
+        <a href="/admin/events/view/{{$event->id}}" class="btn btn-xs btn-outline-primary">View Event</a>
+        <a href="/admin/events/{{$event->id}}/invitees" class="btn btn-xs btn-primary">Invitees</a>
+    </div>
 </div>
 <div class="page-content">
     <div class="section-title box-title">

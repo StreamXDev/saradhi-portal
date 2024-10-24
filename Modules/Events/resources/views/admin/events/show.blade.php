@@ -17,21 +17,24 @@
                 <div class="event-title">
                     <h1 class="title">{{$event->title}}</h1>
                 </div>
-                <a href="/admin/events/{{$event->id}}/invitees" class="btn btn-xs btn-primary">Invitees</a>
+                <div>
+                    <a href="/admin/events/{{$event->id}}/volunteers" class="btn btn-xs btn-primary">View Volunteers</a>
+                    <a href="/admin/events/{{$event->id}}/invitees" class="btn btn-xs btn-primary">View Invitees</a>
+                </div>
             </div>
             <ul class="nav nav-underline" id="eventTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Overview</button>
+                    <button class="nav-link active" id="tab_overview" data-bs-toggle="tab" data-bs-target="#tab_overview-pane" type="button" role="tab" aria-controls="tab_overview-pane" aria-selected="true">Overview</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="participant-tab" data-bs-toggle="tab" data-bs-target="#participant-tab-pane" type="button" role="tab" aria-controls="participant-tab-pane" aria-selected="false">Participants</button>
+                    <button class="nav-link" id="tab_participants" data-bs-toggle="tab" data-bs-target="#tab_participants-pane" type="button" role="tab" aria-controls="tab_participants-pane" aria-selected="false">Participants</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="volunteer-tab" data-bs-toggle="tab" data-bs-target="#volunteer-tab-pane" type="button" role="tab" aria-controls="volunteer-tab-pane" aria-selected="false">Volunteers</button>
+                    <button class="nav-link" id="tab_volunteer" data-bs-toggle="tab" data-bs-target="#tab_volunteer-pane" type="button" role="tab" aria-controls="tab_volunteer-pane" aria-selected="false">Volunteers</button>
                 </li>
             </ul>
             <div class="tab-content" id="myTabContent">
-                <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                <div class="tab-pane fade show active" id="tab_overview-pane" role="tabpanel" aria-labelledby="tab_overview" tabindex="0">
                     <p>{{$event->description}}</p>
                     <div>Start Date: {{date('M d,Y', strtotime($event->start_date))}}</div>
                     @if($event->end_date )<div>Start Date: {{date('M d,Y', strtotime($event->end_date))}}</div>@endif
@@ -39,14 +42,14 @@
                     @if($event->end_time )<div>Start Time: {{date('h:i a', strtotime($event->end_time))}}</div>@endif
                     @if($event->location)<div>Venue: {{$event->location}}</div>@endif
                 </div>
-                <div class="tab-pane fade" id="participant-tab-pane" role="tabpanel" aria-labelledby="participant-tab" tabindex="0">
+                <div class="tab-pane fade" id="tab_participants-pane" role="tabpanel" aria-labelledby="tab_participants" tabindex="0">
                     <table class="table event-list">
                         <thead>
                             <tr>
                                 <th>Name</th>
                                 <th>Type</th>
                                 <th>Unit</th>
-                                <th>Admition</th>
+                                <th>Admitted</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -61,7 +64,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="tab-pane fade" id="volunteer-tab-pane" role="tabpanel" aria-labelledby="volunteer-tab" tabindex="0">
+                <div class="tab-pane fade" id="tab_volunteer-pane" role="tabpanel" aria-labelledby="tab_volunteer" tabindex="0">
                     <table class="table event-list">
                         <thead>
                             <tr>
@@ -87,4 +90,20 @@
         </div>
     </div>
 </div>
+@endsection
+@section('page_scripts')
+<script>
+    $(document).ready(function(){
+        var url = window.location.href;
+        var tabQuery = url.indexOf("#");
+        var activeTab = url.substring(url.indexOf("#") + 1);
+        console.log(tabQuery)
+        if(tabQuery > 0){
+            $(".tab-pane").removeClass("active show");
+            $("#eventTab .nav-link").removeClass("active");
+            $("#" + activeTab +'-pane').addClass("active show");
+            $("#eventTab #"+activeTab).addClass("active");
+        }
+    });
+</script>
 @endsection

@@ -153,11 +153,13 @@ class EventController extends Controller
             return redirect('/admin/events/create');
         }
         $participant_types = EventEnum::select('id', 'slug', 'name')->where('type', 'participant_type')->get();
-        $invitees = EventParticipant::with('invitee_type')->where('event_id', $id)->get();
+        $data = EventParticipant::with('invitee_type')->where('event_id', $id);
+        $invitee_count = $data->get();
+        $invitees = $data->orderBy('id','desc')->paginate(20);
         $total_invited = 0;
         $total_attended = 0;
         $group_count = [];
-        foreach($invitees as $invitee){
+        foreach($invitee_count as $invitee){
             $total_invited += $invitee->pack_count;
             $total_attended += $invitee->admit_count;
             foreach($participant_types as $key => $type){
@@ -170,12 +172,16 @@ class EventController extends Controller
         foreach($invitees as $key => $invitee){
             $invitees[$key]['idQr'] = QrCode::size(300)->generate(json_encode([
                 'qType' => 'event',
-                'pType' => $invitee->invitee_type->slug,
-                'id' => $invitee->id,
-                'name' => $invitee->name,
+                'pack' => [
+                    [
+                        'pType' => $invitee->invitee_type->slug,
+                        'id' => $invitee->id,
+                        'name' => $invitee->name,
+                        'admitted' => $invitee->admitted
+                    ]
+                ],
                 'packTotal' => $invitee->pack_count,
                 'packBalance' => (int)$invitee->pack_count - (int)$invitee->admit_count,
-                'admitted' => $invitee->admitted
             ]));
         }
         return view('events::admin.events.invitee.list', compact('invitees', 'event', 'total_invited', 'total_attended', 'participant_types', 'group_count'));
@@ -245,4 +251,64 @@ class EventController extends Controller
         DB::commit();
         return redirect('/admin/events/view/'.$input['event_id']);
     }
+
+
+    /* ---------------------------------------------------------- VOLUNTEERS -----------------------------------------------*/
+
+    /**
+     * Invitees list
+     */
+    public function volunteers(Request $request, $id)
+    {
+        $event = Event::where('id', $id)->first();
+        if(!$event){
+            return redirect('/admin/events/create');
+        }
+        $volunteers = EventVolunteer::with('user')->where('event_id', $id)->get();
+        return view('events::admin.events.volunteer.list', compact('event','volunteers'));
+    }
+
+
+    /**
+     * Volunteer Create form
+     */
+    public function createVolunteer(Request $request, $id)
+    {
+        $event = Event::where('id', $id)->first();
+        if(!$event){
+            return redirect('/admin/events/create');
+        }
+        return view('events::admin.events.volunteer.add', compact('event'));
+    }
+
+    /**
+     * Store volunteers
+     */
+    public function storeVolunteer(Request $request){
+        $user = Auth::user();
+        $input = $request->all();
+        $event = Event::where('id', $input['event_id'])->first();
+        if(!$event){
+            return redirect('/admin/events/create');
+        }
+        DB::beginTransaction();
+        if($input['volunteers'] && $input['volunteers'] !== null){
+            $volunteers = $input['volunteers'];
+            foreach($volunteers as $volunteer_user_id){
+                EventVolunteer::create([
+                    'event_id' => $event->id,
+                    'user_id' => (int)$volunteer_user_id,
+                    'added_by' => $user->id,
+                    'added_on' => now()
+                ]);
+            };
+        }
+
+        DB::commit();
+        return redirect('/admin/events/view/'.$input['event_id'].'#tab_volunteer');
+    }
+
 }
+
+
+
