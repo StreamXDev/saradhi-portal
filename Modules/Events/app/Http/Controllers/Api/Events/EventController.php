@@ -24,8 +24,8 @@ class EventController extends BaseController
         
         $user = Auth::user();
         $events = Event::where('start_date', '>=', Carbon::now())->orderBy('start_date', 'desc')->get();
-        $member_participants = [];
-        $packTotal = 0;
+        //$member_participants = [];
+        //$packTotal = 0;
         foreach($events as $key => $event){
             $volunteers = EventVolunteer::where('event_id', $event->id)->get();
             foreach($volunteers as $volunteer){
@@ -33,6 +33,27 @@ class EventController extends BaseController
                     $events[$key]->volunteer = true;
                 }
             }
+            $idQr = QrCode::format('png')->size(300)->generate(json_encode([
+                'pType' => 'member',
+                'user_id' => $user->id,
+            ]));
+            $events[$key]['idQr'] = 'data:image/png;base64, ' . base64_encode($idQr);
+        }
+        $data = [
+            'events' => $events
+        ];
+        return $this->sendResponse($data);
+    }
+
+
+    /**
+     * Admit members
+     */
+    
+
+
+
+    /*
             if($event->invite_all_members && Module::has('Members')){
                 $member = Member::with('relations','relations.relatedMember.user','relations.relatedDependent','details')->where('user_id', $user->id)->first();
                 $member_admitted = EventParticipant::where('event_id',$event->id)->where('user_id',$user->id)->first();
@@ -84,17 +105,6 @@ class EventController extends BaseController
             foreach($member_participants as $participant){
                 $packBalance -= (int)$participant['admitted'];
             }
-            $idQr = QrCode::format('png')->size(300)->generate(json_encode([
-                'qType' => 'event',
-                'pack' => $member_participants,
-                'packTotal' => $packTotal,
-                'packBalance' => $packBalance,
-            ]));
-            $events[$key]['idQr'] = 'data:image/png;base64, ' . base64_encode($idQr);
-        }
-        $data = [
-            'events' => $events
-        ];
-        return $this->sendResponse($data);
-    }
+                */
+
 }
