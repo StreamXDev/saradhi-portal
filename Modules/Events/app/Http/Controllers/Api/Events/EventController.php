@@ -34,6 +34,13 @@ class EventController extends BaseController
                     $events[$key]->volunteer = true;
                 }
             }
+            if(!$event->invite_all_members){
+                // if the event not invited all members, Check user is invited separately
+                $invitee = EventParticipant::where('event_id', $event->id)->where('user_id', $user->id)->first();
+                $event->invited = $invitee ? true : false;
+            }else{
+                $event->invited = true;
+            }
             $idQr = QrCode::format('png')->size(300)->generate(json_encode(['E'.$event->id.'-U'.$user->id]));
             $events[$key]['idQr'] = 'data:image/png;base64, ' . base64_encode($idQr);
         }
