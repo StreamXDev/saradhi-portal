@@ -170,19 +170,7 @@ class EventController extends Controller
             }   
         }
         foreach($invitees as $key => $invitee){
-            $invitees[$key]['idQr'] = QrCode::size(300)->generate(json_encode([
-                'qType' => 'event',
-                'pack' => [
-                    [
-                        'pType' => $invitee->invitee_type->slug,
-                        'id' => $invitee->id,
-                        'name' => $invitee->name,
-                        'admitted' => $invitee->admitted
-                    ]
-                ],
-                'packTotal' => $invitee->pack_count,
-                'packBalance' => (int)$invitee->pack_count - (int)$invitee->admit_count,
-            ]));
+            $invitees[$key]['idQr'] = QrCode::size(300)->generate(json_encode(['E'.$event->id.'I'.$invitee->id]));
         }
         return view('events::admin.events.invitee.list', compact('invitees', 'event', 'total_invited', 'total_attended', 'participant_types', 'group_count'));
     }

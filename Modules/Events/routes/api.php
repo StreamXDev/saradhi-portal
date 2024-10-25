@@ -14,8 +14,9 @@ use Modules\Events\Http\Controllers\Api\Events\EventController;
  *
 */
 
-Route::prefix('admin/events')->middleware(['auth:sanctum', 'verified_email', 'is_admin'])->group(function() {
+Route::middleware(['auth:sanctum','verified_email'])->prefix('event')->group(function () {
     Route::controller(EventController::class)->group(function(){
         Route::get('/', 'index');
+        Route::get('/create', 'admitCreate')->name('event.create');
     });
 });
