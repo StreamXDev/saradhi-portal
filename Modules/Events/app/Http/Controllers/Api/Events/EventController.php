@@ -66,15 +66,17 @@ class EventController extends BaseController
             $invitee_id = (int)substr($qrExplode[1],1);
         }
 
+        $event = Event::where('id', $event_id)->first();
+        if(!$event || $qType !== 'event'){
+            return $this->sendError('Not allowed', 'No events found', 405); 
+        }
+
         $volunteer = Auth::user();
         $isVolunteer = EventVolunteer::where('event_id',$event_id)->where('user_id', $volunteer->id)->where('active',1)->first();
         if(!$isVolunteer){
             return $this->sendError('Not allowed', 'Only registered volunteers can read the data', 405); 
         }
-        $event = Event::where('id', $event_id)->first();
-        if(!$event || $qType !== 'event'){
-            return $this->sendError('Not allowed', 'Only allowed registered events', 405); 
-        }
+        
         $packTotal = $packBalance = 0;
         $member_participants = [];
         if($pType == 'member' && $event->invite_all_members && Module::has('Members')){
@@ -83,14 +85,12 @@ class EventController extends BaseController
             $packTotal = 1;
             $member_admitted = EventParticipant::where('event_id',$event->id)->where('user_id',$user->id)->first();
             array_push($member_participants, [
-                [
-                    'pType' => 'member',
-                    'user_id' => $member->user_id,
-                    'relation' => $member->type,
-                    'name' => $member->name,
-                    'unit' => $member->details->member_unit->name,
-                    'admitted' => isset($member_admitted->admitted) && $member_admitted->admitted == 1 ? 1 : 0
-                ]
+                'pType' => 'member',
+                'user_id' => $member->user_id,
+                'relation' => $member->type,
+                'name' => $member->name,
+                'unit' => $member->details->member_unit->name,
+                'admitted' => isset($member_admitted->admitted) && $member_admitted->admitted == 1 ? 1 : 0
             ]);
 
 
@@ -139,7 +139,7 @@ class EventController extends BaseController
                 ]
             ];
             $packTotal = $invitee->pack_count;
-            $packBalance = $invitee->admit_count;
+            $packBalance = $invitee->pack_count - $invitee->admit_count;
         }
 
         $data = [
