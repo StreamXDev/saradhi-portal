@@ -72,7 +72,7 @@ class EventController extends BaseController
             return $this->sendError('Not allowed', 'Only registered volunteers can read the data', 405); 
         }
         $event = Event::where('id', $event_id)->first();
-        if(!$event || $input['qType'] !== 'event'){
+        if(!$event || $qType !== 'event'){
             return $this->sendError('Not allowed', 'Only allowed registered events', 405); 
         }
         $packTotal = $packBalance = 0;
