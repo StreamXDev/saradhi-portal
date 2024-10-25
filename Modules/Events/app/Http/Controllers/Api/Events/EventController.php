@@ -34,7 +34,7 @@ class EventController extends BaseController
                     $events[$key]->volunteer = true;
                 }
             }
-            $idQr = QrCode::format('png')->size(300)->generate(json_encode(['E'.$event->id.'U'.$user->id]));
+            $idQr = QrCode::format('png')->size(300)->generate(json_encode(['E'.$event->id.'-U'.$user->id]));
             $events[$key]['idQr'] = 'data:image/png;base64, ' . base64_encode($idQr);
         }
         $data = [
@@ -50,17 +50,35 @@ class EventController extends BaseController
      */
     public function admitCreate(Request $request)
     {
-        $volunteer = Auth::user();
         
         $input = $request->all();
-        $event = Event::where('id', $input['event_id'])->first();
+        $qrString = $input['data'];
+        $qrExplode = explode("-",$qrString);
+        if(substr($qrExplode[0], 0, 1) == 'E'){
+            $qType = 'event';
+            $event_id = (int)substr($qrExplode[0], 1);
+        }
+        if(substr($qrExplode[1], 0, 1) == 'U'){
+            $pType = 'member';
+            $user_id = (int)substr($qrExplode[1],1);
+        }else if(substr($qrExplode[1], 0, 1) == 'I'){
+            $pType = 'invitee';
+            $invitee_id = (int)substr($qrExplode[1],1);
+        }
+
+        $volunteer = Auth::user();
+        $isVolunteer = EventVolunteer::where('event_id',$event_id)->where('user_id', $volunteer->id)->where('active',1)->first();
+        if(!$isVolunteer){
+            return $this->sendError('Not allowed', 'Only registered volunteers can read the data', 405); 
+        }
+        $event = Event::where('id', $event_id)->first();
         if(!$event || $input['qType'] !== 'event'){
             return $this->sendError('Not allowed', 'Only allowed registered events', 405); 
         }
         $packTotal = $packBalance = 0;
         $member_participants = [];
-        if($input['pType'] == 'member' && $event->invite_all_members && Module::has('Members')){
-            $user = User::where('id',$input['user_id'])->first();
+        if($pType == 'member' && $event->invite_all_members && Module::has('Members')){
+            $user = User::where('id',$user_id)->first();
             $member = Member::with('relations','relations.relatedMember.user','relations.relatedDependent','details')->where('user_id', $user->id)->first();
             $packTotal = 1;
             $member_admitted = EventParticipant::where('event_id',$event->id)->where('user_id',$user->id)->first();
@@ -109,8 +127,8 @@ class EventController extends BaseController
             foreach($member_participants as $participant){
                 $packBalance -= (int)$participant['admitted'];
             }
-        }else if($input['pType'] == 'invitee'){
-            $invitee = EventParticipant::where('id',$input['invitee_id'])->first();
+        }else if($pType == 'invitee'){
+            $invitee = EventParticipant::where('id',$invitee_id)->first();
             $member_participants = [
                 [
                     'pType' => 'invitee',

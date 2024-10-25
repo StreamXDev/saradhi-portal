@@ -170,7 +170,7 @@ class EventController extends Controller
             }   
         }
         foreach($invitees as $key => $invitee){
-            $invitees[$key]['idQr'] = QrCode::size(300)->generate(json_encode(['E'.$event->id.'I'.$invitee->id]));
+            $invitees[$key]['idQr'] = QrCode::size(300)->generate(json_encode(['E'.$event->id.'-I'.$invitee->id]));
         }
         return view('events::admin.events.invitee.list', compact('invitees', 'event', 'total_invited', 'total_attended', 'participant_types', 'group_count'));
     }
