@@ -60,7 +60,7 @@ class EventController extends BaseController
         
         $input = $request->all();
         $qrString = $input['data'];
-        $qrExplode = explode("-",$qrString);
+        $qrExplode = explode("-",$qrString[0]);
         if(substr($qrExplode[0], 0, 1) == 'E'){
             $qType = 'event';
             $event_id = (int)substr($qrExplode[0], 1);
