@@ -253,7 +253,7 @@ class EventController extends Controller
         }
 
         DB::commit();
-        return redirect('/admin/events/view/'.$input['event_id']);
+        return redirect('/admin/events/'.$input['event_id'].'/invitees');
     }
 
 
