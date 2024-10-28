@@ -3,7 +3,7 @@
 <div class="page-title">
     <div>
         <h1 class="title">Invitiees</h1>
-        
+        <div><small class="text-muted">Showing <strong>{{$invitees->currentPage()}}</strong> to <strong>{{$invitees->count()}}</strong> of <strong>{{$invitees->total()}}</strong> results for {{$event->name}}</small></div>
     </div>
     <div>
         <a href="/admin/events/view/{{$event->id}}" class="btn btn-xs btn-outline-primary">View Event</a>
@@ -61,6 +61,7 @@
             @endforeach
         </tbody>
     </table>
+    <div class="pagination-container">{{ $invitees->links() }}</div>
 </div>
 
 <!-- Modal -->
