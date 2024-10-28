@@ -61,7 +61,6 @@
             @endforeach
         </tbody>
     </table>
-    <div class="pagination-container">{{ $invitees->links() }}</div>
 </div>
 
 <!-- Modal -->
