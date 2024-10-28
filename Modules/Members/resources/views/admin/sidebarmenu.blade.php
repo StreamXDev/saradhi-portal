@@ -17,6 +17,7 @@
     <div class="collapse sub-nav" id="member_menu">
         <ul class="nav btn-toggle-nav">
             <li><a href="/admin/members" class="nav-item">List</a></li>
+            @can('user.create')<li><a href="/admin/members/member/create" class="nav-item">Add New</a></li>@endcan
         </ul>
     </div>
 </li>

@@ -25,6 +25,16 @@ class MemberController extends Controller
 {
     /**
      * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    function __construct()
+    {
+        $this->middleware('permission:user.create', ['only' => ['create','store']]);
+    }
+    
+    /**
+     * Display a listing of the resource.
      */
     public function index()
     {
@@ -120,6 +130,23 @@ class MemberController extends Controller
         
         return Excel::download(new MemberExport($member), 'member.xlsx');
         
+    }
+
+    /**
+     * Create Member
+     */
+    public function create()
+    {
+        $countries = Country::with('regions')->where('active', 1)->get();
+        return view('members::admin.member.create', compact('countries'));
+    }
+
+    /**
+     * Store new member
+     */
+    public function store()
+    {
+
     }
 
     /**

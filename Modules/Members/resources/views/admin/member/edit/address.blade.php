@@ -20,10 +20,10 @@
                         <div class="control-col">
                             <select name="governorate" id="governorate" class="form-control @error('governorate') is-invalid @enderror">
                                 <option value="">Select</option>
-                                <option value="ahmadi" @selected($member->localAddress->governorate == 'ahmadi')>Ahmadi</option>
-                                <option value="farvaniya" @selected($member->localAddress->governorate == 'farvaniya')>Farvaniya</option>
-                                <option value="hawally" @selected($member->localAddress->governorate == 'hawally')>Hawally</option>
-                                <option value="jahara" @selected($member->localAddress->governorate == 'jahara')>Jahara</option>
+                                <option value="ahmadi" @selected($member->localAddress && $member->localAddress->governorate == 'ahmadi')>Ahmadi</option>
+                                <option value="farvaniya" @selected($member->localAddress && $member->localAddress->governorate == 'farvaniya')>Farvaniya</option>
+                                <option value="hawally" @selected($member->localAddress && $member->localAddress->governorate == 'hawally')>Hawally</option>
+                                <option value="jahara" @selected($member->localAddress && $member->localAddress->governorate == 'jahara')>Jahara</option>
                             </select>
                         </div>
                     </div>
