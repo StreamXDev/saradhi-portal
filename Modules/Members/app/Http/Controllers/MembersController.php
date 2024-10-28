@@ -60,7 +60,7 @@ class MembersController extends Controller
 
         $member = Member::where('user_id', $user->id)->first();
         $member_request = MembershipRequest::where('user_id', $user->id)->latest()->first();
-        if($member_request->request_status){
+        if($member_request && $member_request->request_status){
             $statuses = $member_request->request_status;
         }
             
