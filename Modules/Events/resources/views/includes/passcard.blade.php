@@ -1,4 +1,4 @@
-<div class="eventPassCard" id="idCard_{{$invitee->id}}">
+<div class="eventPassCard" id="idCard_{{$invitee->id}}" style="background-color: {{$invitee->invitee_type->category}}">
     <div class="header">
         <div class="title">{{$event->title}}</div>
         <div class="info">{{date('M d, Y',strtotime($event->start_date))}} @if($event->end_date) - {{date('M d, Y',strtotime($event->end_date))}}@endif</div>
@@ -9,7 +9,7 @@
         <div class="qr">{{ $invitee->idQr }}</div>
     </div>
     <div class="card-info">
-        Admit 1
+        Admit {{ $invitee->pack_count }}
     </div>
 </div>
 <div style="flex: 1 0 100%; display:flex; justify-content:flex-end; margin-top:1rem; column-gap:0.5rem">

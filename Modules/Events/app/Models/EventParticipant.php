@@ -14,7 +14,7 @@ class EventParticipant extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [
-        'event_id', 'type', 'user_id', 'name', 'company', 'designation', 'unit', 'admitted', 'admitted_on', 'admitted_by', 'created_by'
+        'event_id', 'type', 'user_id', 'name', 'company', 'designation', 'unit', 'pack_count', 'admit_count', 'admitted', 'admitted_on', 'admitted_by', 'created_by'
     ];
 
     public function event():BelongsTo
@@ -32,6 +32,6 @@ class EventParticipant extends Model
 
     public function invitee_type(): BelongsTo
     {
-        return $this->belongsTo(EventEnum::class, 'type', 'id')->select('id', 'slug', 'name', 'order');
+        return $this->belongsTo(EventEnum::class, 'type', 'id')->select('id', 'slug', 'name', 'order', 'category');
     }
 }

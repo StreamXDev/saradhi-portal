@@ -67,8 +67,9 @@
                 <div class="row">
                     <div class="col-md-2">
                         <label for="pack" class="form-label">No. of Packs</label>
-                        <div class="control-col">
+                        <div class="control-col" style="flex-direction:column; align-items:flex-start">
                             <input type="number" name="pack" id="pack" class="form-control" value="1" min="1">
+                            <label for="bulk" style="margin-top: 0.8rem; display:flex; align-items:center" class="form-checkbox bulk-label"><input type="checkbox" name="bulk" id="bulk">&nbsp; Combined Pass</label>
                         </div>
                     </div>
                     <div class="col-md-2">

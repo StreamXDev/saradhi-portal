@@ -152,7 +152,7 @@ class EventController extends Controller
         if(!$event){
             return redirect('/admin/events/create');
         }
-        $participant_types = EventEnum::select('id', 'slug', 'name')->where('type', 'participant_type')->get();
+        $participant_types = EventEnum::select('id', 'slug', 'name', 'category')->where('type', 'participant_type')->get();
         $data = EventParticipant::with('invitee_type')->where('event_id', $id);
         $invitee_count = $data->get();
         $invitees = $data->orderBy('id','desc')->paginate(20);
@@ -176,6 +176,7 @@ class EventController extends Controller
     }
 
 
+    
     /**
      * Invitee add/edit form
      */
@@ -222,9 +223,10 @@ class EventController extends Controller
             return Redirect::back()->withErrors($validator)->withInput();       
         }
 
-        $packs = $input['pack'] ? $input['pack'] : 1;
+        $packs = isset($input['pack']) ? $input['pack'] : 1;
+        $bulk = isset($input['bulk']) ? true : false;
         DB::beginTransaction();
-        for($i=0; $i <= $packs; $i++){
+        if($bulk){
             EventParticipant::create([
                 'event_id' => $input['event_id'],
                 'type' => $input['type'],
@@ -232,8 +234,22 @@ class EventController extends Controller
                 'company' => $input['company'],
                 'designation' => $input['designation'],
                 'unit' => $input['unit'],
+                'pack_count' => $packs,
                 'created_by' => $user->id,
             ]);
+        }else{
+            for($i=0; $i <= $packs; $i++){
+                EventParticipant::create([
+                    'event_id' => $input['event_id'],
+                    'type' => $input['type'],
+                    'name' => $input['name'],
+                    'company' => $input['company'],
+                    'designation' => $input['designation'],
+                    'unit' => $input['unit'],
+                    'pack_count' => $packs,
+                    'created_by' => $user->id,
+                ]);
+            }
         }
 
         DB::commit();

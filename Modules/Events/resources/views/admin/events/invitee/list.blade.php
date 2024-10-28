@@ -54,7 +54,25 @@
                     <td>{{$invitee->admit_count}}</td>
                     <td>
                         <div class="actions">
-                            <a href="#" class="btn" data-bs-toggle="modal" data-bs-target="#eventPassModal"><i class="icon" data-feather="credit-card"></i></a>
+                            <a href="#" class="btn" data-bs-toggle="modal" data-bs-target="#eventPassModal{{$invitee->id}}" ><i class="icon" data-feather="credit-card"></i></a>
+                        </div>
+                        <!-- Modal -->
+                        <div class="modal fade" id="eventPassModal{{$invitee->id}}" tabindex="-1" aria-labelledby="eventPassModal{{$invitee->id}}Label" aria-hidden="true">
+                            <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="eventPassModal{{$invitee->id}}Label">Admission Pass</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    
+                                    <div class="id-card-wrapper">
+                                        @include('events::includes.passcard')
+                                    </div>
+
+                                </div>
+                            </div>
+                            </div>
                         </div>
                     </td>
                 </tr>
@@ -62,25 +80,6 @@
         </tbody>
     </table>
     <div class="pagination-container">{{ $invitees->links() }}</div>
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="eventPassModal" tabindex="-1" aria-labelledby="eventPassModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="eventPassModalLabel">Admission Pass</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            
-            <div class="id-card-wrapper">
-                @include('events::includes.passcard')
-            </div>
-
-        </div>
-      </div>
-    </div>
 </div>
 @endsection
 
