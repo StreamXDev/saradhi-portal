@@ -156,7 +156,6 @@ class EventController extends Controller
         $data = EventParticipant::with('invitee_type')->where('event_id', $id);
         $invitee_count = $data->get();
         $invitees = $data->orderBy('id','desc')->paginate(20);
-        dd($invitees);
         $total_invited = 0;
         $total_attended = 0;
         $group_count = [];
