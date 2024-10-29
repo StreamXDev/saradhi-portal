@@ -13,6 +13,23 @@
         <div><small class="text-muted">Showing <strong>{{$members->currentPage()}}</strong> to <strong>{{$members->count()}}</strong> of <strong>{{$members->total()}}</strong> results</small></div>
     </div>
 </div>
+<div class="page-search">
+    <div class="page-title box-title">
+        <h2 class="title">Search &amp; Filter</h2>
+    </div>
+    <form action="" method="">
+        <div class="form-group no-margin">
+            <div class="row">
+                <div class="col-md-4">
+                    <input type="text" name="search_by" id="search_by" placeholder="Name/Email/Phone/MID" class="form-control" value="{{ $filters['search_by'] }}">
+                </div>
+                <div class="col-md-2">
+                    <input type="submit" value="Search" class="btn btn-primary">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
 <div class="page-content">
     <table class="table list">
         <thead>

@@ -36,11 +36,51 @@ class MemberController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $members = Member::with(['membership', 'details'])->where('active', 1)->orderBy('id','asc')->paginate(20);
-        //dd($members);
-        return view('members::admin.member.list', compact('members'));
+        
+
+        list($members, $filters) = $this->memberSearch();
+        $members = $members->paginate();
+        return view('members::admin.member.list', compact('members', 'filters'));
+    }
+
+    public function memberSearch()
+    {
+
+        $members = Member::with(['membership', 'details','user'])->where('active', 1)->orderBy('id','desc');
+        $filters = collect(
+            [
+                'search_by' => '',
+                'unit' => '',
+                'mid' => '',
+                'status' => '',
+            ]
+        );
+
+        if (request()->get('search_by') != null){
+            $input = request()->get('search_by');
+            $members->where('type', 'LIKE', '%' .$input. '%')
+                ->orWhereHas('user', function($q) use ($input) {
+                    return $q->where('name', 'LIKE', '%' . $input . '%');
+                })
+                ->orWhereHas('user', function($q) use ($input) {
+                    return $q->where('email', $input);
+                })
+                ->orWhereHas('user', function($q) use ($input) {
+                    return $q->where('phone', $input);
+                })
+                ->orWhereHas('membership', function($q) use ($input) {
+                    return $q->where('mid', $input);
+                });
+
+            $filters->put('search_by', request()->get('search_by'));
+        }
+
+        return [
+            $members,
+            $filters
+        ];
     }
 
     /**
@@ -138,7 +178,27 @@ class MemberController extends Controller
     public function create()
     {
         $countries = Country::with('regions')->where('active', 1)->get();
-        return view('members::admin.member.create', compact('countries'));
+        $units = MemberUnit::select('id', 'slug', 'name')->where('active', 1)->get();
+        $blood_groups = MemberEnum::select('id', 'slug', 'name')->where('type', 'blood_group')->get();
+        $suggested_mid = Membership::max('mid') + 1;
+        $district_kerala = array(
+            ['name' => 'Alappuzha', 'slug' => 'alappuzha'],
+            ['name' => 'Ernakulam', 'slug' => 'ernakulam'],
+            ['name' => 'Idukki', 'slug' => 'idukki'],
+            ['name' => 'Kannur', 'slug' => 'kannur'],
+            ['name' => 'Kasaragod', 'slug' => 'kasaragod'],
+            ['name' => 'Kollam', 'slug' => 'kollam'],
+            ['name' => 'Kottayam', 'slug' => 'kottayam'],
+            ['name' => 'Kozhikkode', 'slug' => 'kozhikkode'],
+            ['name' => 'Malappuram', 'slug' => 'malappuram'],
+            ['name' => 'Palakkad', 'slug' => 'palakkad'],
+            ['name' => 'Pathanamthitta', 'slug' => 'pathanamthitta'],
+            ['name' => 'Thiruvananthapuram', 'slug' => 'thriuvananthapuram'],
+            ['name' => 'Thrissur', 'slug' => 'thrissur'],
+            ['name' => 'Wayanada', 'slug' => 'wayanad'],
+            ['name' => 'Other', 'slug' => 'other'],
+        );
+        return view('members::admin.member.create', compact('countries', 'units', 'blood_groups', 'district_kerala', 'suggested_mid'));
     }
 
     /**

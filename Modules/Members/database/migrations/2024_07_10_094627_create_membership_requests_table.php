@@ -18,7 +18,7 @@ return new class extends Migration
             $table->boolean('checked')->default(0);
             $table->unsignedBigInteger('rejected')->nullable();
             $table->foreignId('updated_by')->references('id')->on('users');
-            $table->string('remark')->nullable();
+            $table->text('remark')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

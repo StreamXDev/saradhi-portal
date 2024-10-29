@@ -246,7 +246,7 @@ class EventController extends Controller
                     'company' => $input['company'],
                     'designation' => $input['designation'],
                     'unit' => $input['unit'],
-                    'pack_count' => $packs,
+                    'pack_count' => 1,
                     'created_by' => $user->id,
                 ]);
             }
