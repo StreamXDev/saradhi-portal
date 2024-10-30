@@ -1,4 +1,5 @@
 <?php
+
 if (! function_exists('mime2ext')) {
     function mime2ext($mime) {
         $mime_map = [

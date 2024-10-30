@@ -175,6 +175,7 @@ if(! function_exists('requestStatusDisplay')){
                 foreach($actives as $active){
                     if($value->id == $active->request_status_id  ||  $value->id == $active->request_status_id && $active->rejected ){ //add the request status history to the list
                         $statuses[$key]['checked'] = true;
+                        $statuses[$key]->updated_at = $active->updated_at;
                     }
                     if($value->id == $active->request_status_id){ // adding remarks to the list
                         $statuses[$key]['remark'] = $active->remark;

@@ -97,7 +97,7 @@ class MemberController extends Controller
         $statuses = requestStatusDisplay($id);
         $current_status = MembershipRequest::where('user_id', $id)->latest('id')->first();
         $request_action = requestByPermission($current_status);
-        //dd($request_action);
+        //dd($statuses);
         $suggested_mid = Membership::max('mid') + 1;
 
         $countries = Country::with('regions')->where('active', 1)->get();
@@ -245,7 +245,7 @@ class MemberController extends Controller
         DB::beginTransaction();
 
         User::create([
-            
+
         ]);
 
         DB::commit();
