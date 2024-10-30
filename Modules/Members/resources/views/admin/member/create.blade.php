@@ -6,10 +6,7 @@
     </div>
 </div>
 <div class="page-content">
-    @if($errors->any())
-        <div class="form-errors">{!! implode('', $errors->all('<div>:message</div>')) !!}</div>
-    @endif
-    <form action="">
+    <form action="{{ route('admin.member.create') }}" method="POST" id="registerForm" enctype="multipart/form-data">
         @csrf
         <div class="form-section-title">User Information</div>
         <div class="form-group row">
@@ -21,14 +18,16 @@
             </div>
             <div class="col-md-4">
                 <label for="email" class="form-label">Email<span class="asterisk">*</span></label>
-                <div class="control-col">
+                <div class="control-col block">
                     <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}">
+                    @error('email') <small>{{ $errors->first('email') }}</small> @enderror
                 </div>
             </div>
             <div class="col-md-4">
                 <label for="password" class="form-label">Password<span class="asterisk">*</span></label>
-                <div class="control-col">
+                <div class="control-col block">
                     <input type="text" name="password" id="password" class="form-control @error('password') is-invalid @enderror" value="{{ old('password') }}">
+                    @error('password') <small>{{ $errors->first('password') }}</small> @enderror
                 </div>
             </div>
         </div>
@@ -71,8 +70,9 @@
         <div class="form-group row">
             <div class="col-md-4">
                 <label for="photo" class="form-label">Profile Photo<span class="asterisk">*</span></label>
-                <div class="control-col">
+                <div class="control-col block">
                     <input type="file" name="avatar" id="avatar" class="form-control @error('avatar') is-invalid @enderror" value="{{ old('avatar') }}">
+                    @error('avatar') <small>{{ $errors->first('avatar') }}</small> @enderror
                 </div>
             </div>
         </div>
@@ -119,7 +119,7 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <label class="form-label" for="photo_civil_id_front">Civil ID Copy (Front / Front and Back) <span class="asterisk">(self attested copy) *</span></label>
+                <label class="form-label" for="photo_civil_id_front">Civil ID Copy (Front / Front and Back) <span class="asterisk">*</span></label>
                 <div class="control-col">
                     <input  type="file"  name="photo_civil_id_front"  id="photo_civil_id_front" class="form-control @error('photo_civil_id_front') is-invalid @enderror">
                     <div class="form-text">
@@ -128,7 +128,7 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <label class="form-label" for="photo_civil_id_back">Civil ID Copy (Back) <span class="asterisk">(Upload self attested copy) *</span></label>
+                <label class="form-label" for="photo_civil_id_back">Civil ID Copy (Back) <span class="asterisk">*</span></label>
                 <div class="control-col">
                     <input  type="file"  name="photo_civil_id_back"  id="photo_civil_id_back" class="form-control @error('photo_civil_id_back') is-invalid @enderror">
                     <div class="form-text">
@@ -152,7 +152,7 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <label class="form-label" for="photo_passport_front">Passport Copy (Front / Front and Back) <span class="asterisk">(Upload self attested copy) *</span></label>
+                <label class="form-label" for="photo_passport_front">Passport Copy (Front / Front and Back) <span class="asterisk">*</span></label>
                 <div class="control-col">
                     <input  type="file"  name="photo_passport_front"  id="photo_passport_front" class="form-control @error('photo_passport_front') is-invalid @enderror">
                     <div id="photo_passport_front" class="form-text">
@@ -161,7 +161,7 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <label class="form-label" for="photo_passport_back">Passport Copy (Back) <span class="asterisk">(Upload self attested copy) *</span></label>
+                <label class="form-label" for="photo_passport_back">Passport Copy (Back) <span class="asterisk">*</span></label>
                 <div class="control-col">
                     <input  type="file"  name="photo_passport_back"  id="photo_passport_back" class="form-control @error('photo_passport_back') is-invalid @enderror">
                     <div id="photo_passport_back" class="form-text">
@@ -323,7 +323,7 @@
             <div class="col-md-2">
                 <label for="intro_name" class="form-label">Introducer Name<span class="asterisk">*</span></label>
                 <div class="control-col">
-                    <input type="text" name="introducer_name" id="intro_name" class="form-control" value="{{ old('introducer_name') }}"> 
+                    <input type="text" name="introducer_name" id="intro_name" class="form-control @error('introducer_name') is-invalid @enderror" value="{{ old('introducer_name') }} "> 
                 </div>
             </div>
             <div class="col-md-4">
@@ -334,7 +334,7 @@
                             <option value="{{ $country->calling_code }}" @if($country->code == 'kw') selected @endif>{{ $country->name }} (+{{ $country->calling_code}})</option>
                         @endforeach
                     </select>
-                    <input type="text" name="introducer_phone" id="introducer_phone" class="form-control" value="{{ old('introducer_phone') }}"> 
+                    <input type="text" name="introducer_phone" id="introducer_phone" class="form-control @error('introducer_phone') is-invalid @enderror" value="{{ old('introducer_phone') }}"> 
                 </div>
             </div>
             <div class="col-md-2">
@@ -366,22 +366,22 @@
                 </div>
             </div>
             <div class="col-md-2" id="midPrimary">
-                <label for="primary_mid" class="form-label">Primary Member MID<span class="asterisk">*</span></strong>)</label>
+                <label for="primary_mid" class="form-label">Primary Member MID<span class="asterisk">*</span></strong></label>
                 <div class="control-col">
-                    <input type="text" name="primary_mid" id="primary_mid" class="form-control" aria-describedby="primaryMIDHelp">
+                    <input type="text" name="primary_mid" id="primary_mid" class="form-control @error('primary_mid') is-invalid @enderror" aria-describedby="primaryMIDHelp">
                     <small id="primaryMIDHelp" class="form-text text-muted">Suggested MID: <strong>{{ $suggested_mid }}</strong></small>
                 </div>
             </div>
             <div class="col-md-2" id="midSpouse">
                 <label for="spouse_mid" class="form-label">Spouse MID<span class="asterisk">*</span></label>
                 <div class="control-col">
-                    <input type="text" name="spouse_mid" id="spouse_mid" class="form-control" aria-describedby="spouseMIDHelp">
+                    <input type="text" name="spouse_mid" id="spouse_mid" class="form-control @error('spouse_mid') is-invalid @enderror" aria-describedby="spouseMIDHelp">
                     <small id="spouseMIDHelp" class="form-text text-muted">Suggested MID: <strong>{{ $suggested_mid+1 }}</strong></small>
                 </div>
             </div>
         </div>
         <div class="form-group d-flex">
-            <button type="button" name="action" value="submit" class="btn btn-lg btn-primary justify-self-end">Submit Details</button>
+            <button type="submit" name="action" value="submit" class="btn btn-lg btn-primary justify-self-end">Submit Details</button>
         </div>
     </form>
 </div>

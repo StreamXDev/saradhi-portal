@@ -59,6 +59,10 @@ a{
     display: flex;
     align-items: center;
     flex-wrap: wrap;
+    &.block{
+        flex-direction: column;
+        align-items: flex-start;
+    }
     .country-code{
         width: 160px;
         margin-right: 1rem;

@@ -11,6 +11,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
@@ -19,6 +20,7 @@ use Modules\Members\Models\MemberDetail;
 use Modules\Members\Models\MemberEnum;
 use Modules\Members\Models\MemberLocalAddress;
 use Modules\Members\Models\MemberPermanentAddress;
+use Modules\Members\Models\MemberRelation;
 use Modules\Members\Models\Membership;
 use Modules\Members\Models\MembershipRequest;
 use Modules\Members\Models\MemberUnit;
@@ -209,7 +211,7 @@ class MemberController extends Controller
      */
     public function store(Request $request)
     {
-        $user = Auth::user();
+        $admin = Auth::user();
         $input = $request->all();
 
         $validator = Validator::make($request->all(), ...$this->validationRules($request));
@@ -217,39 +219,257 @@ class MemberController extends Controller
             return Redirect::back()->withErrors($validator)->withInput();       
         }
 
+        DB::beginTransaction();
+
+        $user = User::create([
+            'name' => $input['name'],
+            'email' => $input['email'],
+            'password' => $input['password'],
+            'phone' => $input['phone'],
+            'calling_code' => $input['tel_country_code'],
+            'email_verified_at' => now()
+        ]);
+        $user->assignRole(['Member']);
         $avatarName = 'av'.$user->id.'_'.time().'.'.$request->avatar->extension(); 
         $request->avatar->storeAs('public/images', $avatarName);
+        User::where('id', $user->id)->update([
+            'avatar' => $avatarName,
+        ]);
+
+        $new_member = Member::create([
+            'user_id' => $user->id,
+            'type' => 'primary',
+            'name' => $input['name'],
+            'gender' => $input['gender'],
+            'blood_group' => $input['blood_group'],
+            'active' => $input['verification']  == 'yes' ? 0 : 1
+        ]);
 
         if($request->photo_civil_id_front){
             $civil_id_front_name = 'cvf'.$user->id.'_'.time().'.'.$request->photo_civil_id_front->extension(); 
             $request->photo_civil_id_front->storeAs('public/images', $civil_id_front_name);
         }
-
         if($request->photo_civil_id_back){
             $civil_id_back_name = 'cvb'.$user->id.'_'.time().'.'.$request->photo_civil_id_back->extension(); 
             $request->photo_civil_id_back->storeAs('public/images', $civil_id_back_name);
         }
-
         if($request->photo_passport_front){
             $passport_front_name = 'ppf'.$user->id.'_'.time().'.'.$request->photo_passport_front->extension(); 
             $request->photo_passport_front->storeAs('public/images', $passport_front_name);
         }
-
         if($request->photo_passport_back){
             $passport_back_name = 'ppb'.$user->id.'_'.time().'.'.$request->photo_passport_back->extension(); 
             $request->photo_passport_back->storeAs('public/images', $passport_back_name);
         }
+        MemberDetail::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'member_unit_id' => $input['member_unit_id'],
+                'civil_id' => $input['civil_id'],
+                'photo_civil_id_front' => $civil_id_front_name,
+                'photo_civil_id_back' => $civil_id_back_name,
+                'dob' => $input['dob'],
+                'whatsapp' => $input['whatsapp'],
+                'whatsapp_code' => $input['whatsapp_country_code'],
+                'emergency_phone' => $input['emergency_phone'],
+                'emergency_phone_code' => $input['emergency_country_code'],
+                'company' => $input['company'],
+                'profession' => $input['profession'],
+                'company_address' => $input['company_address'],
+                'passport_no' => $input['passport_no'],
+                'passport_expiry' => $input['passport_expiry'],
+                'photo_passport_front' => $passport_front_name,
+                'photo_passport_back' => $passport_back_name,
+                'paci' => $input['paci'],
+                'sndp_branch' => $input['sndp_branch'],
+                'sndp_branch_number' => $input['sndp_branch_number'],
+                'sndp_union' => $input['sndp_union'],
+                'completed' => 1
+            ]
+        );
 
-        $input['avatar'] = $avatarName;
-
-        DB::beginTransaction();
-
-        User::create([
-
+        Membership::create([
+            'user_id' => $user->id,
+            'type' => $input['type'],
+            'introducer_name' => $input['introducer_name'],
+            'introducer_phone' => $input['introducer_country_code'].$input['introducer_phone'],
+            'introducer_mid' => $input['introducer_mid'],
+            'introducer_unit' => $input['introducer_unit'],
+            'mid' => $input['verification']  == 'yes' ? null : $input['primary_mid'],
+            'start_date' => $input['verification']  == 'yes' ? null : now(),
+            'updated_date' => $input['verification']  == 'yes' ? null : now(),
+            'expiry_date' => $input['verification']  == 'yes' ? null : date('Y-m-d', strtotime('+1 year')),
+            'status' => $input['verification']  == 'yes' ? 'inactive' : 'active',
         ]);
 
-        DB::commit();
+        MemberLocalAddress::create([
+            'user_id' => $user->id,
+            'governorate' => $input['governorate'],
+            'line_1' => $input['local_address_area'],
+            'building' => $input['local_address_building'],
+            'flat' => $input['local_address_flat'],
+            'floor' => $input['local_address_floor'],
+        ]);
 
+        MemberPermanentAddress::create([
+            'user_id' => $user->id,
+            'line_1' => $input['permanent_address_line_1'],
+            'district' => $input['permanent_address_district'],
+            'contact' => $input['permanent_address_country_code'].$input['permanent_address_contact'],
+        ]);
+
+        if($input['verification'] == 'yes'){
+            $status = MemberEnum::where('type', 'request_status')->where('slug', 'saved')->first();
+            MembershipRequest::create([
+                'user_id' => $user->id,
+                'request_status_id' => $status->id,
+                'checked' => 1, 
+                'updated_by' => $admin->id,
+            ]);
+            $status = MemberEnum::where('type', 'request_status')->where('slug', 'submitted')->first();
+            MembershipRequest::create([
+                'user_id' => $user->id,
+                'request_status_id' => $status->id,
+                'updated_by' => $admin->id,
+            ]);
+        }
+
+        if($input['type'] == 'family'){
+            $spouse_user = User::create([
+                'name' => $input['spouse_name'],
+                'email' => $input['spouse_email'],
+                'password' => $input['password'],
+                'phone' => $input['spouse_phone'],
+                'calling_code' => $input['spouse_tel_country_code'],
+                'email_verified_at' => now()
+            ]);
+            $spouse_user->assignRole(['Member']);
+            $spouseAvatarName = 'av'.$spouse_user->id.'_'.time().'.'.$request->spouse_avatar->extension(); 
+            $request->spouse_avatar->storeAs('public/images', $spouseAvatarName);
+            $input['avatar'] = $avatarName;
+            User::where('id', $spouse_user->id)->update([
+                'avatar' => $spouseAvatarName,
+            ]);
+            
+            $new_member_spouse = Member::create([
+                'user_id' => $spouse_user->id,
+                'type' => 'spouse',
+                'name' => $input['spouse_name'],
+                'gender' => $input['spouse_gender'],
+                'blood_group' => $input['spouse_blood_group'],
+                'active' => $input['verification']  == 'yes' ? 0 : 1
+            ]);
+
+            if($request->spouse_photo_civil_id_front){
+                $spouse_civil_id_front_name = 'cvf'.$spouse_user->id.'_'.time().'.'.$request->spouse_photo_civil_id_front->extension(); 
+                $request->spouse_photo_civil_id_front->storeAs('public/images', $spouse_civil_id_front_name);
+            }
+            if($request->spouse_photo_civil_id_back){
+                $spouse_civil_id_back_name = 'cvb'.$spouse_user->id.'_'.time().'.'.$request->spouse_photo_civil_id_back->extension(); 
+                $request->spouse_photo_civil_id_back->storeAs('public/images', $spouse_civil_id_back_name);
+            }
+            if($request->spouse_photo_passport_front){
+                $spouse_passport_front_name = 'ppf'.$spouse_user->id.'_'.time().'.'.$request->spouse_photo_passport_front->extension(); 
+                $request->spouse_photo_passport_front->storeAs('public/images', $spouse_passport_front_name);
+            }
+            if($request->spouse_photo_passport_back){
+                $spouse_passport_back_name = 'ppb'.$spouse_user->id.'_'.time().'.'.$request->spouse_photo_passport_back->extension(); 
+                $request->spouse_photo_passport_back->storeAs('public/images', $spouse_passport_back_name);
+            }
+            MemberDetail::updateOrCreate(
+                ['user_id' => $spouse_user->id],
+                [
+                    'member_unit_id' => $input['member_unit_id'],
+                    'civil_id' => $input['spouse_civil_id'],
+                    'photo_civil_id_front' => $spouse_civil_id_front_name,
+                    'photo_civil_id_back' => $spouse_civil_id_back_name,
+                    'dob' => $input['spouse_dob'],
+                    'whatsapp' => $input['spouse_whatsapp'],
+                    'whatsapp_code' => $input['spouse_whatsapp_country_code'],
+                    'emergency_phone' => $input['spouse_emergency_phone'],
+                    'emergency_phone_code' => $input['spouse_emergency_country_code'],
+                    'company' => $input['spouse_company'],
+                    'profession' => $input['spouse_profession'],
+                    'company_address' => $input['spouse_company_address'],
+                    'passport_no' => $input['spouse_passport_no'],
+                    'passport_expiry' => $input['spouse_passport_expiry'],
+                    'photo_passport_front' => $spouse_passport_front_name,
+                    'photo_passport_back' => $spouse_passport_back_name,
+                    'paci' => $input['spouse_paci'],
+                    'sndp_branch' => $input['sndp_branch'],
+                    'sndp_branch_number' => $input['sndp_branch_number'],
+                    'sndp_union' => $input['sndp_union'],
+                    'completed' => 1
+                ]
+            );
+
+            Membership::create([
+                'user_id' => $spouse_user->id,
+                'type' => $input['type'],
+                'introducer_name' => $input['introducer_name'],
+                'introducer_phone' => $input['introducer_country_code'].$input['introducer_phone'],
+                'introducer_mid' => $input['introducer_mid'],
+                'introducer_unit' => $input['introducer_unit'],
+                'mid' => $input['verification']  == 'yes' ? null : $input['spouse_mid'],
+                'start_date' => $input['verification']  == 'yes' ? null : now(),
+                'updated_date' => $input['verification']  == 'yes' ? null : now(),
+                'expiry_date' => $input['verification']  == 'yes' ? null : date('Y-m-d', strtotime('+1 year')),
+                'status' => $input['verification']  == 'yes' ? 'inactive' : 'active',
+            ]);
+
+            MemberLocalAddress::create([
+                'user_id' => $spouse_user->id,
+                'governorate' => $input['governorate'],
+                'line_1' => $input['local_address_area'],
+                'building' => $input['local_address_building'],
+                'flat' => $input['local_address_flat'],
+                'floor' => $input['local_address_floor'],
+            ]);
+    
+            MemberPermanentAddress::create([
+                'user_id' => $spouse_user->id,
+                'line_1' => $input['permanent_address_line_1'],
+                'district' => $input['permanent_address_district'],
+                'contact' => $input['permanent_address_country_code'].$input['permanent_address_contact'],
+            ]);
+
+            if($input['verification'] == 'yes'){
+                $status = MemberEnum::where('type', 'request_status')->where('slug', 'saved')->first();
+                MembershipRequest::create([
+                    'user_id' => $spouse_user->id,
+                    'request_status_id' => $status->id,
+                    'checked' => 1, 
+                    'updated_by' => $admin->id,
+                ]);
+                $status = MemberEnum::where('type', 'request_status')->where('slug', 'submitted')->first();
+                MembershipRequest::create([
+                    'user_id' => $spouse_user->id,
+                    'request_status_id' => $status->id,
+                    'updated_by' => $admin->id,
+                ]);
+            }
+
+            //Adding relationship
+            $relation = MemberEnum::where('type', 'relationship')->where('slug', 'spouse')->first();
+            $primaryMember = Member::where('user_id',$user->id)->first();
+            MemberRelation::create([
+                'member_id' => $primaryMember->id,
+                'related_member_id' => $new_member_spouse->id,
+                'relationship_id' => $relation->id,
+            ]);
+            MemberRelation::create([
+                'member_id' => $new_member_spouse->id,
+                'related_member_id' => $primaryMember->id,
+                'relationship_id' => $relation->id,
+            ]);
+
+        }
+
+        DB::commit();
+        if($request->verification == 'yes'){
+            return redirect('admin/members/requests');
+        }
+        return redirect('/admin/members');
     }
 
     protected function validationRules($request)
@@ -257,10 +477,10 @@ class MemberController extends Controller
         $rules =  [
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
-            'phone' => 'required|email|unique:users,phone',
-            'password' => 'required',
-            'whatsapp' => 'required',
-            'emergency_phone' => 'required',
+            'phone' => 'required|numeric|unique:users,phone',
+            'password' => ['required', Password::min(8)->numbers()->letters()->symbols()],
+            'whatsapp' => 'required|numeric',
+            'emergency_phone' => 'required|numeric',
             'dob' => 'required|date_format:Y-m-d',
             'gender' => 'required',
             'blood_group' => 'required',
@@ -269,33 +489,17 @@ class MemberController extends Controller
             'passport_expiry' => 'required',
             'type' => 'required',
             'governorate' => 'required',
+            'member_unit_id' => 'required',
             'local_address_area' => 'required',
-            'local_address_building' => 'required',
-            'local_address_flat' => 'required',
-            'local_address_floor' => 'required',
-            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'introducer_name' => 'required',
+            'introducer_phone' => 'required',
+            'avatar' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg','max:2048'],
         ];
 
         $messages = [
-            'name.required'    => 'Name is required',
-            'email.required'    => 'Email is required',
-            'phone.required'    => 'Phone is required',
-            'password.required'    => 'Password is required',
-            'whatsapp.required'    => 'Whatsapp is required',
-            'emergency_phone.required'    => 'Emergency is required',
-            'dob.required'    => 'Date of birth is required',
-            'gender.required'    => 'Gender is required',
-            'blood_group.required'    => 'Blood Group is required',
-            'civil_id.required'    => 'Civil ID is required',
-            'passport_no.required'    => 'Passport No. is required',
-            'passport_expiry.required'    => 'Passport Expiry is required',
-            'type.required'    => 'Membership Type is required',
-            'governorate.required'    => 'Governorate is required',
-            'local_address_area.required'    => 'Kuwait address area is required',
-            'local_address_building.required'    => 'Kuwait address building is required',
-            'local_address_flat.required'    => 'Kuwait address flat is required',
-            'local_address_floor.required'    => 'Kuwait address floor is required',
-
+            'email.unique' => 'The Email ID is already used',
+            'email.email' => 'Please enter a valid email ID',
+            'phone.unique' => 'The phone number is already used',
             'avatar.required' => 'Profile photo is required',
             'avatar.image' => 'Profile photo should be an image',
             'avatar.mimes' => 'Profile photo must be a file of type: jpeg, png, jpg, gif, svg.',
@@ -315,27 +519,15 @@ class MemberController extends Controller
             $rules['spouse_passport_no'] = ['required', 'string'];
             $rules['spouse_passport_expiry'] = ['required', 'date_format:Y-m-d'];
             $rules['spouse_avatar'] = ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg','max:2048'];
+        }
 
-            $messages['spouse_phone.required'] = 'Spouse Phone number is required';
-            $messages['spouse_phone.unique'] = 'Spouse This phone number is already used';
-            $messages['spouse_whatsapp.required'] = 'Spouse Whatsapp Number is required';
-            $messages['spouse_whatsapp.numeric'] = 'Spouse Whatsapp number should be a number';
-            $messages['spouse_emergency_phone.required'] = 'Spouse Emergency Phone Number is required';
-            $messages['spouse_emergency_phone.numeric'] = 'Spouse Emergency Phone number should be a number';
-            $messages['spouse_civil_id.required'] = 'Spouse Civil ID is required';
-            $messages['spouse_civil_id.string'] = 'Spouse Civil ID is not valid';
-            $messages['spouse_dob.required'] = 'Spouse Date of birth is required';
-            $messages['spouse_dob.date_format'] = 'Spouse Date of birth should be of format Y-m-d';
-            $messages['spouse_passport_no.required'] = 'Spouse Passport number is required';
-            $messages['spouse_passport_expiry.required'] = 'Spouse Passport expiry date is required';
-            $messages['spouse_passport_expiry.date_format'] = 'Spouse Passport expiry date should be of format Y-m-d';
-            $messages['spouse_gender.required'] = 'Spouse Gender is required';
-            $messages['spouse_blood_group.required'] = 'Spouse Blood group is required';
-
-            $messages['spouse_avatar.required'] = 'Spouse Profile photo is required';
-            $messages['spouse_avatar.image'] = 'Spouse Profile photo should be an image';
-            $messages['spouse_avatar.mimes'] = 'Spouse Profile photo must be a file of type: jpeg, png, jpg, gif, svg.';
-            $messages['spouse_avatar.max'] = 'Spouse Profile photo size should not be exceeded more than 2mb';
+        if($request->verification == 'no'){
+            $rules['primary_mid'] = ['required', 'string'];
+            $messages['primary_mid.required'] = 'Primary Member MID is required';
+            if($request->type == 'family'){
+                $rules['spouse_mid'] = ['required', 'string'];
+                $messages['spouse_mid.required'] = 'Spouse MID is required';
+            }
         }
 
         return [

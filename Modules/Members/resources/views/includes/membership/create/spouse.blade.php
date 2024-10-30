@@ -79,6 +79,12 @@
             </div>
         </div>
         <div class="col-md-6 col-lg-4">
+            <label for="spouse_paci" class="form-label">Spouse PACI No.</label>
+            <div class="control-col">
+                <input type="text" name="spouse_paci" id="spouse_paci" class="form-control @error('spouse_paci') is-invalid @enderror" value="{{ old('spouse_paci') }}">
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
             <label for="spouse_passport_no" class="form-label">Spouse Passport Number <span class="asterisk">*</span></label>
             <div class="control-col">
                 <input type="text" name="spouse_passport_no" id="spouse_passport_no" class="form-control @error('spouse_passport_no') is-invalid @enderror" value="{{ old('spouse_passport_no' )}}">
