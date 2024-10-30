@@ -7,7 +7,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Country;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
@@ -204,9 +207,141 @@ class MemberController extends Controller
     /**
      * Store new member
      */
-    public function store()
+    public function store(Request $request)
     {
+        $user = Auth::user();
+        $input = $request->all();
 
+        $validator = Validator::make($request->all(), ...$this->validationRules($request));
+        if($validator->fails()){
+            return Redirect::back()->withErrors($validator)->withInput();       
+        }
+
+        $avatarName = 'av'.$user->id.'_'.time().'.'.$request->avatar->extension(); 
+        $request->avatar->storeAs('public/images', $avatarName);
+
+        if($request->photo_civil_id_front){
+            $civil_id_front_name = 'cvf'.$user->id.'_'.time().'.'.$request->photo_civil_id_front->extension(); 
+            $request->photo_civil_id_front->storeAs('public/images', $civil_id_front_name);
+        }
+
+        if($request->photo_civil_id_back){
+            $civil_id_back_name = 'cvb'.$user->id.'_'.time().'.'.$request->photo_civil_id_back->extension(); 
+            $request->photo_civil_id_back->storeAs('public/images', $civil_id_back_name);
+        }
+
+        if($request->photo_passport_front){
+            $passport_front_name = 'ppf'.$user->id.'_'.time().'.'.$request->photo_passport_front->extension(); 
+            $request->photo_passport_front->storeAs('public/images', $passport_front_name);
+        }
+
+        if($request->photo_passport_back){
+            $passport_back_name = 'ppb'.$user->id.'_'.time().'.'.$request->photo_passport_back->extension(); 
+            $request->photo_passport_back->storeAs('public/images', $passport_back_name);
+        }
+
+        $input['avatar'] = $avatarName;
+
+        DB::beginTransaction();
+
+        User::create([
+            
+        ]);
+
+        DB::commit();
+
+    }
+
+    protected function validationRules($request)
+    {
+        $rules =  [
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'required|email|unique:users,phone',
+            'password' => 'required',
+            'whatsapp' => 'required',
+            'emergency_phone' => 'required',
+            'dob' => 'required|date_format:Y-m-d',
+            'gender' => 'required',
+            'blood_group' => 'required',
+            'civil_id' => 'required',
+            'passport_no' => 'required',
+            'passport_expiry' => 'required',
+            'type' => 'required',
+            'governorate' => 'required',
+            'local_address_area' => 'required',
+            'local_address_building' => 'required',
+            'local_address_flat' => 'required',
+            'local_address_floor' => 'required',
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ];
+
+        $messages = [
+            'name.required'    => 'Name is required',
+            'email.required'    => 'Email is required',
+            'phone.required'    => 'Phone is required',
+            'password.required'    => 'Password is required',
+            'whatsapp.required'    => 'Whatsapp is required',
+            'emergency_phone.required'    => 'Emergency is required',
+            'dob.required'    => 'Date of birth is required',
+            'gender.required'    => 'Gender is required',
+            'blood_group.required'    => 'Blood Group is required',
+            'civil_id.required'    => 'Civil ID is required',
+            'passport_no.required'    => 'Passport No. is required',
+            'passport_expiry.required'    => 'Passport Expiry is required',
+            'type.required'    => 'Membership Type is required',
+            'governorate.required'    => 'Governorate is required',
+            'local_address_area.required'    => 'Kuwait address area is required',
+            'local_address_building.required'    => 'Kuwait address building is required',
+            'local_address_flat.required'    => 'Kuwait address flat is required',
+            'local_address_floor.required'    => 'Kuwait address floor is required',
+
+            'avatar.required' => 'Profile photo is required',
+            'avatar.image' => 'Profile photo should be an image',
+            'avatar.mimes' => 'Profile photo must be a file of type: jpeg, png, jpg, gif, svg.',
+            'avatar.max' => 'Profile photo size should not be exceeded more than 2mb',
+        ];
+
+        if($request->type == 'family'){
+            $rules['spouse_name'] = ['required', 'string'];
+            $rules['spouse_email'] = ['required', Rule::unique(User::class, 'email')];
+            $rules['spouse_phone'] = ['required', Rule::unique(User::class, 'phone')];
+            $rules['spouse_whatsapp'] = ['required', 'numeric'];
+            $rules['spouse_emergency_phone'] = ['required', 'numeric'];
+            $rules['spouse_dob'] = ['required', 'date_format:Y-m-d'];
+            $rules['spouse_gender'] = ['required', 'string'];
+            $rules['spouse_blood_group'] = ['required', 'string'];
+            $rules['spouse_civil_id'] = ['required', 'string'];
+            $rules['spouse_passport_no'] = ['required', 'string'];
+            $rules['spouse_passport_expiry'] = ['required', 'date_format:Y-m-d'];
+            $rules['spouse_avatar'] = ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg','max:2048'];
+
+            $messages['spouse_phone.required'] = 'Spouse Phone number is required';
+            $messages['spouse_phone.unique'] = 'Spouse This phone number is already used';
+            $messages['spouse_whatsapp.required'] = 'Spouse Whatsapp Number is required';
+            $messages['spouse_whatsapp.numeric'] = 'Spouse Whatsapp number should be a number';
+            $messages['spouse_emergency_phone.required'] = 'Spouse Emergency Phone Number is required';
+            $messages['spouse_emergency_phone.numeric'] = 'Spouse Emergency Phone number should be a number';
+            $messages['spouse_civil_id.required'] = 'Spouse Civil ID is required';
+            $messages['spouse_civil_id.string'] = 'Spouse Civil ID is not valid';
+            $messages['spouse_dob.required'] = 'Spouse Date of birth is required';
+            $messages['spouse_dob.date_format'] = 'Spouse Date of birth should be of format Y-m-d';
+            $messages['spouse_passport_no.required'] = 'Spouse Passport number is required';
+            $messages['spouse_passport_expiry.required'] = 'Spouse Passport expiry date is required';
+            $messages['spouse_passport_expiry.date_format'] = 'Spouse Passport expiry date should be of format Y-m-d';
+            $messages['spouse_gender.required'] = 'Spouse Gender is required';
+            $messages['spouse_blood_group.required'] = 'Spouse Blood group is required';
+
+            $messages['spouse_avatar.required'] = 'Spouse Profile photo is required';
+            $messages['spouse_avatar.image'] = 'Spouse Profile photo should be an image';
+            $messages['spouse_avatar.mimes'] = 'Spouse Profile photo must be a file of type: jpeg, png, jpg, gif, svg.';
+            $messages['spouse_avatar.max'] = 'Spouse Profile photo size should not be exceeded more than 2mb';
+        }
+
+        return [
+            $rules,
+            $messages
+        ];
     }
 
     /**

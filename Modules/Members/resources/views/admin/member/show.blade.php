@@ -325,7 +325,8 @@
                         @foreach ($statuses as $status)
                             <li class="{{ $status->checked ? 'active' : '' }}{{$status->slug == 'rejected' ? '-rejected' : ''}} {{ strtolower($status->name)}}" >
                                 <div class="title">{{ $status->name }}</div>
-                                <div class="description">{{ $status->description }}</div>
+                                <div class="description">On {{ $status->description }}</div>
+                                @if($status->checked)<div class="date">On {{ date('d-m-Y H:i a', strtotime($status->updated_at)) }}</div>@endif
                                 @if($status->remark)<div class="remark"><strong>Remark:</strong>{{ $status->remark }}</div>@endif
                             </li>
                         @endforeach

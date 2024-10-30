@@ -93,6 +93,17 @@
                     </select>
                 </div>
             </div>
+            <div class="col-md-2">
+                <label for="blood_group" class="form-label">Blood Group <span class="asterisk">*</span></label>
+                <div class="control-col">
+                    <select name="blood_group" id="blood_group" class="form-select @error('blood_group') is-invalid @enderror">
+                        <option value="">Select</option>
+                        @foreach ($blood_groups as $blood_group)
+                            <option value="{{ $blood_group->name }}" @selected(old('blood_group') == $blood_group->name)>{{ $blood_group->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
         </div>
         <div class="form-group row">
             <div class="col-md-2">
@@ -181,17 +192,20 @@
             </div>
         </div>
         <div class="form-section-title">Membership Details</div>
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="type" id="type_single" value="single"   @if(old('type') == 'single') checked @endif  @if(!old('type')) checked @endif>
-            <label class="form-check-label" for="type_single">
-              Single
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="type" id="type_family" value="family" @if(old('type') == 'family') checked @endif>
-            <label class="form-check-label" for="type_family">
-              With Family
-            </label>
+        <div class="form-group">
+            <label for="type" class="form-label">Membership Type</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="type" id="type_single" value="single"   @if(old('type') == 'single') checked @endif  @if(!old('type')) checked @endif>
+                <label class="form-check-label" for="type_single">
+                Single
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="type" id="type_family" value="family" @if(old('type') == 'family') checked @endif>
+                <label class="form-check-label" for="type_family">
+                With Family
+                </label>
+            </div>
         </div>
         <br />
 
