@@ -541,21 +541,6 @@ table.list{
         align-items: stretch;
         .pf-tab{
             flex: 3;
-            .nav{
-                padding: 0 1.5rem;
-                .nav-link{
-                    cursor: pointer;
-                    color: #333;
-                    padding: 0.5rem 1rem;
-                    &.active{
-                        color: $color-primary;
-                    }
-                }
-            }
-            .tab-content{
-                padding:2rem  1.5rem;
-                
-            }
         }
         .pf-aside{
             flex: 1;
@@ -614,6 +599,23 @@ table.list{
                 }
             }
         }
+    }
+}
+.pf-tab{
+    .nav{
+        padding: 0 1.5rem;
+        .nav-link{
+            cursor: pointer;
+            color: #333;
+            padding: 0.5rem 1rem;
+            &.active{
+                color: $color-primary;
+            }
+        }
+    }
+    .tab-content{
+        padding:2rem  1.5rem;
+        
     }
 }
 .photo-profile{

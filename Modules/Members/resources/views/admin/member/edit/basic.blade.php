@@ -23,6 +23,14 @@
                 </div>
                 <div class="form-group row">
                     <div class="col-md-8">
+                        <label for="email" class="form-label">Email <span class="asterisk">*</span></label>
+                        <div class="control-col">
+                            <input type="email" name="email" id="email" value="{{ $member->user->email }}" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-8">
                         <label for="phone" class="form-label">Phone<span class="asterisk">*</span></label>
                         <div class="control-col">
                             <select name="tel_country_code" id="tel_contry_code" class="form-select country-code">

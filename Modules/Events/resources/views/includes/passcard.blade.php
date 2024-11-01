@@ -11,6 +11,7 @@
     <div class="card-info">
         Admit {{ $invitee->pack_count }}
     </div>
+    @if($invitee->unit)<div class="card-info">Unit: {{ $invitee->unit }}</div>@endif
 </div>
 <div style="flex: 1 0 100%; display:flex; justify-content:flex-end; margin-top:1rem; column-gap:0.5rem">
     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="margin-left: auto">Close</button>

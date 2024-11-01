@@ -556,7 +556,8 @@ class MemberController extends Controller
                 'user_id' => 'bail|required',
                 'name' => 'required',
                 'tel_country_code' => 'required|numeric',
-                'phone' => 'required|numeric',
+                'email' => 'required|email|unique:users,email,'.$input['user_id'],
+                'phone' => 'required|numeric|unique:users,phone,'.$input['user_id'],
                 'whatsapp_country_code' => 'required|numeric',
                 'whatsapp' => 'required|numeric',
                 'emergency_country_code' => 'required|numeric',
@@ -599,6 +600,7 @@ class MemberController extends Controller
             
             User::where('id', $user_id)->update([
                 'name' => $input['name'],
+                'email' => $input['email'],
                 'phone' => $input['phone'],
                 'calling_code' => $input['tel_country_code']
             ]);
