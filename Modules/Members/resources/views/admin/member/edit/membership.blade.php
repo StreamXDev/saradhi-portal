@@ -8,6 +8,7 @@
             @csrf
             <input type="hidden" name="user_id" value="{{ $member->user->id }}">
             <input type="hidden" name="edit_membership" value="true">
+            <input type="hidden" name="current_type" value="{{$member->membership->type}}">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="editMembershipLabel">Edit Membership Details</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -23,11 +24,14 @@
                     </div>
                 </div>
                 @endif
+                <label class="form-label">Membership Type</label>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="type" id="type_single" value="single"  @checked($member->membership->type == 'single')>
-                    <label class="form-check-label" for="type_single">
-                        Single  
-                    </label>
+                    <div>
+                        <input class="form-check-input" type="radio" name="type" id="type_single" value="single" @disabled($member->membership->type == 'family')  @checked($member->membership->type == 'single')>
+                        <label class="form-check-label" for="type_single">
+                            Single  
+                        </label>
+                    </div>
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="type" id="type_family" value="family" @checked($member->membership->type == 'family')>
@@ -35,6 +39,7 @@
                         With Family
                     </label>
                 </div>
+                @if($member->membership->type == 'family') <small>You cannot change the membership type bcause the user has already added family member(s)</small>@endif
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

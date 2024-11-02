@@ -177,13 +177,14 @@ class MembershipController extends Controller
     {
         $rules =  [
             'user_id'      => ['required', Rule::exists(User::class, 'id')],
-            'mid'          => ['required', 'string']
+            'mid'          => ['required', Rule::exists(Membership::class, 'mid')]
         ];
 
         $messages = [
             'user_id.required' => 'User ID is required',
             'user_id.exists' => 'User ID is not valid',
             'mid.required' => 'Membership ID is required',
+            'mid.exists' => 'Membership ID is already used',
         ];
 
         return [

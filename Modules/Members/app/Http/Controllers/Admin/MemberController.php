@@ -23,6 +23,7 @@ use Modules\Members\Models\MemberPermanentAddress;
 use Modules\Members\Models\MemberRelation;
 use Modules\Members\Models\Membership;
 use Modules\Members\Models\MembershipRequest;
+use Modules\Members\Models\MemberTrustee;
 use Modules\Members\Models\MemberUnit;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -570,9 +571,29 @@ class MemberController extends Controller
                 'user_id' => 'bail|required',
                 'gender' => 'required',
                 'blood_group' => 'required',
-                'dob' => 'required',
+                'dob' => 'required|date_format:Y-m-d',
                 'passport_no' => 'required',
                 'passport_expiry' => 'required',
+            ]);
+        }elseif(isset($input['edit_membership'])){
+            if(isset($input['current_type']) && $input['current_type'] == 'single'){
+                $validator = Validator::make($request->all(), [
+                    'user_id' => 'bail|required',
+                    'mid'     => 'required|unique:memberships,mid,'.$input['user_id'].',user_id',
+                    'type'    => 'required'
+                ]);
+            }else{
+                $validator = Validator::make($request->all(), [
+                    'user_id' => 'bail|required',
+                    'mid'     => 'required|unique:memberships,mid,'.$input['user_id'].',user_id',
+                ]);
+            }
+        }elseif(isset($input['edit_trustee'])){
+            $validator = Validator::make($request->all(), [
+                'tid' => 'required|unique:member_trustees,tid,'.$input['user_id'].',user_id',
+                'title' => 'required|string',
+                'joining_date' => 'required|date_format:Y-m-d',
+                'status' => 'required'
             ]);
         }
  
@@ -658,17 +679,29 @@ class MemberController extends Controller
                     'photo_passport_back' => $passport_back_name,
                 ]);
             }
+        }elseif(isset($input['edit_membership'])){
+            if(isset($input['current_type']) && $input['current_type'] == 'single'){
+                $membershipUpdateData = [
+                    'mid' => $input['mid'],
+                    'type' => $input['type']
+                ];
+            }else{
+                $membershipUpdateData = [
+                    'mid' => $input['mid']
+                ];
+            }
+            Membership::where('user_id', $user_id)->update($membershipUpdateData);
+        }elseif(isset($input['edit_trustee'])){
+            MemberTrustee::where('user_id',$user_id)->update([
+                'tid' => $input['tid'],
+                'title' => $input['title'],
+                'joining_date' => $input['joining_date'],
+                'status' => $input['status'],
+                'active' => $input['status'] === 'active' ? 1 : 0
+            ]);
         }
 
         return redirect('admin/members/member/view/'.$user_id);
 
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
-    {
-        //
     }
 }

@@ -342,11 +342,9 @@
         <div class="card">
             <div class="card-header">
                 <div class="title">Membership Details</div>
-                <!--
                 <button type="button" class="btn btn-xs icon" data-bs-toggle="modal" data-bs-target="#editMembership">
                     <i class="icon" data-feather="edit-2"></i>
-                </button> 
-                -->
+                </button>
                 @include('members::admin.member.edit.membership')
             </div>
             <div class="card-body">
@@ -367,9 +365,44 @@
                 </ul>
             </div>
         </div>
+        @if($member->is_trustee)
+        <div class="card">
+            <div class="card-header">
+                <div class="title">Trustee Details</div>
+                <button type="button" class="btn btn-xs icon" data-bs-toggle="modal" data-bs-target="#editTrustee">
+                    <i class="icon" data-feather="edit-2"></i>
+                </button>
+                @include('members::admin.member.edit.trustee')
+            </div>
+            <div class="card-body">
+                <ul class="list-basic">
+                    <li>
+                        <span class="label">Trustee ID</span>
+                        <div class="value"><strong>{{$member->trustee->tid}}</strong></div>
+                    </li>
+                    <li>
+                        <span class="label">Title</span>
+                        <div class="value">{{$member->trustee->title}}</div>
+                    </li>
+                    <li>
+                        <span class="label">Joining Date</span>
+                        <div class="value">{{$member->trustee->joining_date}}</div>
+                    </li>
+                    <li>
+                        <span class="label">Status</span>
+                        <div class="value">{{ucfirst($member->trustee->status)}}</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        @endif
         <div class="card">
             <div class="card-header">
                 <div class="title">Introducer Info</div>
+                <button type="button" class="btn btn-xs icon" data-bs-toggle="modal" data-bs-target="#editIntroducer">
+                    <i class="icon" data-feather="edit-2"></i>
+                </button>
+                @include('members::admin.member.edit.introducer')
             </div>
             <div class="card-body">
                 <table class="list-basic">
@@ -380,10 +413,10 @@
                         </tr>
                         <tr>
                             <td class="label">Phone</td>
-                            <td class="value">+{{ $member->membership->introducer_phone_code }}{{ $member->membership->introducer_phone }}</td>
+                            <td class="value">@if($member->membership->introducer_phone) +{{ $member->membership->introducer_phone_code }}{{ $member->membership->introducer_phone }}@endif</td>
                         </tr>
                         <tr>
-                            <td class="label">Membership ID</td>
+                            <td class="label">Introudcer MID</td>
                             <td class="value">{{ $member->membership->introducer_mid }}</td>
                         </tr>
                         <tr>
