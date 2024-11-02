@@ -11,6 +11,8 @@
     <div class="card-info">
         Admit {{ $invitee->pack_count }}
     </div>
+    @if($invitee->company)<div class="card-info">{{ $invitee->company }}</div>@endif
+    @if($invitee->designation)<div class="card-info mb-2">{{ $invitee->designation }}</div>@endif
     @if($invitee->unit)<div class="card-info">Unit: {{ $invitee->unit }}</div>@endif
 </div>
 <div style="flex: 1 0 100%; display:flex; justify-content:flex-end; margin-top:1rem; column-gap:0.5rem">

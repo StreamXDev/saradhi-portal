@@ -7,7 +7,7 @@
     </div>
     <div>
         <a href="/admin/events/view/{{$event->id}}" class="btn btn-xs btn-outline-primary">View Event</a>
-        <a href="/admin/events/{{$event->id}}/invitee/add" class="btn btn-xs btn-primary">Add Invitees</a>
+        @if($event->start_date >= date('Y-m-d'))<a href="/admin/events/{{$event->id}}/invitee/add" class="btn btn-xs btn-primary">Add Invitees</a>@endif
     </div>
 </div>
 <div class="page-content mb-2">

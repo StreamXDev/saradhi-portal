@@ -2,8 +2,10 @@
 
 namespace Modules\Members\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class MemberTrustee extends Model
 {
@@ -13,4 +15,11 @@ class MemberTrustee extends Model
     {
         return $this->belongsTo(Member::class, 'user_id', 'user_id');
     }
+
+    public function user(): HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
 }
+
+

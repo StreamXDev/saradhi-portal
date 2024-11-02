@@ -17,6 +17,7 @@ use Modules\Events\Http\Controllers\Admin\Events\EventController;
 Route::prefix('admin/events')->middleware(['auth:sanctum', 'verified_email', 'is_admin'])->group(function() {
     Route::controller(EventController::class)->group(function(){
         Route::get('/', 'index');
+        Route::get('/past', 'pastEvents');
         Route::get('/view/{id?}', 'show')->name('admin.events.view');
         Route::get('/create', 'create')->name('admin.events.create');
         Route::get('autocomplete', 'autocomplete')->name('admin.events.autocomplete');

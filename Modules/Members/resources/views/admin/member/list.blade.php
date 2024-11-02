@@ -1,11 +1,4 @@
 @extends('layouts.admin')
-@section('page-style')
-<style>
-    .table tr td{
-        vertical-align: middle
-    }
-</style>
-@endsection
 @section('content')
 <div class="page-title">
     <div class="col">
@@ -47,9 +40,9 @@
             @foreach ($members as $member)
             <tr>
                 <td>
-                    <div style="width:50px; height:50px; border-radius:50%; display:block; overflow:hidden">
+                    <div class="list-profile-photo">
                     @if($member->user->avatar)
-                        <img src="{{ url('storage/images/'. $member->user->avatar) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}" class="list-profile-photo" style="width: 100%" />
+                        <img src="{{ url('storage/images/'. $member->user->avatar) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}" />
                     @else
                         <img src="{{ $member->gender == 'male' ? url('images/avatar-male.jpeg') : url('images/avatar-female.png') }}" alt="" style="width: 100%; opacity:0.2">
                     @endif

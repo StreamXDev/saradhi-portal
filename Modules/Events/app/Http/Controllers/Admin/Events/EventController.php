@@ -28,11 +28,20 @@ class EventController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $events = Event::where('start_date', '>=', Carbon::now())->orderBy('start_date', 'desc')->get();
-        return view('events::admin.events.list', compact('events'));
+        $events = Event::orderBy('start_date', 'desc')->get();
+        if($request->get('type') && $request->get('type') == 'past'){
+            $events = $events->where('start_date', '<', Carbon::now());
+            $type = 'past';
+        }else{
+            $events = $events->where('start_date', '>=', Carbon::now());
+            $type = 'upcoming';
+        }
+
+        return view('events::admin.events.list', compact('events','type'));
     }
+
 
     /**
      * Show event
@@ -85,12 +94,10 @@ class EventController extends Controller
             'title' => 'required|string',
             'start_date' => 'required|date_format:Y-m-d',
             'start_date' => 'date_format:Y-m-d',
-            'end_date' => 'date_format:Y-m-d',
         ],[
             'title.required'    => 'Title is required',
             'start_date.required'    => 'Start date is required',
             'start_date.date_format'    => 'Start date should be of format Y-m-d',
-            'end_date.date_format'    => 'End date should be of format Y-m-d',
         ]);
 
         if($validator->fails()){
@@ -123,7 +130,7 @@ class EventController extends Controller
             'cover' => $input['cover'],
         ]);
 
-        if($input['volunteers'] && $input['volunteers'] !== null){
+        if(isset($input['volunteers']) && $input['volunteers'] !== null){
             $volunteers = $input['volunteers'];
             foreach($volunteers as $volunteer_user_id){
                 EventVolunteer::create([
@@ -182,10 +189,11 @@ class EventController extends Controller
      */
     public function createInvitee(Request $request, $id)
     {
-        $event = Event::where('id', $id)->first();
+        $event = Event::where('id', $id)->where('start_date',Carbon::now())->first();
         if(!$event){
             return redirect('/admin/events/create');
         }
+        
         $invitee_types = EventEnum::where('type', 'participant_type')->orderBy('order','asc')->get();
         if($event->invite_all_members){
             foreach ($invitee_types as $key => $item) {
@@ -238,7 +246,7 @@ class EventController extends Controller
                 'created_by' => $user->id,
             ]);
         }else{
-            for($i=0; $i <= $packs; $i++){
+            for($i=1; $i <= $packs; $i++){
                 EventParticipant::create([
                     'event_id' => $input['event_id'],
                     'type' => $input['type'],
@@ -278,7 +286,7 @@ class EventController extends Controller
      */
     public function createVolunteer(Request $request, $id)
     {
-        $event = Event::where('id', $id)->first();
+        $event = Event::where('id', $id)->where('start_date', Carbon::now())->first();
         if(!$event){
             return redirect('/admin/events/create');
         }

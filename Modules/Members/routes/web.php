@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Modules\Members\Http\Controllers\Admin\CommitteeController;
 use Modules\Members\Http\Controllers\Admin\MemberController;
 use Modules\Members\Http\Controllers\Admin\MembershipController;
+use Modules\Members\Http\Controllers\Admin\TrusteeController;
 use Modules\Members\Http\Controllers\MembersController;
 use Modules\Members\Http\Middleware\VerifyProfileStatus;
 
@@ -74,5 +75,11 @@ Route::prefix('admin/committee')->middleware(['auth:sanctum', 'verified_email', 
     Route::controller(CommitteeController::class)->group(function(){
         Route::get('/', 'index');
         Route::get('/create', 'create');
+    });
+});
+
+Route::prefix('admin/trustees')->middleware(['auth:sanctum', 'verified_email', 'is_admin'])->group(function() {
+    Route::controller(TrusteeController::class)->group(function(){
+        Route::get('/', 'index');
     });
 });

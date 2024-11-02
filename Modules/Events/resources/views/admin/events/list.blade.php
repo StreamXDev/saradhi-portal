@@ -8,7 +8,7 @@
 @endsection
 @section('content')
 <div class="page-title">
-    <h1 class="title">Events</h1>
+    <h1 class="title">{{ ucfirst($type) }} Events</h1>
     <div>
         <a href="/admin/events/create" class="btn btn-primary">Create New Event</a>
     </div>

@@ -40,11 +40,35 @@ class MembershipController extends Controller
     /**
      * Display list of membership requests.
      */
-    public function requests()
+    public function requests(Request $request)
     {
         $results = MembershipRequest::with(['member', 'details', 'user', 'member.relations.relationship'])->where('checked', 0)->get()->sortByDesc('id');
+        
+        if($request->query('type')){
+            $type = $request->query('type');
+            switch ($type) {
+                case 'submitted':
+                    $results = $results->where('request_status_id', 3);
+                    break;
+                case 'verified':
+                    $results = $results->where('request_status_id', 4);
+                    break;
+                case 'reviewed':
+                    $results = $results->where('request_status_id', 5);
+                    break;
+                case 'approved':
+                    $results = $results->where('request_status_id', 6);
+                    break;
+                default:
+                    $results = $results->where('request_status_id', 3);
+                    $type = 'submitted';
+                    break; 
+            }
+        }else{
+            $type = 'submitted';
+        }
         $requests = requestsByPermission($results);
-        return view('members::admin.membership.request', compact('requests'));
+        return view('members::admin.membership.request', compact('requests','type'));
     }
 
     public function changeStatus(Request $request)
