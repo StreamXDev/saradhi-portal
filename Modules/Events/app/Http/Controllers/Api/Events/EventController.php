@@ -43,7 +43,7 @@ class EventController extends BaseController
             }
             $idQr = QrCode::format('png')->size(300)->generate(json_encode(['E'.$event->id.'-U'.$user->id]));
             $events[$key]['idQr'] = 'data:image/png;base64, ' . base64_encode($idQr);
-            $events[$key]['thumb'] = $event->thumb ? url('storage/images/'. $event->thumb) : null;
+            $events[$key]['thumb'] = $event->thumb ? url('storage/images/events/'. $event->thumb) : null;
         }
         $data = [
             'events' => $events
