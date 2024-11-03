@@ -13,7 +13,9 @@
             @if(Module::has('Events'))
                 @include('events::admin.sidebarmenu')
             @endif
-            
+            @if(Module::has('Posts'))
+                @include('posts::admin.sidebarmenu')
+            @endif
             <li>
                 <a href="#" class="nav-item btn-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#settings_menu" aria-expanded="true"><i class="icon" data-feather="users"></i>Settings</a>
                 <div class="collapse sub-nav" id="settings_menu">

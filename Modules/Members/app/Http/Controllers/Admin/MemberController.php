@@ -48,7 +48,8 @@ class MemberController extends Controller
 
         list($members, $filters) = $this->memberSearch();
         $members = $members->paginate();
-        return view('members::admin.member.list', compact('members', 'filters'));
+        $units = MemberUnit::select('id', 'slug', 'name')->where('active', 1)->get();
+        return view('members::admin.member.list', compact('members', 'filters', 'units'));
     }
 
     public function memberSearch()
@@ -59,7 +60,6 @@ class MemberController extends Controller
             [
                 'search_by' => '',
                 'unit' => '',
-                'mid' => '',
                 'status' => '',
             ]
         );
@@ -81,6 +81,11 @@ class MemberController extends Controller
                 });
 
             $filters->put('search_by', request()->get('search_by'));
+        }
+
+        if (request()->get('unit') != null){
+            
+            $filters->put('unit', request()->get('unit'));
         }
 
         return [
