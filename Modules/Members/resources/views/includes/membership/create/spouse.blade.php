@@ -21,6 +21,7 @@
                     @endforeach
                 </select>
                 <input type="tel" class="form-control @error('spouse_phone') is-invalid @enderror" name="spouse_phone" id="spouse_phone" value="{{ old('spouse_phone') }}">
+                @error('sopuse_phone') <small>{{ $errors->first('spouse_phone') }}</small> @enderror
             </div>
         </div>
         <div class="col-md-6 col-lg-4">

@@ -221,8 +221,18 @@ class MemberController extends Controller
         $input = $request->all();
 
         $validator = Validator::make($request->all(), ...$this->validationRules($request));
+        
+        if($input['type'] == 'family'){
+            if($input['phone'] == $input['spouse_phone']){
+                $error = \Illuminate\Validation\ValidationException::withMessages([
+                    'spouse_phone' => ['Spouse phone and primary phone number should not be same'],
+                 ]);
+                 throw $error; 
+            }
+        }
+
         if($validator->fails()){
-            return Redirect::back()->withErrors($validator)->withInput();       
+            return Redirect::back()->withErrors($validator)->withInput()->with('error', 'Some fields are not valid');       
         }
 
         DB::beginTransaction();
@@ -272,8 +282,8 @@ class MemberController extends Controller
             [
                 'member_unit_id' => $input['member_unit_id'],
                 'civil_id' => $input['civil_id'],
-                'photo_civil_id_front' => $civil_id_front_name,
-                'photo_civil_id_back' => $civil_id_back_name,
+                'photo_civil_id_front' => $request->photo_civil_id_front ? $civil_id_front_name: null,
+                'photo_civil_id_back' => $request->photo_civil_id_back ? $civil_id_back_name : null,
                 'dob' => $input['dob'],
                 'whatsapp' => $input['whatsapp'],
                 'whatsapp_code' => $input['whatsapp_country_code'],
@@ -284,8 +294,8 @@ class MemberController extends Controller
                 'company_address' => $input['company_address'],
                 'passport_no' => $input['passport_no'],
                 'passport_expiry' => $input['passport_expiry'],
-                'photo_passport_front' => $passport_front_name,
-                'photo_passport_back' => $passport_back_name,
+                'photo_passport_front' => $request->photo_passport_front? $passport_front_name : null,
+                'photo_passport_back' => $request->photo_passport_front ? $passport_back_name : null,
                 'paci' => $input['paci'],
                 'sndp_branch' => $input['sndp_branch'],
                 'sndp_branch_number' => $input['sndp_branch_number'],
@@ -387,8 +397,8 @@ class MemberController extends Controller
                 [
                     'member_unit_id' => $input['member_unit_id'],
                     'civil_id' => $input['spouse_civil_id'],
-                    'photo_civil_id_front' => $spouse_civil_id_front_name,
-                    'photo_civil_id_back' => $spouse_civil_id_back_name,
+                    'photo_civil_id_front' => $request->spouse_photo_civil_id_front ? $spouse_civil_id_front_name : null,
+                    'photo_civil_id_back' => $request->spouse_photo_civil_id_back ? $spouse_civil_id_back_name : null,
                     'dob' => $input['spouse_dob'],
                     'whatsapp' => $input['spouse_whatsapp'],
                     'whatsapp_code' => $input['spouse_whatsapp_country_code'],
@@ -399,8 +409,8 @@ class MemberController extends Controller
                     'company_address' => $input['spouse_company_address'],
                     'passport_no' => $input['spouse_passport_no'],
                     'passport_expiry' => $input['spouse_passport_expiry'],
-                    'photo_passport_front' => $spouse_passport_front_name,
-                    'photo_passport_back' => $spouse_passport_back_name,
+                    'photo_passport_front' => $request->spouse_photo_passport_front ? $spouse_passport_front_name : null,
+                    'photo_passport_back' => $request->spouse_photo_passport_front ? $spouse_passport_back_name : null,
                     'paci' => $input['spouse_paci'],
                     'sndp_branch' => $input['sndp_branch'],
                     'sndp_branch_number' => $input['sndp_branch_number'],

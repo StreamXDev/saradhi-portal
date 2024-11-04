@@ -368,14 +368,14 @@
             <div class="col-md-2" id="midPrimary">
                 <label for="primary_mid" class="form-label">Primary Member MID<span class="asterisk">*</span></strong></label>
                 <div class="control-col">
-                    <input type="text" name="primary_mid" id="primary_mid" class="form-control @error('primary_mid') is-invalid @enderror" aria-describedby="primaryMIDHelp">
+                    <input type="text" name="primary_mid" id="primary_mid" class="form-control @error('primary_mid') is-invalid @enderror" value="{{ old('primary_mid') }}" aria-describedby="primaryMIDHelp">
                     <small id="primaryMIDHelp" class="form-text text-muted">Suggested MID: <strong>{{ $suggested_mid }}</strong></small>
                 </div>
             </div>
             <div class="col-md-2" id="midSpouse">
                 <label for="spouse_mid" class="form-label">Spouse MID<span class="asterisk">*</span></label>
                 <div class="control-col">
-                    <input type="text" name="spouse_mid" id="spouse_mid" class="form-control @error('spouse_mid') is-invalid @enderror" aria-describedby="spouseMIDHelp">
+                    <input type="text" name="spouse_mid" id="spouse_mid" class="form-control @error('spouse_mid') is-invalid @enderror" value="{{ old('spouse_mid') }}" aria-describedby="spouseMIDHelp">
                     <small id="spouseMIDHelp" class="form-text text-muted">Suggested MID: <strong>{{ $suggested_mid+1 }}</strong></small>
                 </div>
             </div>
