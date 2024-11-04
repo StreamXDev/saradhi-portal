@@ -56,6 +56,7 @@
                 </div>
             </header>
             <div class="content-main">
+                @include('layouts.flash-message')
                 @yield('content')
             </div>
         </div>
@@ -71,6 +72,9 @@
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script>
         feather.replace();
+        $(".alert").delay(4000).slideUp(200, function() {
+            $(this).alert('close');
+        });
     </script>
     {{-- Vite JS --}}
     {{-- {{ module_vite('build-members', 'resources/assets/js/app.js') }} --}}

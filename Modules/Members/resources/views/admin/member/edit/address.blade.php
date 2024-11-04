@@ -1,9 +1,6 @@
 <div class="modal fade" id="editAddress" tabindex="-1" aria-labelledby="editAddressLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
-        @if($errors->any())
-            <div class="form-errors">{!! implode('', $errors->all('<div>:message</div>')) !!}</div>
-        @endif
         <form action="{{ route('admin.member.update') }}" method="post" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="user_id" value="{{ $member->user->id }}">

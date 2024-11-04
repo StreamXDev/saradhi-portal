@@ -600,10 +600,15 @@ class MemberController extends Controller
                 'joining_date' => 'required|date_format:Y-m-d',
                 'status' => 'required'
             ]);
+        }elseif(isset($input['edit_email'])){
+            $validator = Validator::make($request->all(), [
+                'user_id' => 'bail|required',
+                'email' => 'required|email|unique:users,email,'.$input['user_id'],
+            ]);
         }
  
         if ($validator->fails()) {
-            return Redirect::back()->withErrors($validator);
+            return Redirect::back()->withErrors($validator)->with('error', 'Some fields are not valid');
         }
         
         $user_id = $input['user_id'];
@@ -704,9 +709,15 @@ class MemberController extends Controller
                 'status' => $input['status'],
                 'active' => $input['status'] === 'active' ? 1 : 0
             ]);
+        }elseif(isset($input['edit_email'])){
+            User::where('id', $user_id)->update([
+                'email' => $input['email'],
+            ]);
+            
+            return redirect('admin/members')->with('success', 'Data updated successfully');
         }
 
-        return redirect('admin/members/member/view/'.$user_id);
+        return redirect('admin/members/member/view/'.$user_id)->with('success', 'Data updated successfully');
 
     }
 }

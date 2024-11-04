@@ -29,6 +29,7 @@
             <tr>
                 <th></th>
                 <th>Name</th>
+                <th>Email</th>
                 <th>MID</th>
                 <th>Unit</th>
                 <th>Mem.Type</th>
@@ -49,16 +50,22 @@
                     </div>
                 </td>
                 <td>{{ ucwords(strtolower($member->name)) }}</td>
+                <td>{{ $member->user->email }}</td>
                 <td>{{ $member->membership->mid }}</td>
                 <td>{{ $member->details->member_unit->name }}</td>
                 <td>{{ ucfirst($member->membership->type) }}</td>
                 <td>{{ ucfirst($member->membership->status) }}</td>
                 <td>
                     <div class="actions">
+                        <button type="button" class="btn btn-xs icon" data-bs-toggle="modal" data-bs-target="#editEmail_{{$member->id}}">
+                            <i class="fa-regular fa-pen-to-square"></i>
+                        </button>
+                        @include('members::admin.member.edit.email')
                         <a href="/admin/members/member/view/{{ $member->user->id }}/{{$members->currentPage()}}" class="btn"><i class="fa-solid fa-eye"></i></a>
                     </div>
                 </td>
             </tr>
+
             @endforeach
         </tbody>
     </table>
