@@ -14,7 +14,7 @@ class EventParticipant extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [
-        'event_id', 'type', 'user_id', 'name', 'company', 'designation', 'unit', 'pack_count', 'admit_count', 'admitted', 'admitted_on', 'admitted_by', 'created_by'
+        'event_id', 'type', 'user_id', 'dependent_id', 'parent_user_id', 'relation', 'name', 'company', 'designation', 'unit', 'pack_count', 'admit_count', 'admitted', 'admitted_on', 'admitted_by', 'created_by'
     ];
 
     public function event():BelongsTo

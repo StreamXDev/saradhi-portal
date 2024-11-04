@@ -93,11 +93,13 @@ class EventController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string',
             'start_date' => 'required|date_format:Y-m-d',
-            'start_date' => 'date_format:Y-m-d',
+            'end_date' => 'required|date_format:Y-m-d',
         ],[
             'title.required'    => 'Title is required',
             'start_date.required'    => 'Start date is required',
             'start_date.date_format'    => 'Start date should be of format Y-m-d',
+            'end_date.required'    => 'End date is required',
+            'end_date.date_format'    => 'End date should be of format Y-m-d',
         ]);
 
         if($validator->fails()){

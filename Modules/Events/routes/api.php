@@ -18,5 +18,6 @@ Route::middleware(['auth:sanctum','verified_email'])->prefix('events')->group(fu
     Route::controller(EventController::class)->group(function(){
         Route::get('/', 'index');
         Route::post('/create', 'admitCreate')->name('event.create');
+        Route::post('/admit', 'admitStore')->name('event.admit');
     });
 });

@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\BaseController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Modules\Events\Models\Event;
+use Modules\Events\Models\EventEnum;
 use Modules\Events\Models\EventParticipant;
 use Modules\Events\Models\EventVolunteer;
 use Modules\Members\Models\Member;
@@ -25,7 +26,7 @@ class EventController extends BaseController
     {
         
         $user = Auth::user(); //The member logged in app
-        $events = Event::where('start_date', '>=', Carbon::now())->orderBy('start_date', 'desc')->get();
+        $events = Event::where('end_date', '>=', Carbon::now())->orderBy('start_date', 'desc')->get();
         $member = Member::with('relations','relations.relatedMember.user','relations.relatedDependent','details')->where('user_id', $user->id)->first();
         $relations = $member->relations;
         foreach($events as $key => $event){
@@ -84,11 +85,12 @@ class EventController extends BaseController
         
         $input = $request->all();
         $qrString = $input['data'];
-        $qrExplode = explode("-",$qrString[0]);
+        $qrExplode = explode("-",$qrString);
         $qType = null;
         $event_id = null;
         $user_id = null;
         $invitee_id = null;
+
         if(substr($qrExplode[0], 0, 1) == 'E'){
             $qType = 'event';
             $event_id = (int)substr($qrExplode[0], 1);
@@ -105,9 +107,9 @@ class EventController extends BaseController
             return $this->sendError('Not allowed', 'No events found', 405); 
         }
 
-        $event = Event::where('id', $event_id)->first();
+        $event = Event::where('id', $event_id)->where('end_date', '>=', Carbon::now())->first();
         if(!$event || $qType !== 'event'){
-            return $this->sendError('Not allowed', 'No events found', 405); 
+            return $this->sendError('Not allowed', 'No upcoming events found', 405); 
         }
 
         $volunteer = Auth::user(); 
@@ -118,6 +120,8 @@ class EventController extends BaseController
         
         $packTotal = $packBalance = 0;
         $member_participants = [];
+        $invitee_member_type = EventEnum::select('id', 'slug', 'name')->where('type', 'participant_type')->where('slug', 'member')->first();
+        $invitee_dependent_type = EventEnum::select('id', 'slug', 'name')->where('type', 'participant_type')->where('slug', 'member_dependent')->first();
         if($pType == 'member' && $event->invite_all_members && Module::has('Members')){
             if(!$user_id){
                 return $this->sendError('Invalid User', 'User not found', 405); 
@@ -128,10 +132,12 @@ class EventController extends BaseController
             $member_admitted = EventParticipant::where('event_id',$event->id)->where('user_id',$user->id)->first();
             array_push($member_participants, [
                 'pType' => 'member',
+                'event_id' => $event->id,
                 'user_id' => $member->user_id,
                 'relation' => $member->type,
                 'name' => $member->name,
                 'unit' => $member->details->member_unit->name,
+                'type' => $invitee_member_type->id,
                 'admitted' => isset($member_admitted->admitted) && $member_admitted->admitted == 1 ? true : false
             ]);
 
@@ -142,24 +148,29 @@ class EventController extends BaseController
                 foreach($relations as  $relation){
                     if($relation->relatedMember){
                         $relatedMember_admitted = EventParticipant::where('event_id',$event->id)->where('user_id', $relation->relatedMember->user->id)->first();
+                        
                         array_push($member_participants, [
                             'pType' => 'member',
+                            'event_id' => $event->id,
                             'user_id' => $relation->relatedMember->user->id,
                             'parent_user_id' => $member->user_id,
                             'relation' => $relation->relatedMember->type,
                             'name' => $relation->relatedMember->name,
                             'unit' => $member->details->member_unit->name,
+                            'type' => $invitee_member_type->id,
                             'admitted' => isset($relatedMember_admitted->admitted) && $relatedMember_admitted->admitted == 1 ? true : false
                         ]);
                     }else if($relation->relatedDependent){
                         $relatedDependent_admitted = EventParticipant::where('event_id',$event->id)->where('dependent_id',$relation->relatedDependent->id)->first();
                         array_push($member_participants, [
                             'pType' => 'member_dependent',
+                            'event_id' => $event->id,
                             'dependent_id' => $relation->relatedDependent->id,
                             'parent_user_id' => $member->user_id,
                             'relation' => $relation->relatedDependent->type,
                             'name' => $relation->relatedDependent->name,
                             'unit' => $member->details->member_unit->name,
+                            'type' => $invitee_dependent_type->id,
                             'admitted' => isset($relatedDependent_admitted->admitted) && $relatedDependent_admitted->admitted == 1 ? true : false
                         ]);
                     }
@@ -177,6 +188,7 @@ class EventController extends BaseController
             $member_participants = [
                 [
                     'pType' => 'invitee',
+                    'event_id' => $event->id,
                     'invitee_id' => $invitee->id,
                     'name' => $invitee->name,
                     'unit' => $invitee->unit,
@@ -190,65 +202,78 @@ class EventController extends BaseController
         $data = [
             'invitees' => $member_participants,
             'packTotal' => $packTotal,
-            'packBalance' => $packBalance
+            'packBalance' => $packBalance,
+            'event' => $event
         ];
         return $this->sendResponse($data);
     }
 
-
-
-    /*
-            if($event->invite_all_members && Module::has('Members')){
-                $member = Member::with('relations','relations.relatedMember.user','relations.relatedDependent','details')->where('user_id', $user->id)->first();
-                $member_admitted = EventParticipant::where('event_id',$event->id)->where('user_id',$user->id)->first();
-                $packTotal = 1;
-
-                array_push($member_participants, [
-                    'pType' => 'member',
-                    'user_id' => $member->user_id,
-                    'relation' => $member->type,
-                    'name' => $member->name,
-                    'unit' => $member->details->member_unit->name,
-                    'admitted' => isset($member_admitted->admitted) && $member_admitted->admitted == 1 ? 1 : 0
-                ]);
-                
-
-                $relations = $member->relations;
-                if($relations){
-                    $packTotal = $packTotal + count($relations);
-                    foreach($relations as  $relation){
-                        if($relation->relatedMember){
-                            $relatedMember_admitted = EventParticipant::where('event_id',$event->id)->where('user_id', $relation->relatedMember->user->id)->first();
-                            array_push($member_participants, [
-                                'pType' => 'member',
-                                'user_id' => $relation->relatedMember->user->id,
-                                'parent_user_id' => $member->user_id,
-                                'relation' => $relation->relatedMember->type,
-                                'name' => $relation->relatedMember->name,
-                                'unit' => $member->details->member_unit->name,
-                                'admitted' => isset($relatedMember_admitted->admitted) && $relatedMember_admitted->admitted == 1 ? 1 : 0
-                            ]);
-                        }else if($relation->relatedDependent){
-                            $relatedDependent_admitted = EventParticipant::where('event_id',$event->id)->where('dependent_id',$relation->relatedDependent->id)->first();
-                            array_push($member_participants, [
-                                'pType' => 'member_dependent',
-                                'dependent_id' => $relation->relatedDependent->id,
-                                'parent_user_id' => $member->user_id,
-                                'relation' => $relation->relatedDependent->type,
-                                'name' => $relation->relatedDependent->name,
-                                'unit' => $member->details->member_unit->name,
-                                'admitted' => isset($relatedDependent_admitted->admitted) && $relatedDependent_admitted->admitted == 1 ? 1 : 0
-                            ]);
-                        }
+    public function admitStore(Request $request)
+    {
+        $volunteer = Auth::user();
+        $input = $request->all();
+        $admitted = 0;
+        $event = Event::where('id', $input['event_id'])->where('end_date', '>=', Carbon::now())->first();
+        if(!$event){
+            return $this->sendError('Not allowed', 'No upcoming events found', 405); 
+        }
+        foreach($input['admits'] as $admit){
+            if($admit['pType'] == 'invitee'){
+                //required : event_id, invitee_id , admit_count = 1
+                $ep = EventParticipant::where('event_id',$admit['event_id'])->where('invitee_id', $admit['invitee_id'])->first();
+                if(!$ep->admitted){
+                    $ep->update([
+                        'admitted' => 1,
+                        'admitted_by' => $volunteer->id,
+                        'admitted_on' => now()
+                    ]);
+                    $ep->increment('admit_count');
+                    $admitted++;
+                }
+            }else{
+                if($admit['pType'] == 'member'){
+                    $ep = EventParticipant::where('event_id',$admit['event_id'])->where('user_id', $admit['user_id'])->first();
+                    if(!$ep || !$ep->admitted){
+                        $nep = EventParticipant::create([
+                            'event_id' => $admit['event_id'],
+                            'type' => $admit['type'],
+                            'user_id' => $admit['user_id'],
+                            'relation' => $admit['relation'],
+                            'name' => $admit['name'],
+                            'admitted' => 1,
+                            'admitted_by' => $volunteer->id,
+                            'admitted_on' => now(),
+                            'created_by' => $volunteer->id,
+                        ]);
+                        $nep->increment('admit_count');
+                        $admitted++;
+                    }
+                }else if($admit['pType'] == 'member_dependent'){
+                    $ep = EventParticipant::where('event_id',$admit['event_id'])->where('dependent_id', $admit['dependent_id'])->first();
+                    if(!$ep || !$ep->admitted){
+                        $nep = EventParticipant::create([
+                            'event_id' => $admit['event_id'],
+                            'type' => $admit['type'],
+                            'dependent_id' => $admit['dependent_id'],
+                            'parent_user_id' => $admit['parent_user_id'],
+                            'relation' => $admit['relation'],
+                            'name' => $admit['name'],
+                            'admitted' => 1,
+                            'admitted_by' => $volunteer->id,
+                            'admitted_on' => now(),
+                            'created_by' => $volunteer->id,
+                        ]);
+                        $nep->increment('admit_count');
+                        $admitted++;
                     }
                 }
-                
             }
-            
-            $packBalance = $packTotal;
-            foreach($member_participants as $participant){
-                $packBalance -= (int)$participant['admitted'];
-            }
-                */
-
+        }
+        $data = [
+            'packTotal' => $input['packTotal'],
+            'packAdmitted' => $admitted,
+            'packBalance' => $input['packTotal'] - $admitted
+        ];
+        return $this->sendResponse($data);
+    }
 }
