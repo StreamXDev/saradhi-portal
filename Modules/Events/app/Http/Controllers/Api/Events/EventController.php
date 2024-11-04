@@ -85,7 +85,7 @@ class EventController extends BaseController
         
         $input = $request->all();
         $qrString = $input['data'];
-        $qrExplode = explode("-",$qrString);
+        $qrExplode = explode("-",$qrString[0]);
         $qType = null;
         $event_id = null;
         $user_id = null;

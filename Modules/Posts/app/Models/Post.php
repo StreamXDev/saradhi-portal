@@ -13,6 +13,6 @@ class Post extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [
-        'title', 'content', 'thumb', 'location', 'date', 'active'
+        'title', 'body', 'thumb', 'location', 'date', 'active'
     ];
 }

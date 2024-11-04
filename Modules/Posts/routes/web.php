@@ -15,5 +15,5 @@ use Modules\Posts\Http\Controllers\Admin\PostsController;
 */
 
 Route::prefix('admin')->middleware(['auth:sanctum', 'verified_email', 'is_admin'])->group(function() {
-    Route::resource('posts', PostsController::class)->names('posts');
+    Route::resource('posts', PostsController::class)->names('admin.posts');
 });
