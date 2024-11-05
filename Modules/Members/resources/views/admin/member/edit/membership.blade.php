@@ -21,6 +21,17 @@
                     </div>
                 </div>
                 @endif
+                <div class="form-group row">
+                    <div class="col-md-8">
+                        <label for="status">Status</label>
+                        <div class="control-col">
+                            <select name="status" id="status" class="form-select">
+                                <option value="active" @selected($member->membership->status == 'active')>Active</option>
+                                <option value="dormant"@selected($member->membership->status == 'dormant')>Dormant</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
                 <label class="form-label">Membership Type</label>
                 <div class="form-check">
                     <div>

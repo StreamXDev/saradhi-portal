@@ -595,6 +595,7 @@ class MemberController extends Controller
                 $validator = Validator::make($request->all(), [
                     'user_id' => 'bail|required',
                     'mid'     => 'required|unique:memberships,mid,'.$input['user_id'].',user_id',
+                    'status'  => 'required',
                     'type'    => 'required'
                 ]);
             }else{
@@ -703,11 +704,13 @@ class MemberController extends Controller
             if(isset($input['current_type']) && $input['current_type'] == 'single'){
                 $membershipUpdateData = [
                     'mid' => $input['mid'],
-                    'type' => $input['type']
+                    'type' => $input['type'],
+                    'status' => $input['status'],
                 ];
             }else{
                 $membershipUpdateData = [
-                    'mid' => $input['mid']
+                    'mid' => $input['mid'],
+                    'status' => $input['status'],
                 ];
             }
             Membership::where('user_id', $user_id)->update($membershipUpdateData);

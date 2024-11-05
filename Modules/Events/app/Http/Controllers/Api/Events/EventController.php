@@ -27,7 +27,7 @@ class EventController extends BaseController
         
         $user = Auth::user(); //The member logged in app
         $events = Event::where('end_date', '>=', Carbon::now())->orderBy('start_date', 'desc')->get();
-        $member = Member::with('relations','relations.relatedMember.user','relations.relatedDependent','details')->where('user_id', $user->id)->first();
+        $member = Member::with('relations','relations.relatedMember.user','relations.relatedDependent','details', 'membership')->where('user_id', $user->id)->first();
         $relations = $member->relations;
         foreach($events as $key => $event){
             $events[$key]['pack']  = 0;
@@ -65,8 +65,10 @@ class EventController extends BaseController
                 }
                 // total number of invitees = total number of dependents + primary member
             }
-            $idQr = QrCode::format('png')->size(300)->generate(json_encode(['E'.$event->id.'-U'.$user->id]));
-            $events[$key]['idQr'] = 'data:image/png;base64, ' . base64_encode($idQr);
+            if($member->membership->status == 'active'){
+                $idQr = QrCode::format('png')->size(300)->generate(json_encode(['E'.$event->id.'-U'.$user->id]));
+                $events[$key]['idQr'] = 'data:image/png;base64, ' . base64_encode($idQr);
+            }
             $events[$key]['thumb'] = $event->thumb ? url('storage/images/events/'. $event->thumb) : null;
         }
         $data = [
