@@ -140,7 +140,8 @@ class EventController extends BaseController
                 'name' => $member->name,
                 'unit' => $member->details->member_unit->name,
                 'type' => $invitee_member_type->id,
-                'admitted' => isset($member_admitted->admitted) && $member_admitted->admitted == 1 ? true : false
+                'admitted' => isset($member_admitted->admitted) && $member_admitted->admitted == 1 ? true : false,
+                'checked' => false
             ]);
 
 
@@ -160,7 +161,8 @@ class EventController extends BaseController
                             'name' => $relation->relatedMember->name,
                             'unit' => $member->details->member_unit->name,
                             'type' => $invitee_member_type->id,
-                            'admitted' => isset($relatedMember_admitted->admitted) && $relatedMember_admitted->admitted == 1 ? true : false
+                            'admitted' => isset($relatedMember_admitted->admitted) && $relatedMember_admitted->admitted == 1 ? true : false,
+                            'checked' => false
                         ]);
                     }else if($relation->relatedDependent){
                         $relatedDependent_admitted = EventParticipant::where('event_id',$event->id)->where('dependent_id',$relation->relatedDependent->id)->first();
@@ -173,7 +175,8 @@ class EventController extends BaseController
                             'name' => $relation->relatedDependent->name,
                             'unit' => $member->details->member_unit->name,
                             'type' => $invitee_dependent_type->id,
-                            'admitted' => isset($relatedDependent_admitted->admitted) && $relatedDependent_admitted->admitted == 1 ? true : false
+                            'admitted' => isset($relatedDependent_admitted->admitted) && $relatedDependent_admitted->admitted == 1 ? true : false,
+                            'checked' => false
                         ]);
                     }
                 }
@@ -194,7 +197,8 @@ class EventController extends BaseController
                     'invitee_id' => $invitee->id,
                     'name' => $invitee->name,
                     'unit' => $invitee->unit,
-                    'admitted' => $invitee->admitted
+                    'admitted' => $invitee->admitted,
+                    'checked' => false
                 ]
             ];
             $packTotal = $invitee->pack_count;
