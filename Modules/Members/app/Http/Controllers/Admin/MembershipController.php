@@ -122,11 +122,14 @@ class MembershipController extends Controller
         $input = $request->all();
 
         $validator = Validator::make($request->all(), ...$this->validationRules());
+
         if($validator->fails()){
-            return Redirect::back()->withErrors($validator)->withInput();       
+            return Redirect::back()->withErrors($validator)->withInput()->with('error', 'Some fields are not valid');
         }
 
         $user_id = $input['user_id'];
+
+        
 
         // check active request and it is ready to confirm
         $approved_status = MemberEnum::where('type', 'request_status')->where('slug', 'approved')->first();
@@ -177,9 +180,8 @@ class MembershipController extends Controller
     {
         $rules =  [
             'user_id'      => ['required', Rule::exists(User::class, 'id')],
-            'mid'          => ['required', Rule::exists(Membership::class, 'mid')]
+            'mid'          => ['required', Rule::unique(Membership::class, 'mid')]
         ];
-
         $messages = [
             'user_id.required' => 'User ID is required',
             'user_id.exists' => 'User ID is not valid',

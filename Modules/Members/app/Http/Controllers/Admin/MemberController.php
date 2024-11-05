@@ -227,7 +227,7 @@ class MemberController extends Controller
                 $error = \Illuminate\Validation\ValidationException::withMessages([
                     'spouse_phone' => ['Spouse phone and primary phone number should not be same'],
                  ]);
-                 throw $error; 
+                throw $error; 
             }
         }
 
