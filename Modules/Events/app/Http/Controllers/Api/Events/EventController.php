@@ -87,7 +87,7 @@ class EventController extends BaseController
     {
         
         $input = $request->all();
-        $qrString = $input['data'];
+        $qrString = preg_replace('/[^A-Za-z0-9\-]/', '', ($input['data']));
         $qrExplode = explode("-",$qrString);
         $qType = null;
         $event_id = null;
