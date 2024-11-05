@@ -88,10 +88,7 @@ class EventController extends BaseController
         
         $input = $request->all();
         $qrString = $input['data'];
-        Test::create([
-            'value' => $input['data']
-        ]);
-        $qrExplode = explode("-",$qrString[0]);
+        $qrExplode = explode("-",$qrString);
         $qType = null;
         $event_id = null;
         $user_id = null;
