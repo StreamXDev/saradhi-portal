@@ -11,6 +11,7 @@ use Modules\Events\Models\Event;
 use Modules\Events\Models\EventEnum;
 use Modules\Events\Models\EventParticipant;
 use Modules\Events\Models\EventVolunteer;
+use Modules\Events\Models\Test;
 use Modules\Members\Models\Member;
 use Nwidart\Modules\Facades\Module;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -87,6 +88,9 @@ class EventController extends BaseController
         
         $input = $request->all();
         $qrString = $input['data'];
+        Test::create([
+            'value' => $input['data']
+        ]);
         $qrExplode = explode("-",$qrString[0]);
         $qType = null;
         $event_id = null;
