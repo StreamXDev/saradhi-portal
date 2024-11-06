@@ -12,6 +12,12 @@
             <span class="label">Civil ID</span>
             <span class="value">{{ $member->details->civil_id }}</span>
         </div>
+        @isset($member->details->member_unit->name)
+        <div class="item">
+            <span class="label">Unit</span>
+            <span class="value">{{ $member->details->member_unit->name }}</span>
+        </div>
+        @endisset
     </div>
     <div class="logo-wrapper">
         <div class="item logo">

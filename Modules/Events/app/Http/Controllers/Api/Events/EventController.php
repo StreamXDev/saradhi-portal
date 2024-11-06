@@ -233,15 +233,13 @@ class EventController extends BaseController
             if($admit['pType'] == 'invitee'){
                 //required : event_id, invitee_id , admit_count = 1
                 $ep = EventParticipant::where('event_id',$admit['event_id'])->where('invitee_id', $admit['invitee_id'])->first();
-                if(!$ep->admitted){
-                    $ep->update([
-                        'admitted' => 1,
-                        'admitted_by' => $volunteer->id,
-                        'admitted_on' => now()
-                    ]);
-                    $ep->increment('admit_count');
-                    $admitted++;
-                }
+                $ep->update([
+                    'admitted' => 1,
+                    'admitted_by' => $volunteer->id,
+                    'admitted_on' => now()
+                ]);
+                $ep->increment('admit_count');
+                $admitted++;
             }else{
                 if($admit['pType'] == 'member'){
                     $ep = EventParticipant::where('event_id',$admit['event_id'])->where('user_id', $admit['user_id'])->first();
