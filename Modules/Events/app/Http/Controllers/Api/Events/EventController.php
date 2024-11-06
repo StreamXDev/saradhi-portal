@@ -194,20 +194,21 @@ class EventController extends BaseController
                 return $this->sendError('Invalid Invitee', 'Invitee not found', 405); 
             }
             $invitee = EventParticipant::where('id',$invitee_id)->first();
-            $member_participants = [
-                [
+            $member_participants=[];
+            $packTotal = $invitee->pack_count;
+            $packBalance = $invitee->pack_count - $invitee->admit_count;
+            for($i= 1; $i <= $packBalance; $i++){
+                $member_participants[] = [
                     'pType' => 'invitee',
                     'event_id' => $event->id,
                     'invitee_id' => $invitee->id,
                     'name' => $invitee->name,
                     'unit' => $invitee->unit,
                     'admitted' => $invitee->admitted,
-                    'pack_count' => $invitee->pack_count,
-                    'admit_count' => $invitee->admit_count,
-                ]
-            ];
-            $packTotal = $invitee->pack_count;
-            $packBalance = $invitee->pack_count - $invitee->admit_count;
+                    'pack_count' => $packTotal,
+                    'admit_count' => $packBalance,
+                ];
+            }
         }
 
         $data = [
