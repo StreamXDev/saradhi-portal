@@ -232,7 +232,7 @@ class EventController extends BaseController
         foreach($input['admits'] as $admit){
             if($admit['pType'] == 'invitee'){
                 //required : event_id, invitee_id , admit_count = 1
-                $ep = EventParticipant::where('event_id',$admit['event_id'])->where('invitee_id', $admit['invitee_id'])->first();
+                $ep = EventParticipant::where('event_id',$admit['event_id'])->where('id', $admit['invitee_id'])->first();
                 $ep->update([
                     'admitted' => 1,
                     'admitted_by' => $volunteer->id,
