@@ -209,6 +209,20 @@ class EventController extends BaseController
                     'admit_count' => $invitee->admit_count,
                 ];
             }
+            if($packBalance == 0){
+                $member_participants = [
+                    [
+                        'pType' => 'invitee',
+                        'event_id' => $event->id,
+                        'invitee_id' => $invitee->id,
+                        'name' => $invitee->name,
+                        'unit' => $invitee->unit,
+                        'admitted' => $invitee->admitted,
+                        'pack_count' => $packTotal,
+                        'admit_count' => $invitee->admit_count,
+                    ]
+                ];
+            }
         }
 
         $data = [
@@ -233,13 +247,15 @@ class EventController extends BaseController
             if($admit['pType'] == 'invitee'){
                 //required : event_id, invitee_id , admit_count = 1
                 $ep = EventParticipant::where('event_id',$admit['event_id'])->where('id', $admit['invitee_id'])->first();
-                $ep->update([
-                    'admitted' => 1,
-                    'admitted_by' => $volunteer->id,
-                    'admitted_on' => now()
-                ]);
-                $ep->increment('admit_count');
-                $admitted++;
+                if($ep && $ep->pack_count > $ep->admit_count){
+                    $ep->update([
+                        'admitted' => 1,
+                        'admitted_by' => $volunteer->id,
+                        'admitted_on' => now()
+                    ]);
+                    $ep->increment('admit_count');
+                    $admitted = $ep->admit_count++;
+                }
             }else{
                 if($admit['pType'] == 'member'){
                     $ep = EventParticipant::where('event_id',$admit['event_id'])->where('user_id', $admit['user_id'])->first();
@@ -279,6 +295,7 @@ class EventController extends BaseController
                 }
             }
         }
+
         $data = [
             'packTotal' => $input['packTotal'],
             'packAdmitted' => $admitted,
