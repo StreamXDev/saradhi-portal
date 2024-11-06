@@ -3,22 +3,23 @@
 namespace Modules\Posts\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
-use Modules\Posts\Models\Post;
+use Modules\Posts\Models\Article;
 
-class PostsController extends Controller
+class ArticlesController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $posts = Post::orderBy('created_at', 'desc')->paginate(25);
-        return view('posts::admin.news.index', compact('posts'));
+        $articles = Article::orderBy('created_at', 'desc')->paginate(25);
+        return view('posts::admin.articles.index', compact('articles'));
     }
 
     /**
@@ -26,7 +27,7 @@ class PostsController extends Controller
      */
     public function create()
     {
-        return view('posts::admin.news.add');
+        return view('posts::admin.articles.add');
     }
 
     /**
@@ -34,7 +35,6 @@ class PostsController extends Controller
      */
     public function store(Request $request)
     {
-        
         $validator = Validator::make($request->all(), [
             'title' => 'required|string',
         ]);
@@ -46,25 +46,23 @@ class PostsController extends Controller
         $input = $request->all();
 
         if(isset($input['thumb'])){
-            $thumbName = 'post_thumb_'.time().'.'.$request->thumb->extension(); 
-            $request->thumb->storeAs('public/images/news', $thumbName);
+            $thumbName = 'article_thumb_'.time().'.'.$request->thumb->extension(); 
+            $request->thumb->storeAs('public/images/articles', $thumbName);
             $input['thumb'] = $thumbName;
         }
 
         DB::beginTransaction();
-        Post::create([
+        Article::create([
             'title' => $input['title'],
             'body' => $input['body'],
             'thumb' => $input['thumb'],
-            'location' => $input['location'],
-            'date' => $input['date'],
+            'order' => $input['order'],
             'active' => 1
         ]);
 
         DB::commit();
 
-        return redirect('/admin/posts');
-        
+        return redirect('/admin/articles');
     }
 
     /**
@@ -72,7 +70,7 @@ class PostsController extends Controller
      */
     public function show($id)
     {
-        return view('posts::admin.news.show');
+        return view('posts::show');
     }
 
     /**
@@ -80,7 +78,7 @@ class PostsController extends Controller
      */
     public function edit($id)
     {
-        return view('posts::admin.news.edit');
+        return view('posts::edit');
     }
 
     /**

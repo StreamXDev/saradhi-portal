@@ -47,6 +47,11 @@
                 </div>
             </div>
         </div>
+        <div class="form-group row">
+            <div class="col-md-2">
+                <input type="checkbox" name="active" id="active" checked><label for="active">Published</label>
+            </div>
+        </div>
         <div class="form-group">
             <button class="btn btn-success btn-submit">Submit</button>
         </div>
