@@ -961,9 +961,23 @@ table.list{
         font-weight: 600;
         text-shadow: 0 5px 5px rgba(0,0,0,0.1);
         color: #fff;
-        padding: 1.5rem 0;
+        padding: 1.5rem 0 0 0;
+    }
+    .title-info{
+        width: 100%;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        column-gap: 1rem;
+        .item{
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+        }
     }
     .id-wrapper{
+        margin-top: 1.5rem;
         background-color: rgba(255,255,255,0.5);
         flex: 1;
         width: 100%;
