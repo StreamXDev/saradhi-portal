@@ -206,7 +206,7 @@ class EventController extends BaseController
                     'unit' => $invitee->unit,
                     'admitted' => $invitee->admitted,
                     'pack_count' => $packTotal,
-                    'admit_count' => $packBalance,
+                    'admit_count' => $invitee->admit_count,
                 ];
             }
         }
