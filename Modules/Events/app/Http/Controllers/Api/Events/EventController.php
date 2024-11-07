@@ -27,7 +27,7 @@ class EventController extends BaseController
     {
         
         $user = Auth::user(); //The member logged in app
-        $events = Event::where('end_date', '>=', Carbon::now())->orderBy('start_date', 'desc')->get();
+        $events = Event::where('end_date', '>=', date('Y-m-d'))->orderBy('start_date', 'desc')->get();
         $member = Member::with('relations','relations.relatedMember.user','relations.relatedDependent','details', 'membership')->where('user_id', $user->id)->first();
         $relations = $member->relations;
         foreach($events as $key => $event){
@@ -110,7 +110,7 @@ class EventController extends BaseController
             return $this->sendError('Not allowed', 'No events found', 405); 
         }
 
-        $event = Event::where('id', $event_id)->where('end_date', '>=', Carbon::now())->first();
+        $event = Event::where('id', $event_id)->where('end_date', '>=', date('Y-m-d'))->first();
         if(!$event || $qType !== 'event'){
             return $this->sendError('Not allowed', 'No upcoming events found', 405); 
         }
@@ -239,7 +239,7 @@ class EventController extends BaseController
         $volunteer = Auth::user();
         $input = $request->all();
         $admitted = 0;
-        $event = Event::where('id', $input['event_id'])->where('end_date', '>=', Carbon::now())->first();
+        $event = Event::where('id', $input['event_id'])->where('end_date', '>=', date('Y-m-d'))->first();
         if(!$event){
             return $this->sendError('Not allowed', 'No upcoming events found', 405); 
         }
