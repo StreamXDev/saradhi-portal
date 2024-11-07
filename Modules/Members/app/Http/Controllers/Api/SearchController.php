@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BaseController;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Modules\Members\Models\Member;
 use Modules\Members\Models\MemberEnum;
 use Modules\Members\Models\MemberUnit;
@@ -39,9 +40,10 @@ class SearchController extends BaseController
                 'status' => '',
             ]
         );
+
         if (request()->get('search_by') != null){
             $input = request()->get('search_by');
-            $members->where('type', 'LIKE', '%' .$input. '%')
+            $members->where('name', 'LIKE', '%' .$input. '%')
                 ->orWhereHas('user', function($q) use ($input) {
                     return $q->where('name', 'LIKE', '%' . $input . '%');
                 })
@@ -60,15 +62,20 @@ class SearchController extends BaseController
 
         if (request()->get('blood_group') != null){
             $input = request()->get('blood_group');
-            //$members->orWhereHas('details', function($q) use ($input) {
-                //return $q->where('member_unit_id', $input);
-            //});
-            $members->where('blood_group', $input);
+            $members->where('blood_group', 'LIKE', '%' . $input . '%');
             $filters->put('blood_group', request()->get('blood_group'));
+        }
+        //return $this->sendResponse($members->toSql());
+
+        $results  = $members->paginate(20);
+        foreach($results as $key => $result){
+            if($result->user->avatar){
+                $results[$key]->user->avatar = url('storage/images/'. $result->user->avatar);
+            }
         }
 
         $data = [
-            'members' => $members->paginate(),
+            'members' => $results,
             'filters' => $filters,
         ];
         return $this->sendResponse($data);
