@@ -163,6 +163,9 @@ class EventController extends Controller
         }
         $participant_types = EventEnum::select('id', 'slug', 'name', 'category')->where('type', 'participant_type')->get();
         $data = EventParticipant::with('invitee_type')->where('event_id', $id);
+        if($event->invite_all_members){
+            $data->where('type' , '!=', 4)->orWhere('type', '!=', 5);
+        }
         $invitee_count = $data->get();
         $invitees = $data->orderBy('id','desc')->paginate(20);
         $total_invited = 0;
