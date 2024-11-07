@@ -17,5 +17,5 @@
 </div>
 <div style="flex: 1 0 100%; display:flex; justify-content:flex-end; margin-top:1rem; column-gap:0.5rem">
     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="margin-left: auto">Close</button>
-    <button type="button" class="btn btn-primary" id="screenshot" data-id="{{$invitee->id}}" data-name="{{$invitee->name}}">Download</button>
+    <button type="button" class="btn btn-primary screenshot" id="screenshot{{$invitee->id}}" data-id="{{$invitee->id}}" data-name="{{$invitee->name}}">Download</button>
 </div>

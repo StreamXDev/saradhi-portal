@@ -87,7 +87,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.6.1/jquery.zoom.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-    $('#screenshot').click(function(){
+    $('.screenshot').click(function(){
         var id = $(this).data('id');
         var name = $(this).data('name').replace(/ /g,'');
         var link = document.createElement('a');
