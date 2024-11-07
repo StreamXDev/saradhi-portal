@@ -32,10 +32,10 @@ class EventController extends Controller
     {
         $events = Event::orderBy('start_date', 'desc')->get();
         if($request->get('type') && $request->get('type') == 'past'){
-            $events = $events->where('start_date', '<', Carbon::now());
+            $events = $events->where('end_date', '<', date('Y-m-d'));
             $type = 'past';
         }else{
-            $events = $events->where('start_date', '>=', Carbon::now());
+            $events = $events->where('end_date', '>=', date('Y-m-d'));
             $type = 'upcoming';
         }
 
