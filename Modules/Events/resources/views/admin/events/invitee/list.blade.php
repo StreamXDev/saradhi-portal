@@ -89,7 +89,7 @@
 <script>
     $('#screenshot').click(function(){
         var id = $(this).data('id');
-        var name = $(this).data('name');
+        var name = $(this).data('name').replace(/ /g,'');
         var link = document.createElement('a');
         html2canvas(document.getElementById('idCard_'+id)).then(function(canvas) {
             var image = canvas.toDataURL();
