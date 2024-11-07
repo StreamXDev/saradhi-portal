@@ -5,6 +5,7 @@ use Modules\Members\Http\Controllers\Api\AddressController;
 use Modules\Members\Http\Controllers\Api\DependentController;
 use Modules\Members\Http\Controllers\Api\MembersController;
 use Modules\Members\Http\Controllers\Api\ProfileController;
+use Modules\Members\Http\Controllers\Api\SearchController;
 use Modules\Members\Http\Middleware\VerifyProfileStatus;
 
 /*
@@ -37,5 +38,9 @@ Route::middleware(['auth:sanctum','verified_email'])->prefix('member')->group(fu
     Route::controller(ProfileController::class)->prefix('profile')->group(function(){
         Route::get('/', 'showProfile');
         Route::post('update', 'updateProfile');
+    });
+    Route::controller(SearchController::class)->prefix('search')->group(function(){
+        Route::get('/', 'index');
+        Route::post('/', 'search');
     });
 });
