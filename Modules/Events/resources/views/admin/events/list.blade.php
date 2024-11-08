@@ -31,9 +31,14 @@
                         @if($event->thumb)<img src="{{ url('storage/images/events/'. $event->thumb) }}" alt="" class="event-list-thumb">
                         @else <div class="no-thumb"></div> @endif
                     </span>
-                    {{$event->title}}
+                    {{$event->title}} &nbsp;
+                    @if($event->start_date <= date('Y-m-d') && $event->end_date >= date('Y-m-d'))<span class="badge rounded-pill text-bg-danger">On Going</span>@endif
                 </td>
-                <td>{{date('M d, Y', strtotime($event->start_date))}} {{date('h:i a', strtotime($event->start_time))}} {{$event->end_date ? 'To':''}} {{date('M d, Y', strtotime($event->end_date))}} {{date('h:i a', strtotime($event->end_time))}}</td>
+                <td>
+                    <span class="date">{{date('M d, Y', strtotime($event->start_date))}} {{date('h:i a', strtotime($event->start_time))}}</span>
+                    &nbsp;{{$event->end_date ? 'To':''}}&nbsp;
+                    <span class="date">{{date('M d, Y', strtotime($event->end_date))}} {{date('h:i a', strtotime($event->end_time))}}</span>
+                </td>
                 <td>{{$event->location}}</td>
                 <td>
                     <div class="actions">

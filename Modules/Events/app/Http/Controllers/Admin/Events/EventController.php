@@ -30,7 +30,7 @@ class EventController extends Controller
      */
     public function index(Request $request)
     {
-        $events = Event::orderBy('start_date', 'desc')->get();
+        $events = Event::orderBy('start_date', 'asc')->get();
         if($request->get('type') && $request->get('type') == 'past'){
             $events = $events->where('end_date', '<', date('Y-m-d'));
             $type = 'past';
