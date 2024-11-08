@@ -30,10 +30,9 @@ Route::middleware(['auth:sanctum','verified_email'])->prefix('member')->group(fu
             Route::post('add', 'storeMemberAddress');
         });
     });
-    Route::controller(DependentController::class)->group(function(){
-        Route::middleware(VerifyProfileStatus::class)->group(function () {
-            //Route::get('add_dependent', 'showProfile');
-        });
+    Route::controller(DependentController::class)->prefix('dependent')->group(function(){
+        Route::get('create', 'create');
+        Route::post('create', 'store');
     });
     Route::controller(ProfileController::class)->prefix('profile')->group(function(){
         Route::get('/', 'showProfile');
