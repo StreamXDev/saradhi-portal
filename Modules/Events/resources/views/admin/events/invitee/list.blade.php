@@ -2,7 +2,7 @@
 @section('content')
 <div class="page-title">
     <div>
-        <h1 class="title">Invitiees</h1>
+        <h1 class="title">{{$event->title}} | Invitiees</h1>
         <div><small class="text-muted">Showing <strong>{{$invitees->currentPage()}}</strong> to <strong>{{$invitees->count()}}</strong> of <strong>{{$invitees->total()}}</strong> results for {{$event->name}}</small></div>
     </div>
     <div>
@@ -12,6 +12,11 @@
 </div>
 <div class="page-content mb-2">
     <div class="count-boxes">
+        <div class="item key-item">
+            <div class="title">{{$event->title}}</div>
+            <div class="info">{{date('M d, Y', strtotime($event->start_date))}}</div>
+            <div class="info">{{date('M d, Y', strtotime($event->end_date))}}</div>
+        </div>
         <div class="item">
             <div class="title">Total</div>
             <div class="count"><label>Invited</label>{{$total_invited}}</div>

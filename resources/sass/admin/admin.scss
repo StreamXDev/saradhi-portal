@@ -1210,6 +1210,14 @@ table.list{
         padding: 0.8rem 1.5rem;
         border: 1px solid #ddd;
         border-radius: 6px;
+        &.key-item{
+            border: none;
+            background-color: #eee;
+            .title{
+                font-size: 0.9rem;
+                font-weight: 600;
+            }
+        }
         .title{
             font-size: 1rem;
             font-weight: 600;
