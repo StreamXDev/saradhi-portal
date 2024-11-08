@@ -25,7 +25,7 @@ class EventParticipant extends Model
     {
         return $this->hasOne(User::class, 'id','user_id');
     }
-    public function admitted_by():HasOne
+    public function admittedBy():HasOne
     {
         return $this->hasOne(User::class, 'id','admitted_by');
     }

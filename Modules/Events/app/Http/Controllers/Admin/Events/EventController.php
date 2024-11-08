@@ -49,8 +49,8 @@ class EventController extends Controller
     public function show(Request $request, $id)
     {
         $event = Event::where('id', $id)->first();
-        $volunteers = EventVolunteer::with('user')->where('event_id', $id)->get();
-        $participants = EventParticipant::where('event_id', $id)->where('admitted',1)->get();
+        $volunteers = EventVolunteer::with('user')->where('event_id', $id)->paginate(25);
+        $participants = EventParticipant::with('admittedBy','invitee_type')->where('event_id', $id)->where('admitted',1)->paginate(25);
         return view('events::admin.events.show', compact('event','volunteers', 'participants'));
     }
 
@@ -163,6 +163,9 @@ class EventController extends Controller
         }
         $participant_types = EventEnum::select('id', 'slug', 'name', 'category')->where('type', 'participant_type')->get();
         $data = EventParticipant::with('invitee_type')->where('event_id', $id);
+        if($event->invite_all_members){
+            $data->where('type','!=', 4)->where('type', '!=', 5);
+        }
         $invitee_count = $data->get();
         $invitees = $data->orderBy('id','desc')->paginate(20);
         $total_invited = 0;

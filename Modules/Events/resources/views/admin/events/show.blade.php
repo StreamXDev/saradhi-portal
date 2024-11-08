@@ -56,9 +56,9 @@
                             @foreach ($participants as $person)    
                             <tr>
                                 <td>{{$person->name}}</td>
-                                <td>{{$person->type}}</td>
+                                <td>{{$person->invitee_type->name}}</td>
                                 <td>{{$person->unit}}</td>
-                                <td>10.46 AM<span class="col-info block">by <a href="/admin/members/member/view/{{$person->admintted_by}}" target="_blank">Safeer Aslam</a></span></td>
+                                <td><small>{{date('M d, Y H:i a', strtotime($person->admitted_on))}}<span class="col-info block">by <a href="/admin/members/member/view/{{$person->admittedBy->id}}" target="_blank">{{$person->admittedBy->name}}</a></span></small></td>
                             </tr>
                             @endforeach
                         </tbody>
