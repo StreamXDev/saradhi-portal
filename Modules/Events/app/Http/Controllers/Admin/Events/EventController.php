@@ -191,7 +191,7 @@ class EventController extends Controller
      */
     public function createInvitee(Request $request, $id)
     {
-        $event = Event::where('id', $id)->where('start_date', '>=', date('Y-m-d'))->first();
+        $event = Event::where('id', $id)->where('end_date', '>=', date('Y-m-d'))->first();
         if(!$event){
             return redirect('/admin/events/create');
         }
@@ -288,7 +288,7 @@ class EventController extends Controller
      */
     public function createVolunteer(Request $request, $id)
     {
-        $event = Event::where('id', $id)->where('start_date', '>=',  date('Y-m-d'))->first();
+        $event = Event::where('id', $id)->where('end_date', '>=',  date('Y-m-d'))->first();
         if(!$event){
             return redirect('/admin/events/create');
         }
