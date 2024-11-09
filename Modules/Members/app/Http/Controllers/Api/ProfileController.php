@@ -184,7 +184,7 @@ class ProfileController extends BaseController
                 }else if($relative->related_dependent_id){
                     $member->relations[$key]->relatedDependent->avatar = url('storage/images/'. $member->relations[$key]->relatedDependent->avatar);
                     $childIdQr = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->relations[$key]->relatedDependent->name,  'Membership ID' => $member->relations[$key]->relatedDependent->parent_mid, 'Civil ID' => $member->relations[$key]->relatedDependent->civil_id]));
-                    $member->relations[$key]->relatedMember->qrCode = 'data:image/png;base64, ' . base64_encode($childIdQr);
+                    $member->relations[$key]->relatedDependent->qrCode = 'data:image/png;base64, ' . base64_encode($childIdQr);
                 }
                 
             }
