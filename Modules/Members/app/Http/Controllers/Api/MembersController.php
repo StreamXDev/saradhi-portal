@@ -308,6 +308,14 @@ class MembersController extends BaseController
                     
                 }
             }
+
+            $proofPendingTypes = [];
+            if($proofPending){
+                $proofPendingTypes[] = 'primary';
+                if($member->membership->type === 'family'){
+                    $proofPendingTypes[] = 'spouse';
+                }
+            }
             
             $response = [
                 'success' => true,
@@ -317,6 +325,7 @@ class MembersController extends BaseController
                 'pending_approval' => $pendingApproval,
                 'current_status' => $currentStatus,
                 'proof_pending' => $proofPending,
+                'proof_pending_types' => $proofPendingTypes,
                 'family_request' => $member->membership->type === 'family' ? true : false,
                 'user' => $user,
                 'member' => $member,
@@ -483,6 +492,7 @@ class MembersController extends BaseController
                 'pending_approval' => $pendingApproval,
                 'current_status' => $currentStatus,
                 'proof_pending' => false,
+                'proof_pending_types' => [],
                 'statuses' => $statuses,
             ];
             return $this->sendResponse($response, 'Your document proof successfully and the Membership request sent to verification');

@@ -172,7 +172,11 @@ class ProfileController extends BaseController
             }
         }
         
-        
+        $proofPendingTypes = [];
+        if($proofPending){
+            $proofPendingTypes[] = 'primary';
+        }
+
         $data = [
             'is_member' => $member ? true : false,
             'profile_completed' => $profileCompleted,
@@ -180,6 +184,7 @@ class ProfileController extends BaseController
             'pending_approval' => $pendingApproval,
             'current_status' => $currentStatus,
             'proof_pending' => $proofPending,
+            'proof_pending_types' => $proofPendingTypes,
             'family_request' => $member->membership->type === 'family' ? true : false,
             'user' => $user,
             'member' => $member,
