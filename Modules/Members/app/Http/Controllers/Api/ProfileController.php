@@ -128,6 +128,7 @@ class ProfileController extends BaseController
         $activeMembership = false;
         $currentStatus = null;
         $proofPending = false;
+        $proofPendingTypes = [];
         
         $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'relations.relatedMember.user', 'relations.relatedMember.membership', 'relations.relatedMember.details', 'relations.relatedDependent', 'requests', 'committees', 'trustee'])->where('user_id' , $user->id)->first();
         
@@ -137,10 +138,12 @@ class ProfileController extends BaseController
             if($member->membership->status === 'inactive'){
                 if(!$member->details->photo_civil_id_front || $member->details->photo_civil_id_back || $member->details->photo_passport_front || $member->details->photo_passport_back){
                     $proofPending = true;
+                    $proofPendingTypes[] = 'self';
                 }
             }
         }else{
-            $proofPending = true; // in no details, proof also pending normally
+            $proofPending = true; // in no details, usually is proof also pending
+            $proofPendingTypes[] = 'self';
         }
 
         $statuses = requestStatusDisplay($user->id);
@@ -151,8 +154,8 @@ class ProfileController extends BaseController
         //Member ID
         if($member->membership){
             $activeMembership = $member->membership->status === 'active' ? true : false;
-            $idQr = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->name,  'Membership ID' => $member->membership->mid, 'Civil ID' => $member->details->civil_id]));
-            $member->membership->qrCode = 'data:image/png;base64, ' . base64_encode($idQr);
+            //$idQr = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->name,  'Membership ID' => $member->membership->mid, 'Civil ID' => $member->details->civil_id]));
+            //$member->membership->qrCode = 'data:image/png;base64, ' . base64_encode($idQr);
         }
         $member->user->avatar = url('storage/images/'. $member->user->avatar);
 
@@ -161,20 +164,28 @@ class ProfileController extends BaseController
             foreach($member->relations as $key => $relative){
                 if($relative->related_member_id){
                     $member->relations[$key]->relatedMember->user->avatar = url('storage/images/'. $member->relations[$key]->relatedMember->user->avatar);
+
+                    if($relative->relatedMember && $relative->relatedMember->details){
+                        if($relative->relatedMember->membership->status === 'inactive'){
+                            if(!$relative->relatedMember->details->photo_civil_id_front || $relative->relatedMember->details->photo_civil_id_back || $relative->relatedMember->details->photo_passport_front || $relative->relatedMember->details->photo_passport_back){
+                                $proofPending = true;
+                                $proofPendingTypes[] = 'spouse';
+                            }
+                        }
+                    }else{
+                        $proofPending = true; // in no details, usually is proof also pending
+                        $proofPendingTypes[] = 'spouse';
+                    }
+
                     if($relative->relatedMember->active){
-                        $spouseIdQr = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->relations[$key]->relatedMember->name,  'Membership ID' => $member->relations[$key]->relatedMember->membership->mid, 'Civil ID' => $member->relations[$key]->relatedMember->details->civil_id]));
-                        $member->relations[$key]->relatedMember->membership->qrCode = 'data:image/png;base64, ' . base64_encode($spouseIdQr);
+                        //$spouseIdQr = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->relations[$key]->relatedMember->name,  'Membership ID' => $member->relations[$key]->relatedMember->membership->mid, 'Civil ID' => $member->relations[$key]->relatedMember->details->civil_id]));
+                        //$member->relations[$key]->relatedMember->membership->qrCode = 'data:image/png;base64, ' . base64_encode($spouseIdQr);
                     }
                 }else if($relative->related_dependent_id){
                     $member->relations[$key]->relatedDependent->avatar = url('storage/images/'. $member->relations[$key]->relatedDependent->avatar);
                 }
                 
             }
-        }
-        
-        $proofPendingTypes = [];
-        if($proofPending){
-            $proofPendingTypes[] = 'primary';
         }
 
         $data = [

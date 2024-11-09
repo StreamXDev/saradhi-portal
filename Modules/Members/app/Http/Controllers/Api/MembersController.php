@@ -311,7 +311,7 @@ class MembersController extends BaseController
 
             $proofPendingTypes = [];
             if($proofPending){
-                $proofPendingTypes[] = 'primary';
+                $proofPendingTypes[] = 'self';
                 if($member->membership->type === 'family'){
                     $proofPendingTypes[] = 'spouse';
                 }
@@ -349,48 +349,44 @@ class MembersController extends BaseController
             return $this->sendError('Not allowed', 'You are not a member', 405); 
         }
 
-        $primaryMember = Member::where('user_id', $user->id)->first();
+        $requestingMember = Member::where('user_id', $user->id)->first();
         $spouseUser = null;
         $spouseMember = null;
-        $hasSpouse = MemberRelation::where('related_member_id', $primaryMember->id)->first();
+        $hasSpouse = MemberRelation::where('related_member_id', $requestingMember->id)->first();
         if($hasSpouse){
             $spouseMember = Member::where('member_id', $hasSpouse->member_id)->first();
             $spouseUser = User::where('id', $spouseMember->user_id)->first();
         }
 
-        if($hasSpouse){
-            $validator = Validator::make($request->all(), [
-                'photo_civil_id_front'    => ['required'],
-                'photo_civil_id_back'     => ['required'],
-                'photo_passport_front'    => ['required'],
-                'photo_passport_back'     => ['required'],
-                'spouse_photo_civil_id_front'    => ['required'],
-                'spouse_photo_civil_id_back'     => ['required'],
-                'spouse_photo_passport_front'    => ['required'],
-                'spouse_photo_passport_back'     => ['required'],
-            ],[
-                'photo_civil_id_front.required'    => 'Required field',
-                'photo_civil_id_back.required'     => 'Required field',
-                'photo_passport_front.required'    => 'Required field',
-                'photo_passport_back.required'     => 'Required field',
-                'spouse_photo_civil_id_front.required'    => 'Required field',
-                'spouse_photo_civil_id_back.required'     => 'Required field',
-                'spouse_photo_passport_front.required'    => 'Required field',
-                'spouse_photo_passport_back.required'     => 'Required field',
-            ]);
-        }else{
-            $validator = Validator::make($request->all(), [
-                'photo_civil_id_front'    => ['required'],
-                'photo_civil_id_back'     => ['required'],
-                'photo_passport_front'    => ['required'],
-                'photo_passport_back'     => ['required']
-            ],[
-                'photo_civil_id_front.required'    => 'Required field',
-                'photo_civil_id_back.required'     => 'Required field',
-                'photo_passport_front.required'    => 'Required field',
-                'photo_passport_back.required'     => 'Required field'
-            ]);
+        $proofPendingTypes = $request->proofPendingTypes();
+        if($proofPendingTypes){
+            if(in_array('self', $proofPendingTypes)){
+                $rules['photo_civil_id_front']    = ['required'];
+                $rules['photo_civil_id_back']     = ['required'];
+                $rules['photo_passport_front']    = ['required'];
+                $rules['photo_passport_back']     = ['required'];
+                
+                $messages['photo_civil_id_front.required']    = 'Required field';
+                $messages['photo_civil_id_back.required']    = 'Required field';
+                $messages['photo_passport_front.required']    = 'Required field';
+                $messages['photo_passport_back.required']    = 'Required field';
+                
+            }
+            if(in_array('spouse', $proofPendingTypes)){
+                $rules['spouse_photo_civil_id_front']    = ['required'];
+                $rules['spouse_photo_civil_id_back']     = ['required'];
+                $rules['spouse_photo_passport_front']    = ['required'];
+                $rules['spouse_photo_passport_back']     = ['required'];
+
+                $messages['spouse_photo_civil_id_front.required']    = 'Required field';
+                $messages['spouse_photo_civil_id_back.required']    = 'Required field';
+                $messages['spouse_photo_passport_front.required']    = 'Required field';
+                $messages['spouse_photo_passport_back.required']    = 'Required field';
+            }
+
+            $validator = Validator::make($request->all(), $rules,$messages);
         }
+
         if($validator->fails()){
             return $this->sendError('Validation Error', $validator->errors());       
         }
@@ -437,7 +433,7 @@ class MembersController extends BaseController
                 'updated_by' => $user->id,
             ]);
             
-            if($hasSpouse){
+            if($proofPendingTypes && in_array('spouse', $proofPendingTypes)){
                 // Storing spouse files
                 $spouse_civil_id_front_name = 'cvf'.$spouseUser->id.'_'.time().'.'.mime2ext($input['spouse_photo_civil_id_front']); 
                 $spouse_civil_id_back_name = 'cvb'.$spouseUser->id.'_'.time().'.'.mime2ext($input['spouse_photo_civil_id_back']); 
