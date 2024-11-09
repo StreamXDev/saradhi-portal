@@ -38,35 +38,36 @@ class EventController extends BaseController
                     $events[$key]->volunteer = true;
                 }
             }
-            if(!$event->invite_all_members){
-                // if the event not invited all members, Check user is invited separately
-                $invitee = EventParticipant::where('event_id', $event->id)->where('user_id', $user->id)->first();
-                $event->invited = $invitee ? true : false;
-                $events[$key]['pack'] = 1;
+            if($member->membership->status == 'active'){
+                if(!$event->invite_all_members){
+                    // if the event not invited all members, Check user is invited separately
+                    $invitee = EventParticipant::where('event_id', $event->id)->where('user_id', $user->id)->first();
+                    $event->invited = $invitee ? true : false;
+                    $events[$key]['pack'] = 1;
 
-                if($relations){
-                    foreach($relations as  $relation){
-                        if($relation->relatedMember){
-                            $relatedMember_invited = EventParticipant::where('event_id',$event->id)->where('user_id', $relation->relatedMember->user->id)->first();
-                            if($relatedMember_invited) {
-                                $events[$key]['pack']++;
-                            }
-                        }else if($relation->relatedDependent){
-                            $relatedDependent_invited = EventParticipant::where('event_id',$event->id)->where('dependent_id',$relation->relatedDependent->id)->first();
-                            if($relatedDependent_invited) {
-                                $events[$key]['pack']++;
+                    if($relations){
+                        foreach($relations as  $relation){
+                            if($relation->relatedMember){
+                                $relatedMember_invited = EventParticipant::where('event_id',$event->id)->where('user_id', $relation->relatedMember->user->id)->first();
+                                if($relatedMember_invited) {
+                                    $events[$key]['pack']++;
+                                }
+                            }else if($relation->relatedDependent){
+                                $relatedDependent_invited = EventParticipant::where('event_id',$event->id)->where('dependent_id',$relation->relatedDependent->id)->first();
+                                if($relatedDependent_invited) {
+                                    $events[$key]['pack']++;
+                                }
                             }
                         }
                     }
+                }else{
+                    $event->invited = true;
+                    if($relations){
+                        $events[$key]['pack'] =  count($relations) + 1;
+                    }
+                    // total number of invitees = total number of dependents + primary member
                 }
-            }else{
-                $event->invited = true;
-                if($relations){
-                    $events[$key]['pack'] =  count($relations) + 1;
-                }
-                // total number of invitees = total number of dependents + primary member
-            }
-            if($member->membership->status == 'active'){
+            
                 $idQr = QrCode::format('png')->size(300)->generate(json_encode(['E'.$event->id.'-U'.$user->id]));
                 $events[$key]['idQr'] = 'data:image/png;base64, ' . base64_encode($idQr);
             }
