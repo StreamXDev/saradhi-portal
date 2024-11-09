@@ -384,8 +384,8 @@ class MembersController extends BaseController
                 $messages['spouse_photo_passport_back.required']    = 'Required field';
             }
 
-            $validator = Validator::make($request->all(), $rules,$messages);
         }
+        $validator = Validator::make($request->all(), $rules,$messages);
 
         if($validator->fails()){
             return $this->sendError('Validation Error', $validator->errors());       
