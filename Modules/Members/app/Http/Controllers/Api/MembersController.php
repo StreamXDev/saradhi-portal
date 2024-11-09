@@ -354,48 +354,43 @@ class MembersController extends BaseController
         $spouseMember = null;
         $hasSpouse = MemberRelation::where('related_member_id', $requestingMember->id)->first();
         if($hasSpouse){
-            $spouseMember = Member::where('member_id', $hasSpouse->member_id)->first();
+            $spouseMember = Member::where('id', $hasSpouse->member_id)->first();
             $spouseUser = User::where('id', $spouseMember->user_id)->first();
         }
 
-        $proofPendingTypes = $request->proofTypes;
-        if($proofPendingTypes){
-            if(in_array('self', $proofPendingTypes)){
-                $rules['photo_civil_id_front']    = ['required'];
-                $rules['photo_civil_id_back']     = ['required'];
-                $rules['photo_passport_front']    = ['required'];
-                $rules['photo_passport_back']     = ['required'];
-                
-                $messages['photo_civil_id_front.required']    = 'Required field';
-                $messages['photo_civil_id_back.required']    = 'Required field';
-                $messages['photo_passport_front.required']    = 'Required field';
-                $messages['photo_passport_back.required']    = 'Required field';
-                
-            }
-            if(in_array('spouse', $proofPendingTypes)){
-                $rules['spouse_photo_civil_id_front']    = ['required'];
-                $rules['spouse_photo_civil_id_back']     = ['required'];
-                $rules['spouse_photo_passport_front']    = ['required'];
-                $rules['spouse_photo_passport_back']     = ['required'];
-
-                $messages['spouse_photo_civil_id_front.required']    = 'Required field';
-                $messages['spouse_photo_civil_id_back.required']    = 'Required field';
-                $messages['spouse_photo_passport_front.required']    = 'Required field';
-                $messages['spouse_photo_passport_back.required']    = 'Required field';
-            }
-
-            $validator = Validator::make($request->all(), $rules,$messages);
-            if($validator->fails()){
-                return $this->sendError('Validation Error', $validator->errors());       
-            }
+        if(isset($request->proofTypeSelf)){
+            $rules['photo_civil_id_front']    = ['required'];
+            $rules['photo_civil_id_back']     = ['required'];
+            $rules['photo_passport_front']    = ['required'];
+            $rules['photo_passport_back']     = ['required'];
+            
+            $messages['photo_civil_id_front.required']    = 'Required field';
+            $messages['photo_civil_id_back.required']    = 'Required field';
+            $messages['photo_passport_front.required']    = 'Required field';
+            $messages['photo_passport_back.required']    = 'Required field';
+            
         }
+        if(isset($request->proofTypeSpouse)){
+            $rules['spouse_photo_civil_id_front']    = ['required'];
+            $rules['spouse_photo_civil_id_back']     = ['required'];
+            $rules['spouse_photo_passport_front']    = ['required'];
+            $rules['spouse_photo_passport_back']     = ['required'];
 
+            $messages['spouse_photo_civil_id_front.required']    = 'Required field';
+            $messages['spouse_photo_civil_id_back.required']    = 'Required field';
+            $messages['spouse_photo_passport_front.required']    = 'Required field';
+            $messages['spouse_photo_passport_back.required']    = 'Required field';
+        }
+        $validator = Validator::make($request->all(), $rules,$messages);
+        if($validator->fails()){
+            return $this->sendError('Validation Error', $validator->errors());       
+        }
         
         $input = $request->all();
         DB::beginTransaction();
         try {
             
-            if($proofPendingTypes && in_array('self', $proofPendingTypes)){
+            if(isset($request->proofTypeSelf)){
                 // Storing files
                 $civil_id_front_name = 'cvf'.$user->id.'_'.time().'.'.mime2ext($input['photo_civil_id_front']); 
                 $civil_id_back_name = 'cvb'.$user->id.'_'.time().'.'.mime2ext($input['photo_civil_id_back']); 
@@ -436,7 +431,7 @@ class MembersController extends BaseController
                 ]);
             }
             
-            if($proofPendingTypes && in_array('spouse', $proofPendingTypes)){
+            if(isset($request->proofTypeSpouse)){
                 // Storing spouse files
                 $spouse_civil_id_front_name = 'cvf'.$spouseUser->id.'_'.time().'.'.mime2ext($input['spouse_photo_civil_id_front']); 
                 $spouse_civil_id_back_name = 'cvb'.$spouseUser->id.'_'.time().'.'.mime2ext($input['spouse_photo_civil_id_back']); 
