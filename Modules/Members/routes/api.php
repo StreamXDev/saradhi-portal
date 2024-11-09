@@ -30,13 +30,11 @@ Route::middleware(['auth:sanctum','verified_email'])->prefix('member')->group(fu
             Route::post('add', 'storeMemberAddress');
         });
     });
-    Route::controller(DependentController::class)->prefix('dependent')->group(function(){
-        Route::get('create', 'create');
-        Route::post('create', 'store');
-    });
     Route::controller(ProfileController::class)->prefix('profile')->group(function(){
         Route::get('/', 'showProfile');
         Route::post('update', 'updateProfile');
+        Route::get('create_dependent', 'createDependent');
+        Route::post('create_dependent', 'storeDependent');
     });
     Route::controller(SearchController::class)->prefix('search')->group(function(){
         Route::get('/', 'index');
