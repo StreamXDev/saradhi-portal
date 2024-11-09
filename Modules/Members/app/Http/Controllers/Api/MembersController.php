@@ -286,7 +286,7 @@ class MembersController extends BaseController
                 $pendingApproval = $currentStatus->request_status->slug === 'confirmed' ? false : true;
             }
             //Member ID
-            if($member->membership && $member->membership){
+            if($member->membership){
                 $activeMembership = $member->membership->status === 'active' ? true : false;
                 $idQr = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->name,  'Membership ID' => $member->membership->mid, 'Civil ID' => $member->details->civil_id]));
                 $member->membership->qrCode = 'data:image/png;base64, ' . base64_encode($idQr);

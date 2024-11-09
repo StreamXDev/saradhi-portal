@@ -154,8 +154,8 @@ class ProfileController extends BaseController
         //Member ID
         if($member->membership){
             $activeMembership = $member->membership->status === 'active' ? true : false;
-            //$idQr = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->name,  'Membership ID' => $member->membership->mid, 'Civil ID' => $member->details->civil_id]));
-            //$member->membership->qrCode = 'data:image/png;base64, ' . base64_encode($idQr);
+            $idQr = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->name,  'Membership ID' => $member->membership->mid, 'Civil ID' => $member->details->civil_id]));
+            $member->membership->qrCode = 'data:image/png;base64, ' . base64_encode($idQr);
         }
         $member->user->avatar = url('storage/images/'. $member->user->avatar);
 
@@ -178,11 +178,13 @@ class ProfileController extends BaseController
                     }
 
                     if($relative->relatedMember->active){
-                        //$spouseIdQr = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->relations[$key]->relatedMember->name,  'Membership ID' => $member->relations[$key]->relatedMember->membership->mid, 'Civil ID' => $member->relations[$key]->relatedMember->details->civil_id]));
-                        //$member->relations[$key]->relatedMember->membership->qrCode = 'data:image/png;base64, ' . base64_encode($spouseIdQr);
+                        $spouseIdQr = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->relations[$key]->relatedMember->name,  'Membership ID' => $member->relations[$key]->relatedMember->membership->mid, 'Civil ID' => $member->relations[$key]->relatedMember->details->civil_id]));
+                        $member->relations[$key]->relatedMember->membership->qrCode = 'data:image/png;base64, ' . base64_encode($spouseIdQr);
                     }
                 }else if($relative->related_dependent_id){
                     $member->relations[$key]->relatedDependent->avatar = url('storage/images/'. $member->relations[$key]->relatedDependent->avatar);
+                    $childIdQr = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->relations[$key]->relatedDependent->name,  'Membership ID' => $member->relations[$key]->relatedDependent->parent_mid, 'Civil ID' => $member->relations[$key]->relatedDependent->civil_id]));
+                    $member->relations[$key]->relatedMember->qrCode = 'data:image/png;base64, ' . base64_encode($childIdQr);
                 }
                 
             }
