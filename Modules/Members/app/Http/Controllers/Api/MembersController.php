@@ -358,7 +358,7 @@ class MembersController extends BaseController
             $spouseUser = User::where('id', $spouseMember->user_id)->first();
         }
 
-        $proofPendingTypes = $request->proofPendingTypes;
+        $proofPendingTypes = $request->proofTypes;
         if($proofPendingTypes){
             if(in_array('self', $proofPendingTypes)){
                 $rules['photo_civil_id_front']    = ['required'];
