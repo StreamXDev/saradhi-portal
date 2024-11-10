@@ -176,14 +176,14 @@ class AuthController extends BaseController
     public function verifyOtp(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'username' => ['bail', 'required', 'email', Rule::exists(User::class, 'email')],
+            'email' => ['bail', 'required', 'email', Rule::exists(User::class, 'email')],
             'otp' => 'bail|required|integer'
         ]);
         if($validator->fails()){
             return $this->sendError('Required fields are empty or incorrect', $validator->errors(), 400);       
         };
         $input = $request->all();
-        $user = User::where('email', $input['username'])->with('otp')->firstOrFail();
+        $user = User::where('email', $input['email'])->with('otp')->firstOrFail();
         if($user->otp == null){
             return $this->sendError('Unauthorized', ['error'=>'Otp not available. Request new one and try again.'], 403);
         }
