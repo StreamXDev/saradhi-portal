@@ -68,8 +68,7 @@ class MemberController extends Controller
             $input = request()->get('search_by');
             $unit_input = request()->get('unit');
             $bg_input = request()->get('blood_group');
-            $members->where('type', 'LIKE', '%' .$input. '%')
-                ->orWhereHas('user', function($q) use ($input) {
+            $members->WhereHas('user', function($q) use ($input) {
                     return $q->where('name', 'LIKE', '%' . $input . '%');
                 })
                 ->orWhereHas('user', function($q) use ($input) {
@@ -83,14 +82,19 @@ class MemberController extends Controller
                 });
 
             $filters->put('search_by', request()->get('search_by'));
+
         }
 
+        /*
         if (request()->get('unit') != null){
-            //$members->orWhereHas('details', function($q) use ($input) {
-                // return $q->where('member_unit_id', request()->get('unit'));
-            //});
+            $members->WhereHas('details', function($q) use ($input) {
+                return $q->where('member_unit_id', request()->get('unit'));
+            });
             $filters->put('unit', request()->get('unit'));
         }
+            */
+
+        //dd($members->toSql());
 
         return [
             $members,

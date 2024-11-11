@@ -52,7 +52,7 @@
                 <td>{{ ucwords(strtolower($member->name)) }}</td>
                 <td>{{ $member->user->email }}</td>
                 <td>@if($member->membership) {{ $member->membership->mid }} @endif</td>
-                <td>@if($member->detials) {{ $member->details->member_unit->name }} @endif</td>
+                <td>@if($member->details) {{ $member->details->member_unit->name }} @endif</td>
                 <td>@if($member->membership) {{ ucfirst($member->membership->type) }} @endif</td>
                 <td>@if($member->membership) {{ ucfirst($member->membership->status) }} @endif</td>
                 <td>
