@@ -12,7 +12,7 @@
         <div class="info">{{date('M d, Y',strtotime($event->start_date))}} @if($event->end_date) - {{date('M d, Y',strtotime($event->end_date))}}@endif</div>
         @if($event->location)<div class="info">{{$event->location}}</div> @endif
     </div>
-    <div class="sl-no">{{2483+$invitee->id}}</div>
+    <div class="sl-no">{{2482+$invitee->id}}</div>
     <div class="sl-id">{{$invitee->id}}</div>
     <div class="card-title">{{$invitee->invitee_type->name}}</div>
     <div class="qr-container">
