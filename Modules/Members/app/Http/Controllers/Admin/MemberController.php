@@ -598,14 +598,14 @@ class MemberController extends Controller
             if(isset($input['current_type']) && $input['current_type'] == 'single'){
                 $validator = Validator::make($request->all(), [
                     'user_id' => 'bail|required',
-                    'mid'     => 'required|unique:memberships,mid,'.$input['user_id'].',user_id',
+                    'mid'     => 'required',
                     'status'  => 'required',
                     'type'    => 'required'
                 ]);
             }else{
                 $validator = Validator::make($request->all(), [
                     'user_id' => 'bail|required',
-                    'mid'     => 'required|unique:memberships,mid,'.$input['user_id'].',user_id',
+                    'mid'     => 'required',
                 ]);
             }
         }elseif(isset($input['edit_trustee'])){
