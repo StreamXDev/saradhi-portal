@@ -163,7 +163,6 @@ class EventController extends Controller
         }
         $participant_types = EventEnum::where('type', 'participant_type')->get();
         $data = EventParticipant::with('invitee_type')->where('event_id', $id);
-        $last_participant_id = $data->max('id');
         if($event->invite_all_members){
             $data->where('type','!=', 4)->where('type', '!=', 5);
         }
