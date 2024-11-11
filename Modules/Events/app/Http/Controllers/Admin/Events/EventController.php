@@ -189,7 +189,7 @@ class EventController extends Controller
             $members = Member::with('user')->where('active',1)->get();
 
         }
-        return view('events::admin.events.invitee.list', compact('invitees', 'event', 'total_invited', 'total_attended', 'participant_types', 'group_count', 'last_participant_id'));
+        return view('events::admin.events.invitee.list', compact('invitees', 'event', 'total_invited', 'total_attended', 'participant_types', 'group_count'));
     }
 
     
