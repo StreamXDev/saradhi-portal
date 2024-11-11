@@ -52,9 +52,9 @@
                 <td>{{ ucwords(strtolower($member->name)) }}</td>
                 <td>{{ $member->user->email }}</td>
                 <td>@if($member->membership) {{ $member->membership->mid }} @endif</td>
-                <td>{{ $member->details->member_unit->name }}</td>
-                <td>{{ ucfirst($member->membership->type) }}</td>
-                <td>{{ ucfirst($member->membership->status) }}</td>
+                <td>@if($member->detials) {{ $member->details->member_unit->name }} @endif</td>
+                <td>@if($member->membership) {{ ucfirst($member->membership->type) }} @endif</td>
+                <td>@if($member->membership) {{ ucfirst($member->membership->status) }} @endif</td>
                 <td>
                     <div class="actions">
                         <button type="button" class="btn btn-xs icon" data-bs-toggle="modal" data-bs-target="#editEmail_{{$member->id}}">
