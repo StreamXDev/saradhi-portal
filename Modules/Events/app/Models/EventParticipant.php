@@ -32,6 +32,6 @@ class EventParticipant extends Model
 
     public function invitee_type(): BelongsTo
     {
-        return $this->belongsTo(EventEnum::class, 'type', 'id')->select('id', 'slug', 'name', 'order', 'category');
+        return $this->belongsTo(EventEnum::class, 'type', 'id')->select('id', 'slug', 'name', 'order', 'category','description', 'pass_width_cm', 'pass_height_cm');
     }
 }

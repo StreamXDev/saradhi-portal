@@ -60,7 +60,7 @@ class EventController extends Controller
     public function create()
     {
         
-        $participant_types = EventEnum::select('id', 'slug', 'name')->where('type', 'participant_type')->get();
+        $participant_types = EventEnum::select('id', 'slug', 'name','description')->where('type', 'participant_type')->get();
         $memberModule = Module::has('Members');
         return view('events::admin.events.create', compact('participant_types','memberModule'));
     }
@@ -161,8 +161,9 @@ class EventController extends Controller
         if(!$event){
             return redirect('/admin/events/create');
         }
-        $participant_types = EventEnum::select('id', 'slug', 'name', 'category')->where('type', 'participant_type')->get();
+        $participant_types = EventEnum::where('type', 'participant_type')->get();
         $data = EventParticipant::with('invitee_type')->where('event_id', $id);
+        $last_participant_id = $data->max('id');
         if($event->invite_all_members){
             $data->where('type','!=', 4)->where('type', '!=', 5);
         }
@@ -184,9 +185,15 @@ class EventController extends Controller
         foreach($invitees as $key => $invitee){
             $invitees[$key]['idQr'] = QrCode::size(300)->generate(json_encode(['E'.$event->id.'-I'.$invitee->id]));
         }
-        return view('events::admin.events.invitee.list', compact('invitees', 'event', 'total_invited', 'total_attended', 'participant_types', 'group_count'));
+
+        if($event->invite_all_members){
+            $members = Member::with('user')->where('active',1)->get();
+
+        }
+        return view('events::admin.events.invitee.list', compact('invitees', 'event', 'total_invited', 'total_attended', 'participant_types', 'group_count', 'last_participant_id'));
     }
 
+    
 
     
     /**

@@ -55,7 +55,7 @@ class MemberController extends Controller
     public function memberSearch()
     {
 
-        $members = Member::with(['membership', 'details','user'])->where('active', 1)->orderBy('id','desc');
+        $members = Member::with(['membership', 'details','user'])->where('active', 1)->orderBy('id','asc');
         $filters = collect(
             [
                 'search_by' => '',

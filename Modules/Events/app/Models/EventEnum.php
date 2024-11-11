@@ -13,11 +13,11 @@ class EventEnum extends Model
      */
     public static function allOf($type)
     {
-        return self::where('type', $type)->select(['id', 'slug', 'name', 'description', 'order'])->orderBy('order', 'asc')->get();
+        return self::where('type', $type)->select(['id', 'slug', 'name', 'category', 'description', 'order', 'pass_width_cm', 'pass_height_cm'])->orderBy('order', 'asc')->get();
     }
 
     public static function allActiveOf($type)
     {
-        return self::where('type', $type)->where('active', 1)->select(['id', 'slug', 'name', 'description', 'order'])->orderBy('order', 'asc')->get();
+        return self::where('type', $type)->where('active', 1)->select(['id', 'slug', 'name', 'category', 'description', 'order', 'pass_width_cm', 'pass_height_cm'])->orderBy('order', 'asc')->get();
     }
 }

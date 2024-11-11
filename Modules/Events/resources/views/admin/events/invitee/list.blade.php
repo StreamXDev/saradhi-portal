@@ -34,56 +34,73 @@
     </div>
 </div>
 <div class="page-content">
-    <table class="table event-list">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Company</th>
-                <th>Designation</th>
-                <th>Unit</th>
-                <th>No. of Allowed</th>
-                <th>No. of Admitted</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($invitees as $invitee)    
-                <tr>
-                    <td>{{$invitee->name}}</td>
-                    <td>{{$invitee->invitee_type->slug}}</td>
-                    <td>{{$invitee->company}}</td>
-                    <td>{{$invitee->designation}}</td>
-                    <td>{{$invitee->unit}}</td>
-                    <td>{{$invitee->pack_count}}</td>
-                    <td>{{$invitee->admit_count}}</td>
-                    <td>
-                        <div class="actions">
-                            <a href="#" class="btn" data-bs-toggle="modal" data-bs-target="#eventPassModal{{$invitee->id}}" ><i class="icon" data-feather="credit-card"></i></a>
-                        </div>
-                        <!-- Modal -->
-                        <div class="modal fade" id="eventPassModal{{$invitee->id}}" tabindex="-1" aria-labelledby="eventPassModal{{$invitee->id}}Label" aria-hidden="true">
-                            <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="eventPassModal{{$invitee->id}}Label">Admission Pass</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <ul class="nav nav-underline" id="inviteeTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tabNormalInvitee" data-bs-toggle="tab" data-bs-target="#tabNormalInvitee-pane" type="button" role="tab" aria-controls="tabNormalInvitee-pane" aria-selected="true">Invitiees</button>
+        </li>
+        @if($event->invite_all_members)
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tbaMembersInvitee" data-bs-toggle="tab" data-bs-target="#tbaMembersInvitee-pane" type="button" role="tab" aria-controls="tbaMembersInvitee-pane" aria-selected="false">Members</button>
+        </li>
+        @endif
+    </ul>
+    <div class="tab-content" id="inviteeTabContent">
+        <div class="tab-pane fade show active" id="tabNormalInvitee-pane" role="tabpanel" aria-labelledby="tabNormalInvitee" tabindex="0">
+            <table class="table event-list">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Company</th>
+                        <th>Designation</th>
+                        <th>Unit</th>
+                        <th>No. of Allowed</th>
+                        <th>No. of Admitted</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($invitees as $invitee)    
+                        <tr>
+                            <td>{{$invitee->name}}</td>
+                            <td>{{$invitee->invitee_type->slug}}</td>
+                            <td>{{$invitee->company}}</td>
+                            <td>{{$invitee->designation}}</td>
+                            <td>{{$invitee->unit}}</td>
+                            <td>{{$invitee->pack_count}}</td>
+                            <td>{{$invitee->admit_count}}</td>
+                            <td>
+                                <div class="actions">
+                                    <a href="#" class="btn" data-bs-toggle="modal" data-bs-target="#eventPassModal{{$invitee->id}}" ><i class="icon" data-feather="credit-card"></i></a>
                                 </div>
-                                <div class="modal-body">
-                                    
-                                    <div class="id-card-wrapper">
-                                        @include('events::includes.passcard')
+                                <!-- Modal -->
+                                <div class="modal fade event_pass {{$invitee->invitee_type->slug}}" id="eventPassModal{{$invitee->id}}" tabindex="-1" aria-labelledby="eventPassModal{{$invitee->id}}Label" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="eventPassModal{{$invitee->id}}Label">Admission Pass</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="id-card-wrapper">
+                                                @include('events::includes.passcard')
+                                            </div>
+                                        </div>
                                     </div>
-
+                                    </div>
                                 </div>
-                            </div>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        @if($event->invite_all_members)
+        <div class="tab-pane fade" id="tbaMembersInvitee-pane" role="tabpanel" aria-labelledby="tbaMembersInvitee" tabindex="0">
+            Memebrs will available soon
+        </div>
+        @endif
+    </div>
     <div class="pagination-container">{{ $invitees->links() }}</div>
 </div>
 @endsection
