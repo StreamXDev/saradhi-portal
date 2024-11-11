@@ -51,7 +51,7 @@
                 </td>
                 <td>{{ ucwords(strtolower($member->name)) }}</td>
                 <td>{{ $member->user->email }}</td>
-                <td>@if($member->membership->mid) {{ $member->membership->mid }} @endif</td>
+                <td>@if($member->membership) {{ $member->membership->mid }} @endif</td>
                 <td>{{ $member->details->member_unit->name }}</td>
                 <td>{{ ucfirst($member->membership->type) }}</td>
                 <td>{{ ucfirst($member->membership->status) }}</td>
