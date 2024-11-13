@@ -353,9 +353,9 @@ class ProfileController extends BaseController
         }else if($input['type'] === 'child'){
             $childInput = [
                 'name' => $input['name'],
-                'email' => $input['email'],
-                'calling_code' => $input['calling_code'],
-                'phone' => $input['phone'],
+                'email' => isset($input['email']) ? $input['email'] : null,
+                'calling_code' => isset($input['calling_code']) ? $input['calling_code'] : null,
+                'phone' => isset($input['phone']) ? $input['phone'] : null,
                 'gender' => $input['gender'],
                 'blood_group' => $input['blood_group'],
                 'civil_id' => $input['civil_id'],
