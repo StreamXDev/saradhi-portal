@@ -387,7 +387,7 @@ class ProfileController extends BaseController
                         $parent_spouse = $rm->id;
                     }
                 }else if($primary_relations->related_dependent_id !== null){
-                    $rd = MemberDependent::where('id', $primary_relations->related_dependent_id);
+                    $rd = MemberDependent::where('id', $primary_relations->related_dependent_id)->first();
                     $siblings[] = $rd->id;
                 }
             }
