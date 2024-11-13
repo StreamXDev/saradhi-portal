@@ -421,12 +421,12 @@ class ProfileController extends BaseController
             if($siblings){
                 foreach($siblings as $sibling){
                     MemberRelation::create([
-                        'dependent_id' => $parent_spouse,
+                        'dependent_id' => $sibling->id,
                         'related_dependent_id' => $child->id,
                         'relationship_id' => $sibling_relation_type->id,
                     ]);
                     MemberRelation::create([
-                        'related_dependent_id' => $parent_spouse,
+                        'related_dependent_id' => $sibling->id,
                         'dependent_id' => $child->id,
                         'relationship_id' => $sibling_relation_type->id,
                     ]);
