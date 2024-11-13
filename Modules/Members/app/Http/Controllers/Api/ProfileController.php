@@ -453,7 +453,7 @@ class ProfileController extends BaseController
             $rules['civil_id'] = ['required', 'string'];
             $rules['passport_no'] = ['required', 'string'];
             $rules['passport_expiry'] = ['required', 'date_format:Y-m-d'];
-            $rules['photo'] = ['required'];
+            $rules['avatar'] = ['required'];
 
             $messages['name.required'] = 'Name is required';
             $messages['email.unique'] = 'Email already registered';
@@ -467,7 +467,7 @@ class ProfileController extends BaseController
             $messages['passport_no.required'] = 'Passport no. is required';
             $messages['passport_expiry.required'] = 'Expiry date is required';
             $messages['passport_expiry.date_format'] = 'Should be Y-m-d format';
-            $messages['photo.required'] = 'Photo is required';
+            $messages['avatar.required'] = 'Photo is required';
         }else if($request->type === 'spouse'){
             $rules['name'] = ['required', 'string'];
             $rules['email'] = ['required', Rule::unique(User::class, 'email')];
@@ -483,7 +483,7 @@ class ProfileController extends BaseController
             $rules['civil_id'] = ['required', 'string'];
             $rules['passport_no'] = ['required', 'string'];
             $rules['passport_expiry'] = ['required', 'date_format:Y-m-d'];
-            $rules['photo'] = ['required'];
+            $rules['avatar'] = ['required'];
 
             $messages['name.required'] = 'Name is required';
             $messages['email.required'] = 'Email is required';
@@ -506,7 +506,7 @@ class ProfileController extends BaseController
             $messages['passport_no.required'] = 'Passport no. is required';
             $messages['passport_expiry.required'] = 'Expiry date is required';
             $messages['passport_expiry.date_format'] = 'Should be Y-m-d format';
-            $messages['photo.required'] = 'Photo is required';
+            $messages['avatar.required'] = 'Photo is required';
         }
 
         return [

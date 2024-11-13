@@ -20,6 +20,7 @@
                     <div class="pf-info-item">{{ $member->user->email }}</div>
                     <div class="pf-info-item"><i class="icon" data-feather="phone"></i>+{{ $member->user->calling_code }}{{ $member->user->phone }}</div>
                     <div class="pf-info-item"><span class="label">Membership ID: </span> <span class="value"><strong>{{ $member->membership->mid ? $member->membership->mid : 'NA' }}</strong></span></div>
+                    <div class="pf-info-item"><span class="label">Civil ID: </span> <span class="value"><strong>{{ $member->details->civil_id }}</strong></span></div>
                     @foreach ($member->relations as $relation)
                         @if ($relation->relatedMember && $relation->relatedMember->type == 'primary')
                             <div class="member-relation-box">

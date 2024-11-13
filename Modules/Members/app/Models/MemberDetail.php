@@ -2,9 +2,11 @@
 
 namespace Modules\Members\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Modules\Members\Database\Factories\MemberDetailFactory;
 
 class MemberDetail extends Model
@@ -39,5 +41,10 @@ class MemberDetail extends Model
     public function member_unit(): BelongsTo
     {
         return $this->belongsTo(MemberUnit::class)->select('id', 'slug', 'name');
+    }
+
+    public function user(): HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
 }

@@ -28,6 +28,7 @@
                     <tr>
                         <th></th>
                         <th>Name</th>
+                        <th>Civil ID</th>
                         <th>Request Status</th>
                         <th>Requested On</th>
                         <th></th>
@@ -40,6 +41,10 @@
                             </div>
                         </td>
                         <td>{{ $request->member->name }}</td>
+                        <td>
+                            {{ $request->details->civil_id }} 
+                            @if($request->duplicate_civil_id)<div><small style="color:red">{{$request->duplicate_civil_id}} Duplicate Civil ID Found</small></div>@endif
+                        </td>
                         <td>{{ $request->request_status->name }}</td>
                         <td>{{ date('d M, Y H:i A', strtotime($request->created_at)) }}</td>
                         <td>

@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Modules\Members\Models\MemberDetail;
 use Modules\Members\Models\Member;
 use Modules\Members\Models\MemberEnum;
 use Modules\Members\Models\Membership;
@@ -43,7 +44,6 @@ class MembershipController extends Controller
     public function requests(Request $request)
     {
         $results = MembershipRequest::with(['member', 'details', 'user', 'member.relations.relationship'])->where('checked', 0)->get()->sortByDesc('id');
-        
         if($request->query('type')){
             $type = $request->query('type');
             switch ($type) {
@@ -67,6 +67,16 @@ class MembershipController extends Controller
         }else{
             $type = 'submitted';
         }
+
+        $results = $results->map(function($requested_user){
+            $requested_user->duplicate_civil_id = null;
+            $requested_civil_id = $requested_user->details->civil_id;
+            $duplicate = MemberDetail::select('user_id')->where('civil_id',$requested_civil_id)->where('user_id', '!=', $requested_user->user_id)->get();
+            if($duplicate){
+                $requested_user->duplicate_civil_id = $duplicate->count();
+            }
+            return $requested_user;
+        });
         $requests = requestsByPermission($results);
         return view('members::admin.membership.request', compact('requests','type'));
     }

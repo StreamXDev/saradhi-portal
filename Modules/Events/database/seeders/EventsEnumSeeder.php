@@ -63,9 +63,14 @@ class EventsEnumSeeder extends Seeder
                 'order' => 4
             ],
             [
-                'slug' => 'other',
-                'name' => 'Other',
-                'order' => 100
+                'slug' => 'entry_pass',
+                'name' => 'Entry Pass',
+                'order' => 5
+            ],
+            [
+                'slug' => 'exit_pass',
+                'name' => 'Exit Pass',
+                'order' => 6
             ],
             
         ];
