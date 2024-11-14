@@ -158,7 +158,7 @@ class MemberController extends Controller
             }
         }
         $backTo = $prevPage ?  '/admin/members?page='.$prevPage : null;
-        dd($member);
+        //dd($member);
         
         return view('members::admin.member.show', compact('member', 'statuses', 'current_status', 'request_action', 'suggested_mid', 'countries', 'units', 'blood_groups', 'gender', 'district_kerala', 'backTo'));
     }
