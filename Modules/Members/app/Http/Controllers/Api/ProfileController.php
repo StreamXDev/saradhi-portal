@@ -363,7 +363,7 @@ class ProfileController extends BaseController
                 'passport_no' => $input['passport_no'],
                 'passport_expiry' => $input['passport_expiry'],
                 'parent_user_id' => $user->id,
-                'parent_user_mid' => $requesting_member->membership->mid,
+                'parent_mid' => $requesting_member->membership->mid,
                 'type' => 'child'
             ];
             DB::beginTransaction();

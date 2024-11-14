@@ -152,13 +152,13 @@ class MemberController extends Controller
                         $member->relations[$key]->relatedMember->membership['idQr'] = QrCode::size(300)->generate(json_encode(['Name' =>  $member->relations[$key]->relatedMember->name,  'Membership ID' => $member->relations[$key]->relatedMember->membership->mid, 'Civil ID' => $member->relations[$key]->relatedMember->details->civil_id]));
                     }
                 }else if($relative->related_dependent_id){
-                    $member->relations[$key]->relatedDependent->avatar = $member->relations[$key]->relatedDependent->avatar && url('storage/images/'. $member->relations[$key]->relatedDependent->avatar);
+                    $member->relations[$key]->relatedDependent->avatar = $member->relations[$key]->relatedDependent->avatar ? url('storage/images/'. $member->relations[$key]->relatedDependent->avatar) : null;
                 }
                 
             }
         }
         $backTo = $prevPage ?  '/admin/members?page='.$prevPage : null;
-        //dd($member);
+        dd($member);
         
         return view('members::admin.member.show', compact('member', 'statuses', 'current_status', 'request_action', 'suggested_mid', 'countries', 'units', 'blood_groups', 'gender', 'district_kerala', 'backTo'));
     }
