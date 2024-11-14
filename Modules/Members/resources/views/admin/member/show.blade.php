@@ -290,7 +290,7 @@
                                             <div class="card-body">
                                                 <div class="photo photo-profile">
                                                     @if($relative->relatedDependent->avatar)
-                                                        <img src="{{ url('storage/images/'. $relative->relatedDependent->avatar) }}" alt="{{ $relative->relatedDependent->name }}" title="{{ $relative->relatedDependent->name }}"  />
+                                                        <img src="{{ $relative->relatedDependent->avatar }}" alt="{{ $relative->relatedDependent->name }}" title="{{ $relative->relatedDependent->name }}"  />
                                                     @else
                                                         <img src="{{ $relative->relatedDependent->gender == 'male' ? url('images/avatar-male.jpeg') : url('images/avatar-female.png') }}" alt="">
                                                     @endif
