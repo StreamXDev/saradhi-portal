@@ -13,7 +13,7 @@
 @section('content')
 <div class="page-title">
     <div>
-        <h1 class="title">Add Invitiees</h1>
+        <h1 class="title">Add Volunteer</h1>
         <div class="subtitle">Event: {{$event->title}}</div>
     </div>
     <div>

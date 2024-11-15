@@ -15,6 +15,7 @@
         <thead>
             <tr>
                 <th>Name</th>
+                <th>Email</th>
                 <th></th>
             </tr>
         </thead>
@@ -22,6 +23,7 @@
             @foreach ($volunteers as $volunteer)    
                 <tr>
                     <td>{{$volunteer->user->name}}</td>
+                    <td>{{$volunteer->user->email}}</td>
                     <td>
                         <div class="actions">
                             <a href="#" class="btn" data-bs-toggle="modal" data-bs-target="#eventPassModal"><i class="icon" data-feather="credit-card"></i></a>
