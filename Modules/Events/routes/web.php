@@ -22,6 +22,7 @@ Route::prefix('admin/events')->middleware(['auth:sanctum', 'verified_email', 'is
         Route::get('/create', 'create')->name('admin.events.create');
         Route::get('autocomplete', 'autocomplete')->name('admin.events.autocomplete');
         Route::post('/create', 'store')->name('admin.events.create');
+        Route::get('/{id?}/export', 'exportParticipants')->name('admin.events.export');
         Route::get('/{id?}/invitees', 'invitees')->name('admin.events.invitees');
         Route::get('/{id?}/invitee/add', 'createInvitee')->name('admin.events.invitee.add');
         Route::post('/invitee/add', 'storeInvitee')->name('admin.events.invitee.add');

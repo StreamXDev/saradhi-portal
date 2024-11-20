@@ -5,6 +5,7 @@ namespace Modules\Events\Http\Controllers\Admin\Events;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Carbon\Carbon;
+use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
@@ -12,6 +13,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
+use Modules\Events\Exports\ParticipantsExport;
 use Modules\Events\Models\Event;
 use Modules\Events\Models\EventEnum;
 use Modules\Events\Models\EventParticipant;
@@ -149,6 +152,11 @@ class EventController extends Controller
         return redirect('/admin/events/'.$event->id.'/invitee/add');
     }
 
+    public function exportParticipants(Request $request, $id){
+        $participants = EventParticipant::with('user','invitee_type')->where('event_id', $id)->get();
+        //dd($participants);
+        return Excel::download(new ParticipantsExport($participants), 'participants.xlsx');
+    }
     
     // ---------------------------------------------------------- INVITEES ---------------------------------------------- //
 

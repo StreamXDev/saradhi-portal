@@ -42,6 +42,7 @@
                 <td>{{$event->location}}</td>
                 <td>
                     <div class="actions">
+                        @if($event->end_date < date('Y-m-d'))<a title="Export Participants" href="/admin/events/{{ $event->id }}/export" class="btn"><i class="fa-regular fa-file-excel"></i></a>@endif
                         <a href="/admin/events/view/{{ $event->id }}" class="btn"><i class="fa-solid fa-eye"></i></a>
                     </div>
                 </td>

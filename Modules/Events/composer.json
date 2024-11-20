@@ -20,7 +20,10 @@
             "Modules\\Events\\": "app/",
             "Modules\\Events\\Database\\Factories\\": "database/factories/",
             "Modules\\Events\\Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/Exports/ParticipantsExport.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
