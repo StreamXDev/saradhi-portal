@@ -103,7 +103,7 @@ if (! function_exists('requestsByPermission')) {
                         'name' => 'Verify',
                         'title' => 'Verify request'
                     ];
-                    $permitted = true;
+                    
                 }
             }
             if($user->can('membership_request.review.show')){
@@ -114,7 +114,7 @@ if (! function_exists('requestsByPermission')) {
                         'name' => 'review',
                         'title' => 'Review request'
                     ];
-                    $permitted = true;
+                    
                 }
             }
             if($user->can('membership_request.approval.show')){
@@ -125,7 +125,6 @@ if (! function_exists('requestsByPermission')) {
                         'name' => 'Approve',
                         'title' => 'Approve request'
                     ];
-                    $permitted = true;
                 }
             }
             if($user->can('membership_request.confirm')){
@@ -136,16 +135,12 @@ if (! function_exists('requestsByPermission')) {
                         'name' => 'Confirm',
                         'title' => 'Confirm request'
                     ];
-                    $permitted = true;
+                    
                 }
             }
         }
 
-        if($permitted){
-            return $results;
-        }else{
-            return array();
-        }
+        return $results;
     }
 }
 

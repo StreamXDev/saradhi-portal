@@ -84,7 +84,7 @@ class MembersController extends BaseController
     public function storeDetails(Request $request)
     {
         $user = Auth::user();
-        $existing_membership_data = Membership::where('user_id', $user->id)->first();
+        $existing_membership_data = Membership::where('user_id', $user->id)->where('status','active')->first();
         $existing_membership_request = MembershipRequest::where('user_id', $user->id)->latest()->first();
         if($existing_membership_data){
             return $this->sendError('Not allowed.', 'You already a member', 405); 
@@ -281,7 +281,7 @@ class MembersController extends BaseController
             }
 
             $statuses = requestStatusDisplay($user->id);
-            $currentStatus = MembershipRequest::where('user_id', $user->id)->latest('id')->first();
+            //$currentStatus = MembershipRequest::where('user_id', $user->id)->latest('id')->first();
             if($currentStatus){
                 $pendingApproval = $currentStatus->request_status->slug === 'confirmed' ? false : true;
             }

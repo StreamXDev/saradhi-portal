@@ -67,7 +67,7 @@ class MembershipController extends Controller
                 $type = 'submitted';
                 break; 
         }
-        
+        //dd($results);
         foreach($results as $requested_user){
             $requested_user->duplicate_civil_id = null;
             $requested_civil_id = $requested_user->details->civil_id;
@@ -77,6 +77,8 @@ class MembershipController extends Controller
             }
         };
         $requests = requestsByPermission($results);
+
+        //dd($requests);
         return view('members::admin.membership.request', compact('requests','type'));
     }
 
