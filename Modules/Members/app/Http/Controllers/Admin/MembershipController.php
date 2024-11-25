@@ -43,7 +43,7 @@ class MembershipController extends Controller
      */
     public function requests(Request $request)
     {
-        $results = MembershipRequest::with(['member', 'details', 'user', 'member.relations.relationship'])->where('checked', 0)->orderBy('id', 'desc')->get();
+        $results = MembershipRequest::with(['member', 'details', 'user', 'member.relations.relationship'])->where('checked', 0)->orderBy('id', 'desc')->paginate(20);
         if($request->query('type')){
             $type = $request->query('type');
         }else{
