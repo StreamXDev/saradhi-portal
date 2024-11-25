@@ -77,7 +77,6 @@ class MembershipController extends Controller
             }
         };
         $requests = requestsByPermission($results);
-        dd($requests);
         return view('members::admin.membership.request', compact('requests','type'));
     }
 
