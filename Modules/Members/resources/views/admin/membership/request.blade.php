@@ -4,7 +4,6 @@
 <div class="page-title">
     <div class="col">
         <h1 class="title">Pending Requests</h1>
-        <div><small class="text-muted">Showing <strong>{{$requests->currentPage()}}</strong> to <strong>{{$requests->count()}}</strong> of <strong>{{$requests->total()}}</strong> results</small></div>
     </div>
 </div>
 <div class="page-content">
@@ -56,7 +55,6 @@
                     </tr>
                     @endforeach
                 </table>
-                <div class="pagination-container">{{ $requests->appends(request()->query())->links() }}</div>
             </div>
             
         </div>
