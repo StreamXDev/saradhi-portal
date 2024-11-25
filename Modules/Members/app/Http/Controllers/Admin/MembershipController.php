@@ -43,7 +43,7 @@ class MembershipController extends Controller
      */
     public function requests(Request $request)
     {
-        $results = MembershipRequest::with(['member', 'details', 'user', 'member.relations.relationship'])->where('checked', 0)->orderBy('id', 'desc')->paginate();
+        $results = MembershipRequest::with(['member', 'details', 'user', 'member.relations.relationship'])->where('checked', 0)->orderBy('id', 'desc');
         if($request->query('type')){
             $type = $request->query('type');
         }else{
@@ -51,33 +51,33 @@ class MembershipController extends Controller
         }
         switch ($type) {
             case 'submitted':
-                $results = $results->where('request_status_id', 3);
+                $results = $results->where('request_status_id', 3)->paginate();
                 break;
             case 'verified':
-                $results = $results->where('request_status_id', 4);
+                $results = $results->where('request_status_id', 4)->paginate();
                 break;
             case 'reviewed':
-                $results = $results->where('request_status_id', 5);
+                $results = $results->where('request_status_id', 5)->paginate();
                 break;
             case 'approved':
-                $results = $results->where('request_status_id', 6);
+                $results = $results->where('request_status_id', 6)->paginate();
                 break;
             default:
-                $results = $results->where('request_status_id', 3);
+                $results = $results->where('request_status_id', 3)->paginate();
                 $type = 'submitted';
                 break; 
         }
-
-        $results = $results->map(function($requested_user){
+        
+        foreach($results as $requested_user){
             $requested_user->duplicate_civil_id = null;
             $requested_civil_id = $requested_user->details->civil_id;
             $duplicate = MemberDetail::select('user_id')->where('civil_id',$requested_civil_id)->where('user_id', '!=', $requested_user->user_id)->get();
             if($duplicate){
                 $requested_user->duplicate_civil_id = $duplicate->count();
             }
-            return $requested_user;
-        });
+        };
         $requests = requestsByPermission($results);
+        dd($requests);
         return view('members::admin.membership.request', compact('requests','type'));
     }
 

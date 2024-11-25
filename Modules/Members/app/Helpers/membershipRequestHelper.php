@@ -139,10 +139,10 @@ if (! function_exists('requestsByPermission')) {
                     $permitted = true;
                 }
             }
-            $requests[] = $result;
         }
+
         if($permitted){
-            return $requests;
+            return $results;
         }else{
             return array();
         }
