@@ -43,29 +43,29 @@ class MembershipController extends Controller
      */
     public function requests(Request $request)
     {
-        $results = MembershipRequest::with(['member', 'details', 'user', 'member.relations.relationship'])->where('checked', 0)->get()->sortByDesc('id');
+        $results = MembershipRequest::with(['member', 'details', 'user', 'member.relations.relationship'])->where('checked', 0)->get()->orderBy('id', 'desc');
         if($request->query('type')){
             $type = $request->query('type');
-            switch ($type) {
-                case 'submitted':
-                    $results = $results->where('request_status_id', 3);
-                    break;
-                case 'verified':
-                    $results = $results->where('request_status_id', 4);
-                    break;
-                case 'reviewed':
-                    $results = $results->where('request_status_id', 5);
-                    break;
-                case 'approved':
-                    $results = $results->where('request_status_id', 6);
-                    break;
-                default:
-                    $results = $results->where('request_status_id', 3);
-                    $type = 'submitted';
-                    break; 
-            }
         }else{
             $type = 'submitted';
+        }
+        switch ($type) {
+            case 'submitted':
+                $results = $results->where('request_status_id', 3);
+                break;
+            case 'verified':
+                $results = $results->where('request_status_id', 4);
+                break;
+            case 'reviewed':
+                $results = $results->where('request_status_id', 5);
+                break;
+            case 'approved':
+                $results = $results->where('request_status_id', 6);
+                break;
+            default:
+                $results = $results->where('request_status_id', 3);
+                $type = 'submitted';
+                break; 
         }
 
         $results = $results->map(function($requested_user){
