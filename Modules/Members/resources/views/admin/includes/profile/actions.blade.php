@@ -16,9 +16,6 @@
         @endcan
         <li>
             <a href="#" class="btn btn-xs btn-outline-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="icon" data-feather="more-vertical"></i></a>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li><a href="#" class="dropdown-item disabled">Edit Profile</a></li>
-            </ul>
         </li>
     </ul>
 </div>

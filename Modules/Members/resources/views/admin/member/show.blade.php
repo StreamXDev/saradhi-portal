@@ -38,6 +38,44 @@
                 @include('members::admin.includes.profile.actions')
             </div>
         </div>
+        @if($duplicates)
+        <div class="pf-duplicate-container">
+            <div class="header">
+                <div class="title">Duplicates Found</div>
+                <div class="title-info">We found another member with the same <strong>Civil ID</strong>. If these are same person, you can merge the new data with old.</div>
+            </div>
+            @foreach($duplicates as $duplicate)
+            <div class="pf-duplicates">
+                <div class="photo photo-profile">
+                    @if($duplicate->user->avatar)
+                        <img src="{{ url('storage/images/'. $duplicate->user->avatar) }}" alt="{{ $duplicate->user->name }}" title="{{ $duplicate->user->name }}" class="list-profile-photo" />
+                    @else
+                        <img src="{{ $duplicate->gender == 'male' ? url('images/avatar-male.jpeg') : url('images/avatar-female.png') }}" alt="">
+                    @endif
+                </div>
+                <div class="col-left">
+                    <div class="pf-name">{{ $duplicate->name }} 
+                        <div class="status-pill {{ $duplicate->membership->status }}">{{ $duplicate->membership->status }}</div>
+                    </div>
+                    <div class="info">
+                        <div class="col">
+                            <div class="item">{{ $duplicate->user->email }}</div>
+                            @if($duplicate->user->phone)<div class="item">+{{ $duplicate->user->calling_code }}{{ $duplicate->user->phone }}</div>@endif
+                        </div>
+                        
+                        <div class="col">
+                            <div class="item"><span class="label">Membership ID: </span> <span class="value"><strong>{{ $duplicate->membership->mid ? $duplicate->membership->mid : 'NA' }}</strong></span></div>
+                            <div class="item"><span class="label">Civil ID: </span> <span class="value"><strong>{{ $duplicate->details->civil_id }}</strong></span></div>
+                        </div>
+                        <div class="col">
+                            <div class="item">Member since {{date('d M, Y',strtotime($duplicate->membership->start_date))}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+        @endif
         <div class="pf-content">
             <div class="pf-tab">
                 <ul class="nav nav-underline" id="profileTab" role="tablist">

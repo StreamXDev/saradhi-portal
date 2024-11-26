@@ -159,8 +159,15 @@ class MemberController extends Controller
         }
         $backTo = $prevPage ?  '/admin/members?page='.$prevPage : null;
         //dd($member);
-        
-        return view('members::admin.member.show', compact('member', 'statuses', 'current_status', 'request_action', 'suggested_mid', 'countries', 'units', 'blood_groups', 'gender', 'district_kerala', 'backTo'));
+
+        //Finding duplicate member with same civil id
+        $duplicates = array();
+        $duplicate_users = MemberDetail::select('user_id')->where('civil_id',$member->details->civil_id)->where('user_id', '!=', $member->user_id)->get();
+        foreach($duplicate_users as $user){
+            $duplicate_member = Member::with(['user', 'details', 'membership'])->where('user_id',$user->user_id)->first();
+            array_push($duplicates, $duplicate_member);
+        }
+        return view('members::admin.member.show', compact('member', 'statuses', 'current_status', 'request_action', 'suggested_mid', 'countries', 'units', 'blood_groups', 'gender', 'district_kerala', 'backTo', 'duplicates'));
     }
 
     /**
