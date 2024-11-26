@@ -72,6 +72,10 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-action">
+                    <a href="#" class="btn btn-primary btn-xs" data-bs-toggle="modal" data-bs-target="#mergeMembers">Merge</a>
+                </div>
+                @include('members::admin.includes.profile.merge')
             </div>
             @endforeach
         </div>
