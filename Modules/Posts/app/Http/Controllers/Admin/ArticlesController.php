@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Modules\Posts\Models\Article;
 
@@ -70,7 +71,8 @@ class ArticlesController extends Controller
      */
     public function show($id)
     {
-        return view('posts::show');
+        $article = Article::where('id', $id)->first();
+        return view('posts::admin.articles.show', compact('article'));
     }
 
     /**
@@ -78,7 +80,8 @@ class ArticlesController extends Controller
      */
     public function edit($id)
     {
-        return view('posts::edit');
+        $article = Article::where('id', $id)->first();
+        return view('posts::admin.articles.edit', compact('article'));
     }
 
     /**
@@ -86,7 +89,42 @@ class ArticlesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string',
+        ]);
+
+        if($validator->fails()){
+            return Redirect::back()->withErrors($validator)->withInput();       
+        }
+
+        $input = $request->all();
+
+        $article = Article::where('id', $id)->first();
+
+        if(isset($input['thumb'])){
+            $existing_thumb = $article->thumb;
+            if($existing_thumb){
+                Storage::delete('public/images/articles/'.$existing_thumb);
+            }
+            $thumbName = 'article_thumb_'.time().'.'.$request->thumb->extension(); 
+            $request->thumb->storeAs('public/images/articles', $thumbName);
+            $input['thumb'] = $thumbName;
+        }else{
+            $input['thumb'] = $article->thumb;
+        }
+
+        DB::beginTransaction();
+        Article::where('id', $id)->update([
+            'title' => $input['title'],
+            'body' => $input['body'],
+            'thumb' => $input['thumb'],
+            'date' => $input['date'],
+            'active' => isset($input['active']) ? 1: 0
+        ]);
+
+        DB::commit();
+
+        return redirect('/admin/articles/'.$id);
     }
 
     /**
@@ -94,6 +132,17 @@ class ArticlesController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $article = Article::findOrFail($id);
+
+        $existing_thumb = $article->thumb;
+        if($existing_thumb){
+            Storage::delete('public/images/articles/'.$existing_thumb);
+            
+        }
+        $article->delete();
+
+        return redirect()->back()->with(
+            ['message' => 'Article Deleted']
+        );
     }
 }
