@@ -117,7 +117,7 @@ class MemberController extends Controller
     {
         
         $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'relations.relatedMember.user', 'relations.relatedMember.membership', 'relations.relatedMember.details', 'relations.relatedDependent', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
-        dd($member);
+        //dd($member);
         $statuses = requestStatusDisplay($id);
         $current_status = MembershipRequest::where('user_id', $id)->latest('id')->first();
         $request_action = requestByPermission($current_status);
@@ -170,7 +170,9 @@ class MemberController extends Controller
 
         //Finding duplicate member with same civil id
         $duplicates = array();
-        $duplicate_users = MemberDetail::select('user_id')->where('civil_id',$member->details->civil_id)->where('user_id', '!=', $member->user_id)->get();
+        if($member->membership->joined_as == 'new'){
+            $duplicate_users = MemberDetail::select('user_id')->where('civil_id',$member->details->civil_id)->where('user_id', '!=', $member->user_id)->get();
+        }
         foreach($duplicate_users as $user){
             $duplicate_member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress'])->where('user_id',$user->user_id)->first();
             array_push($duplicates, $duplicate_member);
