@@ -7,12 +7,17 @@
 <div class="profile-view pf-default">
     <div class="pf-main">
         <div class="pf-face">
-            <div class="photo photo-profile">
-                @if($member->user->avatar)
-                    <img src="{{ url('storage/images/'. $member->user->avatar) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}" class="list-profile-photo" />
-                @else
-                    <img src="{{ $member->gender == 'male' ? url('images/avatar-male.jpeg') : url('images/avatar-female.png') }}" alt="">
-                @endif
+            <div class="photo">
+                <div class="photo-profile">
+                    @if($member->user->avatar)
+                        <img src="{{ url('storage/images/'. $member->user->avatar) }}" alt="{{ $member->user->name }}" title="{{ $member->user->name }}" class="list-profile-photo" />
+                    @else
+                        <img src="{{ $member->gender == 'male' ? url('images/avatar-male.jpeg') : url('images/avatar-female.png') }}" alt="">
+                    @endif
+                </div>
+                <button type="button" class="btn btn-xs icon" data-bs-toggle="modal" data-bs-target="#editBasics">
+                    <i class="icon" data-feather="edit-2"></i>
+                </button>
             </div>
             <div class="col-left">
                 <div class="info">

@@ -515,6 +515,19 @@ table.list{
         column-gap: 1.5rem;
         padding:0 1.5rem;
         margin-bottom: 1.5rem;
+        .photo{
+            position: relative;
+            .btn{
+                position: absolute;
+                bottom: 0;
+                right: 15px;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                border: 1px solid #ddd;
+                background-color: #fff;
+            }
+        }
         .pf-name{
             font-weight: 600;
             font-size: 1.2rem !important;
@@ -708,6 +721,7 @@ table.list{
     align-items: center;
     justify-content: center;
     border: 5px solid rgba(0,0,0,0.1);
+    position: relative;
     img{
         width: 100%;
     }
@@ -1369,4 +1383,36 @@ table.list{
             }
         }
     }
+}
+
+.post-view{
+    .header{
+        display: flex;
+        align-items: center;
+        column-gap: 1.5rem;
+        margin-bottom: 1.5rem;
+        .image{
+            width: 200px;
+            height: 200px;
+            img{
+                width: 100%;
+            }
+        }
+        .details{
+            .title{
+                font-weight: 600;
+                font-size: 1.4rem;
+            }
+            .info{
+                color: #666;
+                font-size: 0.9rem;
+            }
+        }
+    }
+}
+.post-image{
+    flex: 0 1 100px;
+}
+.img-thumb{
+    width: inherit;
 }

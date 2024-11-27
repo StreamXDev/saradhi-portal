@@ -21,6 +21,14 @@
                 </div>
                 <div class="form-group row">
                     <div class="col-md-8">
+                        <label for="avatar" class="form-label">Profile Photo</label>
+                        <div class="control-col">
+                            <input  type="file" name="avatar"  id="avatar" class="form-control @error('avatar') is-invalid @enderror" >
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-8">
                         <label for="email" class="form-label">Email <span class="asterisk">*</span></label>
                         <div class="control-col">
                             <input type="email" name="email" id="email" value="{{ $member->user->email }}" class="form-control">
@@ -113,6 +121,7 @@
                         </div>
                     </div>
                 </div>
+                
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

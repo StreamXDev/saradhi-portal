@@ -16,8 +16,17 @@
                 <div class="col-md-4">
                     <input type="text" name="search_by" id="search_by" placeholder="Name/Email/Phone/MID" class="form-control" value="{{ $filters['search_by'] }}">
                 </div>
-                <div class="col-md-2">
-                    <input type="submit" value="Search" class="btn btn-primary">
+                <div class="col-md-4">
+                    <select name="status" id="search_status" class="form-select">
+                        <option value="">Status</option>
+                        <option value="active" @if($filters['status'] == 'active') selected @endif>Active</option>
+                        <option value="dormant" @if($filters['status'] == 'dormant') selected @endif>Dormant</option>
+                    </select>
+                </div>
+                <div class="col-md-4" style="display: flex; align-items:center; column-gap:0.5rem">
+                    <input type="submit" name="search" value="Search" class="btn btn-primary">
+                    <input type="button" value="CLEAR" class="btn btn-outline-default" onClick="clearForm();">
+                    <button type="submit" name="export" value="export" class="btn btn-outline-default btn-right" style="margin-left: auto"><i class="fa-regular fa-file-excel"></i> Export</button>
                 </div>
             </div>
         </div>
@@ -72,4 +81,11 @@
     <div class="pagination-container">{{ $members->appends(request()->query())->links() }}</div>
     
 </div>
+@endsection
+@section('page_scripts')
+<script>
+    function clearForm(){
+        window.location = window.location.href.split("?")[0];
+    }
+</script>
 @endsection

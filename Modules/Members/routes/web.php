@@ -63,11 +63,12 @@ Route::prefix('admin/members')->middleware(['auth:sanctum', 'verified_email', 'i
     Route::controller(MemberController::class)->group(function(){
         Route::get('/', 'index');
         Route::get('/member/view/{id}/{prevPage?}', 'show');
-        Route::get('/member/pdf/{id}', 'generatePDF');
-        Route::get('/member/excel/{id}', 'generateExcel');
+        Route::get('/member/pdf/{id}', 'exportViewToPDF');
+        Route::get('/member/excel/{id}', 'exportViewToExcel');
         Route::post('/member/update', 'update')->name('admin.member.update');
         Route::get('/member/create','create');
         Route::post('/member/create','store')->name('admin.member.create');
+        Route::post('/member/merge', 'merge')->name('admin.member.merge');
     });
 });
 

@@ -23,7 +23,8 @@
         },
         "files": [
             "app/Helpers/membershipRequestHelper.php",
-            "app/Exports/MemberExport.php"
+            "app/Exports/MemberExport.php",
+            "app/Exports/MembersListExport.php"
         ]
     },
     "autoload-dev": {

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Modules\Posts\Models\Post;
 
@@ -58,7 +59,7 @@ class PostsController extends Controller
             'thumb' => $input['thumb'],
             'location' => $input['location'],
             'date' => $input['date'],
-            'active' => 1
+            'active' => isset($input['active']) ? 1: 0
         ]);
 
         DB::commit();
@@ -72,7 +73,8 @@ class PostsController extends Controller
      */
     public function show($id)
     {
-        return view('posts::admin.news.show');
+        $post = Post::where('id', $id)->first();
+        return view('posts::admin.news.show', compact('post'));
     }
 
     /**
@@ -80,7 +82,8 @@ class PostsController extends Controller
      */
     public function edit($id)
     {
-        return view('posts::admin.news.edit');
+        $post = Post::where('id', $id)->first();
+        return view('posts::admin.news.edit', compact('post'));
     }
 
     /**
@@ -88,7 +91,44 @@ class PostsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string',
+        ]);
+
+        if($validator->fails()){
+            return Redirect::back()->withErrors($validator)->withInput();       
+        }
+
+        $input = $request->all();
+
+        $post = Post::where('id', $id)->first();
+
+        if(isset($input['thumb'])){
+            $existing_thumb = $post->thumb;
+            if($existing_thumb){
+                Storage::delete('public/images/news/'.$existing_thumb);
+            }
+            $thumbName = 'post_thumb_'.time().'.'.$request->thumb->extension(); 
+            $request->thumb->storeAs('public/images/news', $thumbName);
+            $input['thumb'] = $thumbName;
+        }else{
+            $input['thumb'] = $post->thumb;
+        }
+
+        DB::beginTransaction();
+        Post::where('id', $id)->update([
+            'title' => $input['title'],
+            'body' => $input['body'],
+            'thumb' => $input['thumb'],
+            'location' => $input['location'],
+            'date' => $input['date'],
+            'active' => isset($input['active']) ? 1: 0
+        ]);
+
+        DB::commit();
+
+        return redirect('/admin/posts/'.$id);
     }
 
     /**
@@ -96,6 +136,17 @@ class PostsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $post = Post::findOrFail($id);
+
+        $existing_thumb = $post->thumb;
+        if($existing_thumb){
+            Storage::delete('public/images/news/'.$existing_thumb);
+            
+        }
+        $post->delete();
+
+        return redirect()->back()->with(
+            ['message' => 'Post Deleted']
+        );
     }
 }

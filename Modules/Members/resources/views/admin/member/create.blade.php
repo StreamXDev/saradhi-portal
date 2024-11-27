@@ -366,17 +366,33 @@
                 </div>
             </div>
             <div class="col-md-2" id="midPrimary">
-                <label for="primary_mid" class="form-label">Primary Member MID<span class="asterisk">*</span></strong></label>
-                <div class="control-col">
-                    <input type="text" name="primary_mid" id="primary_mid" class="form-control @error('primary_mid') is-invalid @enderror" value="{{ old('primary_mid') }}" aria-describedby="primaryMIDHelp">
-                    <small id="primaryMIDHelp" class="form-text text-muted">Suggested MID: <strong>{{ $suggested_mid }}</strong></small>
+                <div class="form-group">
+                    <label for="primary_mid" class="form-label">Primary Member MID<span class="asterisk">*</span></strong></label>
+                    <div class="control-col">
+                        <input type="text" name="primary_mid" id="primary_mid" class="form-control @error('primary_mid') is-invalid @enderror" value="{{ old('primary_mid') }}" aria-describedby="primaryMIDHelp">
+                        <small id="primaryMIDHelp" class="form-text text-muted">Suggested MID: <strong>{{ $suggested_mid }}</strong></small>
+                    </div>
+                </div>
+                <div>
+                    <label for="primary_start_date" class="form-label">Primary Member Start Date<span class="asterisk">*</span></strong></label>
+                    <div class="control-col">
+                        <input type="date" name="primary_start_date" id="primary_start_date" class="form-control @error('primary_start_date') is-invalid @enderror" value="{{ old('primary_start_date') ? old('primary_start_date') : date('Y-m-d') }}" >
+                    </div>
                 </div>
             </div>
             <div class="col-md-2" id="midSpouse">
-                <label for="spouse_mid" class="form-label">Spouse MID<span class="asterisk">*</span></label>
-                <div class="control-col">
-                    <input type="text" name="spouse_mid" id="spouse_mid" class="form-control @error('spouse_mid') is-invalid @enderror" value="{{ old('spouse_mid') }}" aria-describedby="spouseMIDHelp">
-                    <small id="spouseMIDHelp" class="form-text text-muted">Suggested MID: <strong>{{ $suggested_mid+1 }}</strong></small>
+                <div class="form-group">
+                    <label for="spouse_mid" class="form-label">Spouse MID<span class="asterisk">*</span></label>
+                    <div class="control-col">
+                        <input type="text" name="spouse_mid" id="spouse_mid" class="form-control @error('spouse_mid') is-invalid @enderror" value="{{ old('spouse_mid') }}" aria-describedby="spouseMIDHelp">
+                        <small id="spouseMIDHelp" class="form-text text-muted">Suggested MID: <strong>{{ $suggested_mid+1 }}</strong></small>
+                    </div>
+                </div>
+                <div>
+                    <label for="spouse_start_date" class="form-label">Spouse Start Date<span class="asterisk">*</span></strong></label>
+                    <div class="control-col">
+                        <input type="date" name="spouse_start_date" id="spouse_start_date" class="form-control @error('spouse_start_date') is-invalid @enderror" value="{{ old('spouse_start_date') ? old('spouse_start_date') : date('Y-m-d') }}" >
+                    </div>
                 </div>
             </div>
         </div>

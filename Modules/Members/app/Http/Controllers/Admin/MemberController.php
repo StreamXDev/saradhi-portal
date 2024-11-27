@@ -13,8 +13,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
+use Modules\Members\Exports\MembersListExport;
 use Modules\Members\Models\Member;
 use Modules\Members\Models\MemberDetail;
 use Modules\Members\Models\MemberEnum;
@@ -44,18 +46,20 @@ class MemberController extends Controller
      */
     public function index(Request $request)
     {
-        
-
         list($members, $filters) = $this->memberSearch();
         $members = $members->paginate();
         $units = MemberUnit::select('id', 'slug', 'name')->where('active', 1)->get();
+        if($request->get('export')){
+            return $this->exportListToExcel($members);
+        }
         return view('members::admin.member.list', compact('members', 'filters', 'units'));
     }
 
     public function memberSearch()
     {
 
-        $members = Member::with(['membership', 'details','user'])->where('active', 1)->orderBy('id','asc');
+        $members = Member::with(['membership', 'details','user'])->where('active', 1)->orderBy(Membership::select('mid')->whereColumn('memberships.user_id', 'members.user_id'));
+
         $filters = collect(
             [
                 'search_by' => '',
@@ -66,8 +70,6 @@ class MemberController extends Controller
 
         if (request()->get('search_by') != null){
             $input = request()->get('search_by');
-            $unit_input = request()->get('unit');
-            $bg_input = request()->get('blood_group');
             $members->WhereHas('user', function($q) use ($input) {
                     return $q->where('name', 'LIKE', '%' . $input . '%');
                 })
@@ -84,7 +86,13 @@ class MemberController extends Controller
             $filters->put('search_by', request()->get('search_by'));
 
         }
-
+        if (request()->get('status') != null){
+            $input = request()->get('status');
+            $members->WhereHas('membership', function($q) use ($input) {
+                return $q->where('status', $input);
+            });
+            $filters->put('status', request()->get('status'));
+        }
         /*
         if (request()->get('unit') != null){
             $members->WhereHas('details', function($q) use ($input) {
@@ -173,7 +181,7 @@ class MemberController extends Controller
     /**
      * Generate member view pdf
      */
-    public function generatePDF($id)
+    public function exportViewToPDF($id)
     {
         $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
         
@@ -190,12 +198,19 @@ class MemberController extends Controller
 
     }
 
-    public function generateExcel($id)
+    public function exportViewToExcel($id)
     {
         $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'requests', 'committees', 'trustee', 'details.member_unit'])->where('user_id' , $id)->get();
         
         return Excel::download(new MemberExport($member), 'member.xlsx');
         
+    }
+
+    private function exportListToExcel($members)
+    {
+        list($members) = $this->memberSearch();
+        $members = $members->get();
+        return Excel::download(new MembersListExport($members), 'members.xlsx');
     }
 
     /**
@@ -234,7 +249,6 @@ class MemberController extends Controller
     {
         $admin = Auth::user();
         $input = $request->all();
-
         $validator = Validator::make($request->all(), ...$this->validationRules($request));
         
         if($input['type'] == 'family'){
@@ -327,9 +341,9 @@ class MemberController extends Controller
             'introducer_mid' => $input['introducer_mid'],
             'introducer_unit' => $input['introducer_unit'],
             'mid' => $input['verification']  == 'yes' ? null : $input['primary_mid'],
-            'start_date' => $input['verification']  == 'yes' ? null : now(),
-            'updated_date' => $input['verification']  == 'yes' ? null : now(),
-            'expiry_date' => $input['verification']  == 'yes' ? null : date('Y-m-d', strtotime('+1 year')),
+            'start_date' => $input['verification']  == 'yes' ? null : $input['primary_start_date'],
+            'updated_date' => $input['verification']  == 'yes' ? null : $input['primary_start_date'],
+            'expiry_date' => $input['verification']  == 'yes' ? null : date('Y-m-d', strtotime('+1 year', strtotime($input['primary_start_date']))),
             'status' => $input['verification']  == 'yes' ? 'inactive' : 'active',
         ]);
 
@@ -442,9 +456,9 @@ class MemberController extends Controller
                 'introducer_mid' => $input['introducer_mid'],
                 'introducer_unit' => $input['introducer_unit'],
                 'mid' => $input['verification']  == 'yes' ? null : $input['spouse_mid'],
-                'start_date' => $input['verification']  == 'yes' ? null : now(),
-                'updated_date' => $input['verification']  == 'yes' ? null : now(),
-                'expiry_date' => $input['verification']  == 'yes' ? null : date('Y-m-d', strtotime('+1 year')),
+                'start_date' => $input['verification']  == 'yes' ? null : $input['spouse_start_date'],
+                'updated_date' => $input['verification']  == 'yes' ? null : $input['spouse_start_date'],
+                'expiry_date' => $input['verification']  == 'yes' ? null : date('Y-m-d', strtotime('+1 year', strtotime($input['spouse_start_date']))),
                 'status' => $input['verification']  == 'yes' ? 'inactive' : 'active',
             ]);
 
@@ -638,6 +652,7 @@ class MemberController extends Controller
         }
         
         $user_id = $input['user_id'];
+        $user = User::where('id', $user_id)->first();
 
         if(isset($input['edit_address'])){
             MemberLocalAddress::where('user_id', $user_id)->update([
@@ -674,6 +689,17 @@ class MemberController extends Controller
                 'paci' => $input['paci'],
             ]);
 
+            if(isset($input['avatar'])){
+                $existing_avatar = $user->avatar;
+                if($existing_avatar){
+                    Storage::delete('public/images/'.$existing_avatar);
+                }
+                $avatarName = 'av'.$user_id.'_'.time().'.'.$request->avatar->extension(); 
+                $request->avatar->storeAs('public/images',$avatarName);
+                User::where('id', $user_id)->update([
+                    'avatar' => $avatarName,
+                ]);
+            }
             if(isset($input['photo_civil_id_front'])){
                 $civil_id_front_name = 'cvf'.$user_id.'_'.time().'.'.$request->photo_civil_id_front->extension(); 
                 $request->photo_civil_id_front->storeAs('public/images', $civil_id_front_name);
@@ -747,5 +773,14 @@ class MemberController extends Controller
 
         return redirect('admin/members/member/view/'.$user_id)->with('success', 'Data updated successfully');
 
+    }
+
+    /**
+     * Merge duplicate members
+     */
+    public function merge(Request $request)
+    {
+        $input = $request->all();
+        dd($input);
     }
 }
