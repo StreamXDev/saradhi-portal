@@ -117,7 +117,7 @@ class MemberController extends Controller
     {
         
         $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'relations.relatedMember.user', 'relations.relatedMember.membership', 'relations.relatedMember.details', 'relations.relatedDependent', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
-        //dd($member);
+        dd($member);
         $statuses = requestStatusDisplay($id);
         $current_status = MembershipRequest::where('user_id', $id)->latest('id')->first();
         $request_action = requestByPermission($current_status);
