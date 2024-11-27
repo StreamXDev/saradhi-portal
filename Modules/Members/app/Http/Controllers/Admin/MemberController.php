@@ -781,6 +781,6 @@ class MemberController extends Controller
     public function merge(Request $request)
     {
         $input = $request->all();
-        dd($input);
+        
     }
 }

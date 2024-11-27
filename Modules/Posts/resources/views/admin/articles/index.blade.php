@@ -29,6 +29,11 @@
                 <td>{{$article->active ? 'Published' : 'Unpublished' }}</td>
                 <td>
                     <div class="actions">
+                        <form method="POST" action="{{ route('admin.articles.destroy', $article->id) }}" onSubmit="if(!confirm('Are you sure want to delete this article?')){return false;}">
+                            @csrf
+                            @method('delete')
+                            <button type="submit" class="btn"><i class="fa-solid fa-trash"></i></button>
+                        </form>
                         <a href="/admin/articles/{{ $article->id }}" class="btn"><i class="fa-solid fa-eye"></i></a>
                     </div>
                 </td>

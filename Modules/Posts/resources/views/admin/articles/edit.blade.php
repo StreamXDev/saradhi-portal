@@ -31,7 +31,7 @@
         <div class="form-group row">
             <div class="col-md-4 row">
                 <div class="col post-image">
-                    <img src="{{ url('storage/images/news/'. $article->thumb) }}" alt="" class="img-thumb">
+                    <img src="{{ url('storage/images/articles/'. $article->thumb) }}" alt="" class="img-thumb">
                 </div>
                 <div class="col">
                     <label class="form-label" for="thumb">Change Image</label>
