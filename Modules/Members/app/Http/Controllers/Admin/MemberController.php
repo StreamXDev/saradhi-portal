@@ -48,6 +48,13 @@ class MemberController extends Controller
     {
         list($members, $filters) = $this->memberSearch();
         $members = $members->paginate();
+        foreach($members as $member){
+            $member->duplicate_civil_id = false;
+            $duplicate = MemberDetail::select('user_id')->where('civil_id',$member->details->civil_id)->where('user_id', '!=', $member->user_id)->first();
+            if($duplicate){
+                $member->duplicate_civil_id = true;
+            }
+        }
         $units = MemberUnit::select('id', 'slug', 'name')->where('active', 1)->get();
         if($request->get('export')){
             return $this->exportListToExcel($members);

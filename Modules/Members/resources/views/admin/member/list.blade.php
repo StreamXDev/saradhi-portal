@@ -40,6 +40,7 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>MID</th>
+                <th>Civil ID</th>
                 <th>Unit</th>
                 <th>Mem.Type</th>
                 <th>Status</th>
@@ -61,6 +62,7 @@
                 <td>{{ ucwords(strtolower($member->name)) }}</td>
                 <td>{{ $member->user->email }}</td>
                 <td>@if($member->membership) {{ $member->membership->mid }} @endif</td>
+                <td><span class="@if($member->duplicate_civil_id)text-danger @endif">@if($member->details) {{ $member->details->civil_id }} @endif</span></td>
                 <td>@if($member->details) {{ $member->details->member_unit->name }} @endif</td>
                 <td>@if($member->membership) {{ ucfirst($member->membership->type) }} @endif</td>
                 <td>@if($member->membership) {{ ucfirst($member->membership->status) }} @endif</td>
