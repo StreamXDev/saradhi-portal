@@ -160,9 +160,13 @@ class MemberController extends Controller
         if($member->membership){
             $member->membership['idQr'] = QrCode::size(300)->generate(json_encode(['Name' =>  $member->name,  'Membership ID' => $member->membership->mid, 'Civil ID' => $member->details->civil_id]));
         }
+        $member['spouse'] = false;
         if($member->relations){
             foreach($member->relations as $key => $relative){
                 if($relative->related_member_id){
+                    if($relative->relatedMember->type == 'spouse'){
+                        $member['spouse'] = $relative->related_member_id;
+                    }
                     if($relative->relatedMember->active){
                         $member->relations[$key]->relatedMember->membership['idQr'] = QrCode::size(300)->generate(json_encode(['Name' =>  $member->relations[$key]->relatedMember->name,  'Membership ID' => $member->relations[$key]->relatedMember->membership->mid, 'Civil ID' => $member->relations[$key]->relatedMember->details->civil_id]));
                     }
@@ -178,11 +182,13 @@ class MemberController extends Controller
         //Finding duplicate member with same civil id
         $duplicates = array();
         if($member->membership->joined_as == 'new'){
-            //$duplicate_users = MemberDetail::select('user_id')->where('civil_id',$member->details->civil_id)->where('user_id', '!=', $member->user_id)->get();
-            //foreach($duplicate_users as $user){
-                //$duplicate_member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress'])->where('user_id',$user->user_id)->first();
-                //array_push($duplicates, $duplicate_member);
-            //}
+            $duplicate_users = MemberDetail::select('user_id')->where('civil_id',$member->details->civil_id)->where('user_id', '!=', $member->user_id)->get();
+            foreach($duplicate_users as $user){
+                $duplicate_member = Member::with(['user','membership', 'relations', 'relations.relatedMember.user', 'relations.relatedMember.membership'])->where('user_id',$user->user_id)->where('active',1)->first();
+                if($duplicate_member){
+                    array_push($duplicates, $duplicate_member);
+                }
+            }
         }
         return view('members::admin.member.show', compact('member', 'statuses', 'current_status', 'request_action', 'suggested_mid', 'countries', 'units', 'blood_groups', 'gender', 'district_kerala', 'backTo', 'duplicates'));
     }
@@ -790,7 +796,124 @@ class MemberController extends Controller
     public function merge(Request $request)
     {
         $input = $request->all();
+        $new_user = $input['new_id'];
+        $old_user = $input['old_id'];
+
+        $nm_user = User::where('id', $new_user)->first();
+        $nm = Member::with('relations')->where('user_id' , $new_user)->first();
+        $nm_details = MemberDetail::where('user_id' , $new_user)->first();
+        $nm_membership = Membership::where('user_id' , $new_user)->first();
+        $nm_permanent_address = MemberPermanentAddress::where('user_id' , $new_user)->first();
+        $nm_local_address = MemberLocalAddress::where('user_id' , $new_user)->first();
+        $nm_requests = MembershipRequest::where('user_id', $new_user)->get();
         
+        $om_user = User::where('id', $old_user)->first();
+        $om = Member::with('relations')->where('user_id' , $old_user)->first();
+        $om_details = MemberDetail::where('user_id' , $old_user)->first();
+        $om_membership = Membership::where('user_id' , $old_user)->first();
+        $om_permanent_address = MemberPermanentAddress::where('user_id' , $old_user)->first();
+        $om_local_address = MemberLocalAddress::where('user_id' , $old_user)->first();
+
+        DB::beginTransaction();
+        if($nm->relations){
+            foreach($nm->relations as $key => $relative){
+                if($relative->related_member_id){
+                    $related_member_id = $relative->related_member_id;
+                    $relation_id = $relative->relationship_id;
+                    MemberRelation::updateOrCreate([
+                        'member_id' => $om->id,
+                    ], [
+                        'related_member_id' => $related_member_id,
+                        'relationship_id' => $relation_id,
+                    ]);
+                    MemberRelation::updateOrCreate([
+                        'related_member_id' => $om->id,
+                    ], [
+                        'member_id' => $related_member_id,
+                        'relationship_id' => $relation_id,
+                    ]);
+                    $rm1 = MemberRelation::where('member_id', $nm->id)->where('related_member_id', $related_member_id)->first();
+                    if($rm1){
+                        $rm1->delete();
+                    }
+                    $rm2 = MemberRelation::where('member_Id', $related_member_id)->where('related_member_id', $nm->id)->first();
+                    if($rm2){
+                        $rm2->delete();
+                    }
+                    
+                }
+            }
+        }
+        MemberLocalAddress::updateOrCreate([
+            'user_id' => $old_user
+        ],[
+            'governorate' => $nm_local_address->governorate,
+            'line_1' => $nm_local_address->line_1,
+            'building' => $nm_local_address->building,
+            'flat' => $nm_local_address->flat,
+            'floor' => $nm_local_address->floor,
+        ]);
+        $nm_local_address->delete();
+        
+        MemberPermanentAddress::updateOrCreate([
+            'user_id' => $old_user
+        ],[
+            'line_1' => $nm_permanent_address->line_1,
+            'line_2' => $nm_permanent_address->line_2,
+            'district' => $nm_permanent_address->district,
+            'city' => $nm_permanent_address->city,
+            'contact' => $nm_permanent_address->contact,
+        ]);
+        $nm_permanent_address->delete();
+
+        $om_details->update([
+            'whatsapp_code' => $nm_details->whatsapp_code,
+            'whatsapp' => $nm_details->whatsapp,
+            'emergency_phone_code' => $nm_details->emergency_phone_code,
+            'emergency_phone' => $nm_details->emergency_phone,
+            'dob' => $nm_details->dob,
+            'passport_no' => $nm_details->passport_no,
+            'passport_expiry' => $nm_details->passport_expiry,
+            'company' => $nm_details->company,
+            'profession' => $nm_details->profession,
+            'company_address' => $nm_details->company_address,
+            'paci' => $nm_details->paci,
+            'sndp_branch' => $nm_details->sndp_branch,
+            'sndp_branch_number' => $nm_details->sndp_branch_number,
+            'sndp_union' => $nm_details->sndp_union,
+            'member_unit_id' => $nm_details->member_unit_id,
+        ]);
+        $nm_details->delete();
+        
+        $om->update([
+            'name' => $nm_user->name,
+            'blood_group' => $nm->blood_group,
+        ]);
+        $nm->delete();
+
+        $om_membership->update([
+            'type' => $nm_membership->type
+        ]);
+        $nm_membership->delete();
+
+        foreach($nm_requests as $rq){
+            $rq->forceDelete();
+        }
+
+        $nm_user->delete();
+        
+        $om_user->update([
+            'avatar' => $nm_user->avatar,
+            'email' => $nm_user->email,
+            'name' => $nm_user->name,
+            'password' => $nm_user->password,
+            'phone' => $nm_user->phone,
+            'calling_code' => $nm_user->calling_code,
+            'email_verified_at' => $nm_user->email_verified_at,
+        ]);
+        DB::commit();
+
+        return redirect('admin/members/member/view/'.$old_user)->with('success', 'Member merged successfully');
         
     }
 }
