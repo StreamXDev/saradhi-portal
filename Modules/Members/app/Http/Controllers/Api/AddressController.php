@@ -133,7 +133,7 @@ class AddressController extends BaseController
 
         try{
             if($type === 'local'){
-                $address = MemberLocalAddress::where('user_id', $user->id);
+                $address = MemberLocalAddress::where('user_id', $user->id)->first();
                 $address->update([
                     'user_id' => $user->id,
                     'governorate' => $input['governorate'],
@@ -147,7 +147,7 @@ class AddressController extends BaseController
                     'zip' => $input['zip'],
                     ]);
             }else if($type === 'indian'){
-                $address = MemberPermanentAddress::where('user_id', $user->id);
+                $address = MemberPermanentAddress::where('user_id', $user->id)->first();
                 $address->update([
                     'user_id' => $user->id,
                     'line_1' => $input['permanent_address_line_1'],
