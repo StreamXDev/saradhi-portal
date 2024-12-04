@@ -148,7 +148,6 @@ class AddressController extends BaseController
             }else if($type === 'indian'){
                 $address = MemberPermanentAddress::where('user_id', $user->id)->first();
                 $address->update([
-                    'user_id' => $user->id,
                     'line_1' => $input['permanent_address_line_1'],
                     'line_2' => $input['permanent_address_line_2'],
                     'country' => isset($input['country']) ? $input['country'] : $address->country,
