@@ -165,7 +165,7 @@ class AddressController extends BaseController
             $data = [
                 'success' => true,
                 'local_address' => $member->localAddress,
-                'permanent_address' => $member->permanent_address
+                'permanent_address' => $member->permanentAddress
             ];
             return $this->sendResponse($data, 'Address updated successfully.');
         }catch (\Exception $e) {
