@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Modules\Members\Models\Member;
 use Modules\Members\Models\MemberLocalAddress;
 use Modules\Members\Models\MemberPermanentAddress;
 
@@ -132,7 +133,7 @@ class AddressController extends BaseController
 
         try{
             if($type === 'local'){
-                $address = MemberLocalAddress::findOrFail($input['id']);
+                $address = MemberLocalAddress::where('user_id', $user->id);
                 $address->update([
                     'user_id' => $user->id,
                     'governorate' => $input['governorate'],
@@ -146,7 +147,7 @@ class AddressController extends BaseController
                     'zip' => $input['zip'],
                     ]);
             }else if($type === 'indian'){
-                $address = MemberPermanentAddress::findOrFail($input['id']);
+                $address = MemberPermanentAddress::where('user_id', $user->id);
                 $address->update([
                     'user_id' => $user->id,
                     'line_1' => $input['permanent_address_line_1'],
@@ -160,11 +161,14 @@ class AddressController extends BaseController
                 ]);
             }
 
-            $response = [
+            $member = Member::with(['localAddress', 'permanentAddress'])->where('user_id' , $user->id)->first();
+
+            $data = [
                 'success' => true,
-                'address' => $address
+                'local_address' => $member->localAddress,
+                'permanent_address' => $member->permanent_address
             ];
-            return $this->sendResponse($response, 'Address updated successfully.');
+            return $this->sendResponse($data, 'Address updated successfully.');
         }catch (\Exception $e) {
             return $this->sendError('Failed', $e);
         }
