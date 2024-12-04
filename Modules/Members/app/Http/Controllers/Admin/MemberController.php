@@ -811,10 +811,11 @@ class MemberController extends Controller
         $om = Member::with('relations')->where('user_id' , $old_user)->first();
         $om_details = MemberDetail::where('user_id' , $old_user)->first();
         $om_membership = Membership::where('user_id' , $old_user)->first();
-        $om_permanent_address = MemberPermanentAddress::where('user_id' , $old_user)->first();
         $om_local_address = MemberLocalAddress::where('user_id' , $old_user)->first();
+        $om_permanent_address = MemberPermanentAddress::where('user_id' , $old_user)->first();
 
         DB::beginTransaction();
+
         if($nm->relations){
             foreach($nm->relations as $key => $relative){
                 if($relative->related_member_id){
@@ -844,50 +845,51 @@ class MemberController extends Controller
                 }
             }
         }
+
         MemberLocalAddress::updateOrCreate([
             'user_id' => $old_user
         ],[
-            'governorate' => $nm_local_address->governorate,
-            'line_1' => $nm_local_address->line_1,
-            'building' => $nm_local_address->building,
-            'flat' => $nm_local_address->flat,
-            'floor' => $nm_local_address->floor,
+            'governorate' => isset($input['governorate']) ? $nm_local_address->governorate : $om_local_address->governorate,
+            'line_1' => isset($input['local_address_line_1']) ? $nm_local_address->line_1 : $om_local_address->line_1,
+            'building' => isset($input['local_address_building']) ? $nm_local_address->building : $om_local_address->building,
+            'flat' => isset($input['local_address_flat']) ? $nm_local_address->flat : $om_local_address->flat,
+            'floor' => isset($input['local_address_floor']) ? $nm_local_address->floor : $om_local_address->floor,
         ]);
         $nm_local_address->delete();
         
         MemberPermanentAddress::updateOrCreate([
             'user_id' => $old_user
         ],[
-            'line_1' => $nm_permanent_address->line_1,
-            'line_2' => $nm_permanent_address->line_2,
-            'district' => $nm_permanent_address->district,
-            'city' => $nm_permanent_address->city,
-            'contact' => $nm_permanent_address->contact,
+            'line_1' =>  isset($input['permanent_address']) ? $nm_permanent_address->line_1 : $om_permanent_address->line_1,
+            'line_2' =>  isset($input['permanent_address']) ? $nm_permanent_address->line_2 : $om_permanent_address->line_2,
+            'district' =>  isset($input['permanent_address']) ? $nm_permanent_address->district : $om_permanent_address->district,
+            'city' => isset($input['permanent_address']) ?  $nm_permanent_address->city : $om_permanent_address->city,
+            'contact' =>  isset($input['permanent_address']) ? $nm_permanent_address->contact : $om_permanent_address->contact,
         ]);
         $nm_permanent_address->delete();
 
         $om_details->update([
-            'whatsapp_code' => $nm_details->whatsapp_code,
-            'whatsapp' => $nm_details->whatsapp,
-            'emergency_phone_code' => $nm_details->emergency_phone_code,
-            'emergency_phone' => $nm_details->emergency_phone,
-            'dob' => $nm_details->dob,
-            'passport_no' => $nm_details->passport_no,
-            'passport_expiry' => $nm_details->passport_expiry,
-            'company' => $nm_details->company,
-            'profession' => $nm_details->profession,
-            'company_address' => $nm_details->company_address,
-            'paci' => $nm_details->paci,
-            'sndp_branch' => $nm_details->sndp_branch,
-            'sndp_branch_number' => $nm_details->sndp_branch_number,
-            'sndp_union' => $nm_details->sndp_union,
-            'member_unit_id' => $nm_details->member_unit_id,
+            'whatsapp_code' => isset($input['whatsapp']) ? $nm_details->whatsapp_code : $om_details->whatsapp_code,
+            'whatsapp' => isset($input['whatsapp']) ? $nm_details->whatsapp : $om_details->whatsapp,
+            'emergency_phone_code' => isset($input['emergency_phone']) ? $nm_details->emergency_phone_code : $om_details->emergency_phone_code,
+            'emergency_phone' => isset($input['emergency_phone']) ? $nm_details->emergency_phone : $om_details->emergency_phone,
+            'dob' => isset($input['dob']) ? $nm_details->dob : $om_details->dob,
+            'passport_no' =>  isset($input['passport_no']) ? $nm_details->passport_no : $om_details->passport_no,
+            'passport_expiry' =>  isset($input['passport_expiry']) ? $nm_details->passport_expiry : $om_details->passport_expiry,
+            'company' =>  isset($input['company']) ? $nm_details->company : $om_details->company,
+            'profession' =>  isset($input['profession']) ? $nm_details->profession : $om_details->profession,
+            'company_address' =>  isset($input['company_address']) ? $nm_details->company_address : $om_details->company_address,
+            'paci' =>  isset($input['paci']) ? $nm_details->paci : $om_details->paci,
+            'sndp_branch' =>  isset($input['sndp_branch']) ? $nm_details->sndp_branch : $om_details->sndp_branch,
+            'sndp_branch_number' =>  isset($input['sndp_branch_number']) ? $nm_details->sndp_branch_number : $om_details->sndp_branch_number,
+            'sndp_union' => isset($input['sndp_union']) ?  $nm_details->sndp_union : $om_details->sndp_union,
+            'member_unit_id' =>  isset($input['unit']) ? $nm_details->member_unit_id : $om_details->member_unit_id,
         ]);
         $nm_details->delete();
         
         $om->update([
-            'name' => $nm_user->name,
-            'blood_group' => $nm->blood_group,
+            'name' => isset($input['name']) ? $nm_user->name : $om_user->name,
+            'blood_group' => isset($input['blood_group']) ? $nm->blood_group : $om->blood_group,
         ]);
         $nm->delete();
 
@@ -903,12 +905,12 @@ class MemberController extends Controller
         $nm_user->delete();
         
         $om_user->update([
-            'avatar' => $nm_user->avatar,
-            'email' => $nm_user->email,
-            'name' => $nm_user->name,
+            'avatar' => isset($input['avatar']) ? $nm_user->avatar : $om_user->avatar,
+            'email' => isset($input['email']) ? $nm_user->email : $om_user->email,
+            'name' => isset($input['name']) ? $nm_user->name : $om_user->name,
             'password' => $nm_user->password,
-            'phone' => $nm_user->phone,
-            'calling_code' => $nm_user->calling_code,
+            'phone' => isset($input['phone']) ? $nm_user->phone : $om_user->phone,
+            'calling_code' => isset($input['phone']) ? $nm_user->calling_code : $om_user->calling_code,
             'email_verified_at' => $nm_user->email_verified_at,
         ]);
         DB::commit();

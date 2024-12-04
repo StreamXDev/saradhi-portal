@@ -130,9 +130,9 @@ class AddressController extends BaseController
             return $this->sendError('Validation Error', $validator->errors()); 
         }
 
-        $address = MemberLocalAddress::findOrFail($input['id']);
         try{
             if($type === 'local'){
+                $address = MemberLocalAddress::findOrFail($input['id']);
                 $address->update([
                     'user_id' => $user->id,
                     'governorate' => $input['governorate'],
@@ -144,8 +144,9 @@ class AddressController extends BaseController
                     'floor' => $input['local_address_floor'],
                     'city' => $input['city'],
                     'zip' => $input['zip'],
-                ]);
+                    ]);
             }else if($type === 'indian'){
+                $address = MemberPermanentAddress::findOrFail($input['id']);
                 $address->update([
                     'user_id' => $user->id,
                     'line_1' => $input['permanent_address_line_1'],

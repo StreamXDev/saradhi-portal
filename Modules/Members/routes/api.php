@@ -29,6 +29,7 @@ Route::middleware(['auth:sanctum','verified_email'])->prefix('member')->group(fu
             Route::get('add', 'createMemberAddress');
             Route::post('add', 'storeMemberAddress');
         });
+        Route::post('update', 'updateAddress');
     });
     Route::controller(ProfileController::class)->prefix('profile')->group(function(){
         Route::get('/', 'showProfile');
@@ -36,6 +37,7 @@ Route::middleware(['auth:sanctum','verified_email'])->prefix('member')->group(fu
         Route::get('create_dependent', 'createDependent');
         Route::post('create_dependent', 'storeDependent');
     });
+
     Route::controller(SearchController::class)->prefix('search')->group(function(){
         Route::get('/', 'index');
         Route::post('/', 'search');
