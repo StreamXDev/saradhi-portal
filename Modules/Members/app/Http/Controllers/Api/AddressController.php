@@ -135,29 +135,28 @@ class AddressController extends BaseController
             if($type === 'local'){
                 $address = MemberLocalAddress::where('user_id', $user->id)->first();
                 $address->update([
-                    'user_id' => $user->id,
                     'governorate' => $input['governorate'],
-                    'country' => $input['country'],
-                    'region' => $input['region'],
+                    'country' => isset($input['country']) ? $input['country'] : $address->country,
+                    'region' => isset($input['region']) ? $input['region'] : $address->region,
                     'line_1' => $input['local_address_area'],
                     'building' => $input['local_address_building'],
                     'flat' => $input['local_address_flat'],
                     'floor' => $input['local_address_floor'],
-                    'city' => $input['city'],
-                    'zip' => $input['zip'],
-                    ]);
+                    'city' => isset($input['city']) ? $input['city'] : $address->city,
+                    'zip' => isset($input['zip']) ? $input['zip'] : $address->zip,
+                ]);
             }else if($type === 'indian'){
                 $address = MemberPermanentAddress::where('user_id', $user->id)->first();
                 $address->update([
                     'user_id' => $user->id,
                     'line_1' => $input['permanent_address_line_1'],
                     'line_2' => $input['permanent_address_line_2'],
-                    'country' => $input['country'],
-                    'region' => $input['region'],
-                    'district' => $input['permanent_address_district'],
-                    'city' => $input['city'],
-                    'zip' => $input['zip'],
-                    'contact' => $input['permanent_address_country_code'].$input['permanent_address_contact'],
+                    'country' => isset($input['country']) ? $input['country'] : $address->country,
+                    'region' => isset($input['region']) ? $input['region'] : $address->region,
+                    'district' => isset($input['permanent_address_district']) ? $input['permanent_address_district'] : $address->district,
+                    'city' => isset($input['city']) ? $input['city'] : $address->city,
+                    'zip' => isset($input['zip']) ? $input['zip'] : $address->zip,
+                    'contact' => isset($input['permanent_address_contact']) ? $input['permanent_address_country_code'].$input['permanent_address_contact'] : $address->contact,
                 ]);
             }
 
