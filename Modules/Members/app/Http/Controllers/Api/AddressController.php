@@ -153,8 +153,8 @@ class AddressController extends BaseController
                     'country' => isset($input['country']) ? $input['country'] : $address->country,
                     'region' => isset($input['region']) ? $input['region'] : $address->region,
                     'district' => isset($input['permanent_address_district']) ? $input['permanent_address_district'] : $address->district,
-                    'city' => isset($input['city']) ? $input['city'] : $address->city,
-                    'zip' => isset($input['zip']) ? $input['zip'] : $address->zip,
+                    'city' => isset($input['permanent_address_city']) ? $input['permanent_address_city'] : $address->city,
+                    'zip' => isset($input['permanent_address_zip']) ? $input['permanent_address_zip'] : $address->zip,
                     'contact' => isset($input['permanent_address_contact']) ? $input['permanent_address_country_code'].$input['permanent_address_contact'] : $address->contact,
                 ]);
             }
