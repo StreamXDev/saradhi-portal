@@ -507,6 +507,23 @@ class ProfileController extends BaseController
         }
     }
 
+    public function deleteDependent(Request $request)
+    {
+        $input = $request->all();
+        $child = MemberDependent::where('id', $input['id'])->first();
+        $relation1 = MemberRelation::where('dependent_id', $input['id'])->get();
+        $relation2 = MemberRelation::where('related_dependent_id', $input['id'])->get();
+        foreach($relation1 as $rel){
+            $rel->delete();
+        }
+        foreach($relation2 as $rel){
+            $rel->delete();
+        }
+        $child->delete();
+        $data = $this->getProfileData();
+        return $this->sendResponse($data, 'Child deleted successfully');
+    }
+
     protected function dependentValidationRules($request)
     {
         
