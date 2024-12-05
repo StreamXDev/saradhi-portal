@@ -36,6 +36,7 @@ Route::middleware(['auth:sanctum','verified_email'])->prefix('member')->group(fu
         Route::post('update', 'updateProfile');
         Route::get('create_dependent', 'createDependent');
         Route::post('create_dependent', 'storeDependent');
+        Route::post('update_dependent', 'updateDependent');
     });
 
     Route::controller(SearchController::class)->prefix('search')->group(function(){
