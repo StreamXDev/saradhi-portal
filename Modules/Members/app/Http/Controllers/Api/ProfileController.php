@@ -440,6 +440,73 @@ class ProfileController extends BaseController
         return $this->sendResponse($data, 'Profile Details');
     }
 
+    public function updateDependent(Request $request)
+    {
+        $logged_user = Auth::user();
+        $logged_user_membership = Membership::where('user_id', $logged_user->id)->first();
+        if(!$logged_user_membership){
+            return $this->sendError('Not allowed', 'You are not a member', 405); 
+        }
+
+        $validator = Validator::make($request->all(), [
+            'profile_type'    => 'required',
+            'id'    => 'required',
+            'avatar'    => 'required',
+            'name'    => 'required|string',
+            'blood_group'    => 'required|string',
+            'dob'    => 'required|date_format:Y-m-d',
+            'gender' => 'required|string',
+            'civil_id'    => 'required|string',
+            'passport_no'    => 'required|string',
+            'passport_expiry'    => 'required|date_format:Y-m-d',
+            
+        ],[
+            'profile_type.required'    => 'Profile type is required',
+            'id.required'    => 'Required field',
+            'avatar.required'    => 'Photo is required',
+            'name.required'    => 'Name is required field',
+            'blood_group.required'    => 'Required field',
+            'dob.required'    => 'Required field',
+            'dob.date_format'    => 'Should be Y-m-d format',
+            'gender.required'    => 'Required field',
+            'civil_id.required'    => 'Required field',
+            'passport_no.required'    => 'Required field',
+            'passport_expiry.required'    => 'Required field',
+            'passport_expiry.date_format'    => 'Should be Y-m-d format',
+        ]);
+        if($validator->fails()){
+            return $this->sendError('Validation Error', $validator->errors());       
+        }
+
+        $input = $request->all();
+        $child = MemberDependent::where('id', $input['id'])->first();
+
+        if($child){
+            $existing_avatar = $child->avatar;
+            $new_avatar = $input['avatar'];
+
+            if(isset($input['avatar_mime']) && $input['avatar_mime']){ // if avatar_mime, the avatar file is new
+                if(Storage::exists('public/images/'.$existing_avatar)){
+                    Storage::delete('public/images/'.$existing_avatar);
+                }
+                $avatarName = 'av'.$child->id.'_'.time().'.'.mime2ext($input['avatar_mime']);
+                Storage::put('public/images/'.$avatarName, base64_decode($input['avatar']));
+                $input['avatar'] = $avatarName;
+            }else{
+                $input['avatar'] = basename($input['avatar']);
+            }
+
+            $child->update(Arr::only($input, [
+                'avatar', 'name', 'blood_group', 'dob', 'gender', 'civil_id', 'passport_no', 'passport_expiry'
+            ]));
+    
+            $data = $this->getProfileData();
+            return $this->sendResponse($data, 'Profile Updated successfully');
+        }else{
+            return $this->sendError('Not allowed', 'Requested child ('.$input['name'].') does not found. Please try again', 405); 
+        }
+    }
+
     protected function dependentValidationRules($request)
     {
         
