@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use Modules\Imports\Models\Export;
 use Modules\Imports\Models\Import;
 use Modules\Imports\Models\Membership as ImportMembership;
@@ -50,9 +51,9 @@ class ImportMemberController extends Controller
         return view('imports::index', compact('members'));
     }
 
-
-    public function import()
+    public function import(Request $request, $id = false)
     {
+        
         $last_exported  = Export::select('membership_id')->where('exported', 1)->latest()->first();
 
         if($last_exported){

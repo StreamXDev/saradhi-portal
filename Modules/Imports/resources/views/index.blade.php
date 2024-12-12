@@ -4,7 +4,7 @@
 <div class="page-title">
     <h1 class="title">Import Members</h1>
     <div>
-        <a href="/admin/import/do?page={{ $members->currentPage() }}" class="btn btn-primary">Import Next Set</a>
+        <a href="/admin/import/do?id=1" class="btn btn-primary">Import Next Set</a>
     </div>
 </div>
 <div class="page-content">
