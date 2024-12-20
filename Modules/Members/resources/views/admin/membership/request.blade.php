@@ -22,6 +22,9 @@
             <li class="nav-item">
                 <a href="?type=approved" class="nav-link  @if($type == 'approved') active @endif">Approved</a>
             </li>
+            <li class="nav-item">
+                <a href="?type=rejected" class="nav-link  @if($type == 'rejected') active @endif">Rejected</a>
+            </li>
         </ul>
         <div class="tab-content" id="requestListTabContent">
             <div class="tab-pane fade show active" id="submitsPane">

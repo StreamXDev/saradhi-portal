@@ -69,6 +69,8 @@ Route::prefix('admin/members')->middleware(['auth:sanctum', 'verified_email', 'i
         Route::get('/member/create','create');
         Route::post('/member/create','store')->name('admin.member.create');
         Route::post('/member/merge', 'merge')->name('admin.member.merge');
+        Route::get('/member/family/create/{id?}','createFamilyMember');
+        Route::post('/member/family/create/','storeFamilyMember')->name('admin.member.family');
     });
 });
 

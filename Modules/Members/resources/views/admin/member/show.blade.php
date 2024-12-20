@@ -27,16 +27,22 @@
                     <div class="pf-info-item"><span class="label">Membership ID: </span> <span class="value"><strong>{{ $member->membership->mid ? $member->membership->mid : 'NA' }}</strong></span></div>
                     <div class="pf-info-item"><span class="label">Civil ID: </span> <span class="value"><strong>{{ $member->details->civil_id }}</strong></span></div>
                     @foreach ($member->relations as $relation)
-                        @if ($relation->relatedMember && $relation->relatedMember->type == 'primary')
-                            <div class="member-relation-box">
-                                <div class="box-content">
-                                    <div class="image"><img src="{{ url('storage/images/'. $relation->relatedMember->user->avatar) }}" alt="{{ $relation->relatedMember->name }}" title="{{ $relation->relatedMember->name }}" class="list-profile-photo" /></div>
-                                    <div class="value">
-                                        {{ $member->name }} is {{$relation->relationship->slug }} of <strong>{{ $relation->relatedMember->name }}</strong>
-                                    </div>
-                                    <a href="/admin/members/member/view/{{ $relation->relatedMember->user->id}}" class="btn btn-default">VIEW</a>
+                        @if($relation->relatedMember)
+                        <div class="member-relation-box">
+                            <div class="box-content">
+                                <div class="image">
+                                    @if($relation->relatedMember->user->avatar)
+                                        <img src="{{ url('storage/images/'. $relation->relatedMember->user->avatar) }}" alt="{{ $relation->relatedMember->name }}" title="{{ $relation->relatedMember->name }}" class="list-profile-photo" />
+                                    @else
+                                        <img src="{{ $member->gender == 'male' ? url('images/avatar-male.jpeg') : url('images/avatar-female.png') }}" alt="">
+                                    @endif
                                 </div>
+                                <div class="value">
+                                    {{ $member->name }} is {{$relation->relationship->slug }} of <strong>{{ $relation->relatedMember->name }}</strong>
+                                </div>
+                                <a href="/admin/members/member/view/{{ $relation->relatedMember->user->id}}" class="btn btn-default">VIEW</a>
                             </div>
+                        </div>
                         @endif
                     @endforeach
                 </div>
@@ -95,7 +101,7 @@
                         <a class="nav-link" id="membership_tab" data-bs-toggle="tab" data-bs-target="#membership_tab_pane" role="tab" aria-controls="membership_tab_pane" aria-selected="false">Membership</a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="relation_tab" data-bs-toggle="tab" data-bs-target="#relation_tab_pane" role="tab" aria-controls="relation_tab_pane" aria-selected="false">Relations</a>
+                        <a class="nav-link" id="relation_tab" data-bs-toggle="tab" data-bs-target="#relation_tab_pane" role="tab" aria-controls="relation_tab_pane" aria-selected="false">Family</a>
                     </li>
                 </ul>
                 <div class="tab-content" id="profileTabContent">
@@ -307,6 +313,14 @@
                     </div>
                     <div class="tab-pane fade" id="membership_tab_pane" role="tabpanel" aria-labelledby="membership_tab" tabindex="0">Membership</div>
                     <div class="tab-pane fade" id="relation_tab_pane" role="tabpanel" aria-labelledby="relation_tab" tabindex="0">
+                        <div class="tab-content-header">
+                            <div class="title">@if($member->relations)Family Members @else No family members found. @endif</div>
+                            @if($member->type == 'primary')
+                            <div class="actions">
+                                <a href="/admin/members/member/family/create/{{$member->user_id}}" class="btn btn-primary">Add Family Member</a>
+                            </div>
+                            @endif
+                        </div>
                         @if ($member->relations)
                             <div class="relative-cards">
                                 @foreach ($member->relations as $relative)
@@ -324,10 +338,15 @@
                                                 <div class="card-content">
                                                     <div class="title">{{$relative->relatedMember->user->name}}</div>
                                                     <div class="info">{{ ucfirst($relative->relationship->name)}}</div>
+                                                    <div class="info">MID: {{ $relative->relatedMember->membership->mid }}</div>
+                                                    <div class="info">Civil ID: {{ $relative->relatedMember->details->civil_id }}</div>
                                                 </div>
                                             </div>
                                             <div class="card-footer">
-                                                
+                                                <div class="actions">
+                                                    <a href="/admin/members/member/view/{{ $relative->relatedMember->user->id}}" class="btn btn-xs icon" ><i class="icon" data-feather="eye"></i></a>
+                                                    <a href="#" class="btn btn-xs icon" ><i class="icon" data-feather="edit-2"></i></a>
+                                                </div>
                                             </div>
                                         </div>
                                         
@@ -344,14 +363,20 @@
                                                 </div>
                                                 <div class="card-content">
                                                     <div class="title">{{$relative->relatedDependent->name}}</div>
-                                                    <div class="info">{{ ucfirst($relative->relatedDependent->type)}}</div>
+                                                    <div class="info">{{ ucfirst($relative->relatedDependent->type)}} - {{ ucfirst($relative->relatedDependent->gender)}}</div>
+                                                    <div class="info">DOB: {{ date('M d, Y', strtotime($relative->relatedDependent->dob)) }}</div>
+                                                    <div class="info">Email: {{ $relative->relatedDependent->email }}</div>
+                                                    <div class="info">Passport No: {{ $relative->relatedDependent->passport_no }}</div>
+                                                    <div class="info">Passport Expiry: {{ $relative->relatedDependent->passport_expiry }}</div>
                                                 </div>
                                             </div>
                                             <div class="card-footer">
-                                                
+                                                <div class="actions">
+                                                    <a href="#" class="btn btn-xs icon" ><i class="icon" data-feather="edit-2"></i></a>
+                                                    <a href="#" class="btn btn-xs icon" ><i class="icon" data-feather="trash"></i></a>
+                                                </div>
                                             </div>
                                         </div>
-
                                     @endif
                                 @endforeach
                             </div>
@@ -409,6 +434,14 @@
                     <li>
                         <span class="label">Membership Status</span>
                         <div class="value {{ $member->membership->status =='active' ? 'text-success' : 'text-danger' }}">{{ ucfirst($member->membership->status) }}</div>
+                    </li>
+                    <li>
+                        <span class="label">Joining Date</span>
+                        <div class="value">{{ date('M d, Y', strtotime($member->membership->start_date)) }}</div>
+                    </li>
+                    <li>
+                        <span class="label">Expiry Date</span>
+                        <div class="value">{{ date('M d, Y', strtotime($member->membership->expiry_date)) }}</div>
                     </li>
                 </ul>
             </div>

@@ -11,6 +11,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use Modules\Members\Exports\MembersListExport;
 use Modules\Members\Models\Member;
+use Modules\Members\Models\MemberDependent;
 use Modules\Members\Models\MemberDetail;
 use Modules\Members\Models\MemberEnum;
 use Modules\Members\Models\MemberLocalAddress;
@@ -177,7 +179,6 @@ class MemberController extends Controller
             }
         }
         $backTo = $prevPage ?  '/admin/members?page='.$prevPage : null;
-        //dd($member);
 
         //Finding duplicate member with same civil id
         $duplicates = array();
@@ -264,7 +265,7 @@ class MemberController extends Controller
     {
         $admin = Auth::user();
         $input = $request->all();
-        $validator = Validator::make($request->all(), ...$this->validationRules($request));
+        $validator = Validator::make($request->all(), ...$this->newMemberValidation($request));
         
         if($input['type'] == 'family'){
             if($input['phone'] == $input['spouse_phone']){
@@ -532,7 +533,7 @@ class MemberController extends Controller
         return redirect('/admin/members');
     }
 
-    protected function validationRules($request)
+    protected function newMemberValidation($request)
     {
         $rules =  [
             'name' => 'required',
@@ -544,7 +545,7 @@ class MemberController extends Controller
             'dob' => 'required|date_format:Y-m-d',
             'gender' => 'required',
             'blood_group' => 'required',
-            'civil_id' => 'required',
+            'civil_id' => 'required|digits:12',
             'passport_no' => 'required',
             'passport_expiry' => 'required',
             'type' => 'required',
@@ -575,7 +576,7 @@ class MemberController extends Controller
             $rules['spouse_dob'] = ['required', 'date_format:Y-m-d'];
             $rules['spouse_gender'] = ['required', 'string'];
             $rules['spouse_blood_group'] = ['required', 'string'];
-            $rules['spouse_civil_id'] = ['required', 'string'];
+            $rules['spouse_civil_id'] = ['required', 'digits:12'];
             $rules['spouse_passport_no'] = ['required', 'string'];
             $rules['spouse_passport_expiry'] = ['required', 'date_format:Y-m-d'];
             $rules['spouse_avatar'] = ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg','max:2048'];
@@ -917,5 +918,337 @@ class MemberController extends Controller
 
         return redirect('admin/members/member/view/'.$old_user)->with('success', 'Member merged successfully');
         
+    }
+
+    /**
+     * Create family member form
+     * 
+     */
+    public function createFamilyMember($id){
+        $parent = Member::with(['details', 'membership', 'relations'])->where('user_id', $id)->first();
+        if($parent->type !== 'primary'){
+            // parent is not a primary member
+            return Redirect::back()->with('error', 'Parent should be a primary member');
+        }
+        $parent->hasSpouse = false;
+        if($parent->relations){
+            foreach($parent->relations as $relation){
+                if($relation->related_member_id){
+                    $parent->hasSpouse = true;
+                }
+            }
+        }
+        $countries = Country::with('regions')->where('active', 1)->get();
+        $units = MemberUnit::select('id', 'slug', 'name')->where('active', 1)->get();
+        $blood_groups = MemberEnum::select('id', 'slug', 'name')->where('type', 'blood_group')->get();
+        $suggested_mid = Membership::max('mid') + 1;
+        $district_kerala = array(
+            ['name' => 'Alappuzha', 'slug' => 'alappuzha'],
+            ['name' => 'Ernakulam', 'slug' => 'ernakulam'],
+            ['name' => 'Idukki', 'slug' => 'idukki'],
+            ['name' => 'Kannur', 'slug' => 'kannur'],
+            ['name' => 'Kasaragod', 'slug' => 'kasaragod'],
+            ['name' => 'Kollam', 'slug' => 'kollam'],
+            ['name' => 'Kottayam', 'slug' => 'kottayam'],
+            ['name' => 'Kozhikkode', 'slug' => 'kozhikkode'],
+            ['name' => 'Malappuram', 'slug' => 'malappuram'],
+            ['name' => 'Palakkad', 'slug' => 'palakkad'],
+            ['name' => 'Pathanamthitta', 'slug' => 'pathanamthitta'],
+            ['name' => 'Thiruvananthapuram', 'slug' => 'thriuvananthapuram'],
+            ['name' => 'Thrissur', 'slug' => 'thrissur'],
+            ['name' => 'Wayanada', 'slug' => 'wayanad'],
+            ['name' => 'Other', 'slug' => 'other'],
+        );
+        return view('members::admin.member.create_family', compact('countries', 'units', 'blood_groups', 'district_kerala', 'suggested_mid', 'parent'));
+    }
+
+    /**
+     * Store family member
+     */
+    public function storeFamilyMember(Request $request)
+    {
+        $admin = Auth::user();
+        $input = $request->all();
+        $validator = Validator::make($request->all(), ...$this->familyMemberValidation($request));
+
+        if($validator->fails()){
+            return Redirect::back()->withErrors($validator)->withInput()->with('error', 'Some fields are not valid');       
+        }
+
+        $parent = Member::with(['details', 'membership', 'relations'])->where('user_id', $input['parent'])->first();
+
+        if($input['profile_type'] == 'spouse'){
+            $parent->hasSpouse = false;
+            if($parent->relations){
+                foreach($parent->relations as $relation){
+                    if($relation->related_member_id){
+                        $parent->hasSpouse = true;
+                    }
+                }
+            }
+            if($parent->hasSpouse){
+                // Member already has a spouse
+                return Redirect::back()->with('error', 'Member already has a spouse');
+            }
+
+
+            DB::beginTransaction();
+
+            Membership::where('user_id', $input['parent'])->update([
+                'type' => 'family'
+            ]);
+
+            $user = User::create([
+                'name' => $input['name'],
+                'email' => $input['email'],
+                'password' => Hash::make($this->rand_passwd()),
+                'phone' => $input['phone'],
+                'calling_code' => $input['tel_country_code'],
+                'email_verified_at' => now()
+            ]);
+            $user->assignRole(['Member']);
+            $avatarName = 'av'.$user->id.'_'.time().'.'.$request->avatar->extension(); 
+            $request->avatar->storeAs('public/images', $avatarName);
+            User::where('id', $user->id)->update([
+                'avatar' => $avatarName,
+            ]);
+    
+            $new_member = Member::create([
+                'user_id' => $user->id,
+                'type' => 'spouse',
+                'name' => $input['name'],
+                'gender' => $input['gender'],
+                'blood_group' => $input['blood_group'],
+                'active' => $input['verification']  == 'yes' ? 0 : 1
+            ]);
+
+            MemberDetail::updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'member_unit_id' => $input['member_unit_id'],
+                    'civil_id' => $input['civil_id'],
+                    'dob' => $input['dob'],
+                    'whatsapp' => $input['whatsapp'],
+                    'whatsapp_code' => $input['whatsapp_country_code'],
+                    'emergency_phone' => $input['emergency_phone'],
+                    'emergency_phone_code' => $input['emergency_country_code'],
+                    'company' => $input['company'],
+                    'profession' => $input['profession'],
+                    'company_address' => $input['company_address'],
+                    'passport_no' => $input['passport_no'],
+                    'passport_expiry' => $input['passport_expiry'],
+                    'paci' => $input['paci'],
+                    'sndp_branch' => $input['sndp_branch'],
+                    'sndp_branch_number' => $input['sndp_branch_number'],
+                    'sndp_union' => $input['sndp_union'],
+                    'completed' => 1
+                ]
+            );
+    
+            Membership::create([
+                'user_id' => $user->id,
+                'type' => 'family',
+                'mid' => $input['verification']  == 'yes' ? null : $input['mid'],
+                'start_date' => $input['verification']  == 'yes' ? null : $input['start_date'],
+                'updated_date' => $input['verification']  == 'yes' ? null : $input['start_date'],
+                'expiry_date' => $input['verification']  == 'yes' ? null : date('Y-m-d', strtotime('+1 year', strtotime($input['start_date']))),
+                'status' => $input['verification']  == 'yes' ? 'inactive' : 'active',
+            ]);
+    
+            MemberLocalAddress::create([
+                'user_id' => $user->id,
+                'governorate' => $input['governorate'],
+                'line_1' => $input['local_address_area'],
+                'building' => $input['local_address_building'],
+                'flat' => $input['local_address_flat'],
+                'floor' => $input['local_address_floor'],
+            ]);
+    
+            MemberPermanentAddress::create([
+                'user_id' => $user->id,
+                'line_1' => $input['permanent_address_line_1'],
+                'district' => $input['permanent_address_district'],
+                'contact' => $input['permanent_address_country_code'].$input['permanent_address_contact'],
+            ]);
+
+            if($input['verification'] == 'yes'){
+                $status = MemberEnum::where('type', 'request_status')->where('slug', 'saved')->first();
+                MembershipRequest::create([
+                    'user_id' => $user->id,
+                    'request_status_id' => $status->id,
+                    'checked' => 1, 
+                    'updated_by' => $admin->id,
+                ]);
+                $status = MemberEnum::where('type', 'request_status')->where('slug', 'submitted')->first();
+                MembershipRequest::create([
+                    'user_id' => $user->id,
+                    'request_status_id' => $status->id,
+                    'updated_by' => $admin->id,
+                ]);
+            }
+
+            //Adding relationship
+            $relation = MemberEnum::where('type', 'relationship')->where('slug', 'spouse')->first();
+            $primaryMember = Member::where('user_id',$parent->user_id)->first();
+            MemberRelation::create([
+                'member_id' => $primaryMember->id,
+                'related_member_id' => $new_member->id,
+                'relationship_id' => $relation->id,
+            ]);
+            MemberRelation::create([
+                'member_id' => $new_member->id,
+                'related_member_id' => $primaryMember->id,
+                'relationship_id' => $relation->id,
+            ]);
+
+            DB::commit();
+            if($request->verification == 'yes'){
+                return redirect('admin/members/requests');
+            }
+        }else if($input['profile_type'] == 'child'){
+
+            $childInput = [
+                'name' => $input['name'],
+                'email' => isset($input['email']) ? $input['email'] : null,
+                'calling_code' => isset($input['calling_code']) ? $input['calling_code'] : null,
+                'phone' => isset($input['phone']) ? $input['phone'] : null,
+                'gender' => $input['gender'],
+                'blood_group' => $input['blood_group'],
+                'civil_id' => $input['civil_id'],
+                'dob' => $input['dob'],
+                'passport_no' => $input['passport_no'],
+                'passport_expiry' => $input['passport_expiry'],
+                'parent_user_id' => $parent->user_id,
+                'parent_mid' => $parent->membership->mid,
+                'type' => 'child'
+            ];
+            DB::beginTransaction();
+            Membership::where('user_id', $input['parent'])->update([
+                'type' => 'family'
+            ]);
+            $child = MemberDependent::create($childInput);
+            $child_avatar = 'cvf'.$child->id.'_'.time().'.'.$request->avatar->extension(); 
+            $request->avatar->storeAs('public/images', $child_avatar);
+            MemberDependent::where('id', $child->id)->update([
+                'avatar' => $child_avatar,
+            ]);
+
+            $relations_against_primary_member = MemberRelation::where('member_id', $parent->id)->get();
+            $parent_primary = $parent->id;
+            $parent_spouse = null;
+            $siblings = [];
+            foreach($relations_against_primary_member as $primary_relations){
+                if($primary_relations->related_member_id !== null){
+                    $rm = Member::where('id',$primary_relations->related_member_id)->first();
+                    if($rm->type === 'primary'){
+                        $parent_primary = $rm->id;
+                    }else{
+                        $parent_spouse = $rm->id;
+                    }
+                }else if($primary_relations->related_dependent_id !== null){
+                    $rd = MemberDependent::where('id', $primary_relations->related_dependent_id)->first();
+                    $siblings[] = $rd->id;
+                }
+            }
+            $parent_relation_type = MemberEnum::where('type', 'relationship')->where('slug', 'parent')->first();
+            $child_relation_type = MemberEnum::where('type', 'relationship')->where('slug', 'child')->first();
+            $sibling_relation_type = MemberEnum::where('type', 'relationship')->where('slug', 'sibling')->first();
+            if($parent_primary){
+                MemberRelation::create([
+                    'member_id' => $parent_primary,
+                    'related_dependent_id' => $child->id,
+                    'relationship_id' => $parent_relation_type->id,
+                ]);
+                MemberRelation::create([
+                    'related_member_id' => $parent_primary,
+                    'dependent_id' => $child->id,
+                    'relationship_id' => $child_relation_type->id,
+                ]);
+            }
+            if($parent_spouse){
+                MemberRelation::create([
+                    'member_id' => $parent_spouse,
+                    'related_dependent_id' => $child->id,
+                    'relationship_id' => $parent_relation_type->id,
+                ]);
+                MemberRelation::create([
+                    'related_member_id' => $parent_spouse,
+                    'dependent_id' => $child->id,
+                    'relationship_id' => $child_relation_type->id,
+                ]);
+            }
+            if($siblings){
+                foreach($siblings as $sibling){
+                    MemberRelation::create([
+                        'dependent_id' => $sibling,
+                        'related_dependent_id' => $child->id,
+                        'relationship_id' => $sibling_relation_type->id,
+                    ]);
+                    MemberRelation::create([
+                        'related_dependent_id' => $sibling,
+                        'dependent_id' => $child->id,
+                        'relationship_id' => $sibling_relation_type->id,
+                    ]);
+                }
+            }
+            DB::commit();
+        }
+        
+        return redirect('/admin/members/member/view/'.$parent->user_id);
+
+    }
+
+    protected function rand_passwd( $length = 8, $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' ) {
+        return substr( str_shuffle( $chars ), 0, $length );
+    }
+
+    protected function familyMemberValidation($request)
+    {
+        $rules =  [
+            'name' => 'required',
+            'dob' => 'required|date_format:Y-m-d',
+            'gender' => 'required',
+            'blood_group' => 'required',
+            'civil_id' => 'required|digits:12',
+            'passport_no' => 'required',
+            'passport_expiry' => 'required',
+            'avatar' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg','max:2048'],
+        ];
+
+        $messages = [
+            'avatar.required' => 'Profile photo is required',
+            'avatar.image' => 'Profile photo should be an image',
+            'avatar.mimes' => 'Profile photo must be a file of type: jpeg, png, jpg, gif, svg.',
+            'avatar.max' => 'Profile photo size should not be exceeded more than 2mb',
+        ];
+
+        if($request->profile_type == 'spouse'){
+            $rules['name'] = ['required', 'string'];
+            $rules['email'] = ['required', Rule::unique(User::class, 'email')];
+            $rules['phone'] = ['required', Rule::unique(User::class, 'phone')];
+            $rules['whatsapp'] = ['required', 'numeric'];
+            $rules['emergency_phone'] = ['required', 'numeric'];
+            $rules['governorate'] = ['required'];
+            $rules['member_unit_id'] = ['required'];
+            $rules['local_address_area'] = ['required'];
+
+            $messages['email.required'] = 'Please enter a valid email ID';
+            $messages['email.unique'] = 'The email id already used';
+            $messages['phone.required'] = 'Enter a valid phone number';
+            $messages['phone.unique'] = 'The phone number is already used';
+            $messages['whatsapp.required'] = 'Whatsapp number is required';
+            $messages['whatsapp.numeric'] = 'Enter a valid whatsapp number';
+            $messages['emergency_phone.required'] = 'Emergency phone number is required';
+            $messages['emergency_phone.numeric'] = 'Enter a valid phone number';
+            $messages['governorate.required'] = 'Governorate is required';
+            $messages['member_unit_id.required'] = 'Unit is required';
+            $messages['local_address_area.required'] = 'Line 1 is required';
+
+        }
+
+        return [
+            $rules,
+            $messages
+        ];
     }
 }

@@ -510,7 +510,7 @@ class MembersController extends BaseController
             'gender'            => ['required', 'string'],
             'dob'               => ['required', 'date_format:Y-m-d'],
             'blood_group'       => ['required', 'string'],
-            'civil_id'          => ['required', 'string'],
+            'civil_id'          => ['required', 'digits:12'],
             'passport_no'       => ['required', 'string'],
             'passport_expiry'   => ['required', 'date_format:Y-m-d'],
             'governorate'        => ['required', 'string'],
@@ -536,7 +536,6 @@ class MembersController extends BaseController
             'dob.date_format' => 'Should be Y-m-d format',
             'blood_group.required' => 'Blood group is required',
             'civil_id.required' => 'Civil ID is required',
-            'civil_id.string' => 'Invalid Civil ID',
             'passport_no.required' => 'Passport no. is required',
             'passport_expiry.required' => 'Expiry date is required',
             'passport_expiry.date_format' => 'Should be Y-m-d format',
@@ -558,7 +557,7 @@ class MembersController extends BaseController
             $rules['spouse_gender'] = ['required', 'string'];
             $rules['spouse_dob'] = ['required', 'date_format:Y-m-d'];
             $rules['spouse_blood_group'] = ['required', 'string'];
-            $rules['spouse_civil_id'] = ['required', 'string'];
+            $rules['spouse_civil_id'] = ['required', 'digits:12'];
             $rules['spouse_passport_no'] = ['required', 'string'];
             $rules['spouse_passport_expiry'] = ['required', 'date_format:Y-m-d'];
             $rules['spouse_photo'] = ['required'];
@@ -580,7 +579,6 @@ class MembersController extends BaseController
             $messages['spouse_dob.date_format'] = 'Should be Y-m-d format';
             $messages['spouse_blood_group.required'] = 'Blood group is required';
             $messages['spouse_civil_id.required'] = 'Civil ID is required';
-            $messages['spouse_civil_id.string'] = 'Invalid Civil ID';
             $messages['spouse_passport_no.required'] = 'Passport no. is required';
             $messages['spouse_passport_expiry.required'] = 'Expiry date is required';
             $messages['spouse_passport_expiry.date_format'] = 'Should be Y-m-d format';

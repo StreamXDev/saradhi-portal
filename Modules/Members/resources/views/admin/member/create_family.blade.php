@@ -2,12 +2,25 @@
 @section('content')
 <div class="page-title">
     <div class="col">
-        <h1 class="title">Add Member</h1>
+        <h1 class="title">Add Family Member</h1>
     </div>
 </div>
 <div class="page-content">
-    <form action="{{ route('admin.member.create') }}" method="POST" id="registerForm" enctype="multipart/form-data">
+    <form action="{{ route('admin.member.family') }}" method="POST" id="registerForm" enctype="multipart/form-data">
         @csrf
+        <input type="hidden" name="parent" value="{{ $parent->user_id }}">
+        <div class="form-group">
+            <div class="col-md-2">
+                <label for="profile_type" class="form-label">Type<span class="asterisk">*</span></label>
+                <div class="control-col">
+                    <select name="profile_type" id="profile_type" class="form-select">
+                        <option value="spouse" @disabled($parent->hasSpouse ? true : false)>Spouse</option>
+                        <option value="child">Child</option>
+                    </select> 
+                    
+                </div>
+            </div>
+        </div>
         <div class="form-section-title">User Information</div>
         <div class="form-group row">
             <div class="col-md-4">
@@ -16,24 +29,17 @@
                     <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}">
                 </div>
             </div>
+        </div>
+        <div class="form-group row">
             <div class="col-md-4">
-                <label for="email" class="form-label">Email<span class="asterisk">*</span></label>
+                <label for="email" class="form-label">Email<span class="asterisk spouse-view">*</span></label>
                 <div class="control-col block">
                     <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}">
                     @error('email') <small>{{ $errors->first('email') }}</small> @enderror
                 </div>
             </div>
             <div class="col-md-4">
-                <label for="password" class="form-label">Password<span class="asterisk">*</span></label>
-                <div class="control-col block">
-                    <input type="text" name="password" id="password" class="form-control @error('password') is-invalid @enderror" value="{{ old('password') }}">
-                    @error('password') <small>{{ $errors->first('password') }}</small> @enderror
-                </div>
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-md-4">
-                <label for="phone" class="form-label">Phone<span class="asterisk">*</span></label>
+                <label for="phone" class="form-label">Phone<span class="asterisk spouse-view">*</span></label>
                 <div class="control-col">
                     <select name="tel_country_code" id="tel_contry_code" class="form-select country-code">
                         @foreach ($countries as $country)
@@ -43,6 +49,8 @@
                     <input type="tel" name="phone" id="phone" class="form-control @error('phone') is-invalid @enderror" value="{{ old('phone') }}">
                 </div>
             </div>
+        </div>
+        <div class="form-group row spouse-view">
             <div class="col-md-4">
                 <label for="whatsapp" class="form-label">Whatsapp<span class="asterisk">*</span></label>
                 <div class="control-col">
@@ -62,14 +70,13 @@
                             <option value="{{ $country->calling_code }}" @if($country->code == 'kw') selected @endif>{{ $country->name }} (+{{ $country->calling_code}})</option>
                         @endforeach
                     </select>
-                    <input type="tel" name="emergency_phone" id="emergency_phone" class="form-control @error('emergency_phone') is-invalid @enderror" value="{{ old('emergency_phone') }}">
+                    <input type="tel" name="emergency_phone" id="emergency_phone" class="form-control @error('emergency_phone') is-invalid @enderror" value="{{ old('emergency_phone') ? old('emergency_phone') : $parent->details->emergency_phone }}">
                 </div>
             </div>
-            
         </div>
         <div class="form-group row">
             <div class="col-md-4">
-                <label for="photo" class="form-label">Profile Photo<span class="asterisk">*</span></label>
+                <label for="photo" class="form-label">Profile Photo</label>
                 <div class="control-col block">
                     <input type="file" name="avatar" id="avatar" class="form-control @error('avatar') is-invalid @enderror" value="{{ old('avatar') }}">
                     @error('avatar') <small>{{ $errors->first('avatar') }}</small> @enderror
@@ -112,28 +119,10 @@
                     <input type="text" name="civil_id" id="civil_id" class="form-control @error('civil_id') is-invalid @enderror" value="{{ old('civil_id') }}">
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-2 spouse-view">
                 <label for="paci" class="form-label">PACI No.</label>
                 <div class="control-col">
                     <input type="text" name="paci" id="paci" class="form-control" value="{{ old('paci') }}">
-                </div>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label" for="photo_civil_id_front">Civil ID Copy (Front / Front and Back) <span class="asterisk">*</span></label>
-                <div class="control-col">
-                    <input  type="file"  name="photo_civil_id_front"  id="photo_civil_id_front" class="form-control @error('photo_civil_id_front') is-invalid @enderror">
-                    <div class="form-text">
-                        Upload Civil id front side image
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label" for="photo_civil_id_back">Civil ID Copy (Back) <span class="asterisk">*</span></label>
-                <div class="control-col">
-                    <input  type="file"  name="photo_civil_id_back"  id="photo_civil_id_back" class="form-control @error('photo_civil_id_back') is-invalid @enderror">
-                    <div class="form-text">
-                        Upload Civil id back side image
-                    </div>
                 </div>
             </div>
         </div>
@@ -151,27 +140,9 @@
                     <input type="date" name="passport_expiry" id="passport_expiry" class="form-control @error('passport_expiry') is-invalid @enderror" value="{{ old('passport_expiry') }}">
                 </div>
             </div>
-            <div class="col-md-4">
-                <label class="form-label" for="photo_passport_front">Passport Copy (Front / Front and Back) <span class="asterisk">*</span></label>
-                <div class="control-col">
-                    <input  type="file"  name="photo_passport_front"  id="photo_passport_front" class="form-control @error('photo_passport_front') is-invalid @enderror">
-                    <div id="photo_passport_front" class="form-text">
-                        Upload Passport front side image
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label" for="photo_passport_back">Passport Copy (Back) <span class="asterisk">*</span></label>
-                <div class="control-col">
-                    <input  type="file"  name="photo_passport_back"  id="photo_passport_back" class="form-control @error('photo_passport_back') is-invalid @enderror">
-                    <div id="photo_passport_back" class="form-text">
-                        Upload Passport back side image
-                    </div>
-                </div>
-            </div>
         </div>
-        <div class="form-section-title">Professional Details</div>
-        <div class="form-group row">
+        <div class="form-section-title spouse-view">Professional Details</div>
+        <div class="form-group row spouse-view">
             <div class="col-md-4">
                 <label for="profession" class="form-label">Profession</label>
                 <div class="control-col">
@@ -191,29 +162,9 @@
                 </div>
             </div>
         </div>
-        <div class="form-section-title">Membership Details</div>
-        <div class="form-group">
-            <label for="type" class="form-label">Membership Type</label>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="type" id="type_single" value="single"   @if(old('type') == 'single') checked @endif  @if(!old('type')) checked @endif>
-                <label class="form-check-label" for="type_single">
-                Single
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="type" id="type_family" value="family" @if(old('type') == 'family') checked @endif>
-                <label class="form-check-label" for="type_family">
-                With Family
-                </label>
-            </div>
-        </div>
-        <br />
-
-        @include('members::includes.membership.create.spouse')
-
-        <div class="form-section-title">Address</div>
-        <div class="form-section-subtitle">Kuwait Address</div>
-        <div class="form-group row">
+        <div class="form-section-title spouse-view">Address</div>
+        <div class="form-section-subtitle spouse-view">Kuwait Address</div>
+        <div class="form-group row spouse-view">
             <div class="col-md-2">
                 <label for="governorate" class="form-label">Governorate <span class="asterisk">*</span></label>
                 <div class="control-col">
@@ -262,9 +213,9 @@
                 </div>
             </div>
         </div>
-        <div class="form-title-divider"></div>
-        <div class="form-section-subtitle">India Address</div>
-        <div class="form-group row">
+        <div class="form-title-divider spouse-view"></div>
+        <div class="form-section-subtitle spouse-view">India Address</div>
+        <div class="form-group row spouse-view">
             <div class="col-md-4">
                 <label for="permanent_address_line_1" class="form-label">Address</label>
                 <div class="control-col">
@@ -297,8 +248,8 @@
                 </div>
             </div>
         </div>
-        <div class="form-section-title">Other Details</div>
-        <div class="form-group row">
+        <div class="form-section-title spouse-view">Other Details</div>
+        <div class="form-group row spouse-view">
             <div class="col-md-2">
                 <label for="sndp_branch" class="form-label">SNDP Branch</label>
                 <div class="control-col">
@@ -318,45 +269,8 @@
                 </div>
             </div>
         </div>
-        <div class="form-section-title">Intoroducer Details</div>
-        <div class="form-group row">
-            <div class="col-md-2">
-                <label for="intro_name" class="form-label">Introducer Name<span class="asterisk">*</span></label>
-                <div class="control-col">
-                    <input type="text" name="introducer_name" id="intro_name" class="form-control @error('introducer_name') is-invalid @enderror" value="{{ old('introducer_name') }} "> 
-                </div>
-            </div>
-            <div class="col-md-4">
-                <label for="introducer_phone" class="form-label">Introducer's Phone<span class="asterisk">*</span></label>
-                <div class="control-col">
-                    <select name="introducer_country_code" id="contry_code" class="form-select country-code">
-                        @foreach ($countries as $country)
-                            <option value="{{ $country->calling_code }}" @if($country->code == 'kw') selected @endif>{{ $country->name }} (+{{ $country->calling_code}})</option>
-                        @endforeach
-                    </select>
-                    <input type="text" name="introducer_phone" id="introducer_phone" class="form-control @error('introducer_phone') is-invalid @enderror" value="{{ old('introducer_phone') }}"> 
-                </div>
-            </div>
-            <div class="col-md-2">
-                <label for="introducer_mid" class="form-label">Introducer's MID</label>
-                <div class="control-col">
-                    <input type="text" name="introducer_mid" id="introducer_mid" class="form-control" value="{{ old('introducer_mid') }}"> 
-                </div>
-            </div>
-            <div class="col-md-2">
-                <label for="introducer_units" class="form-label">Introducer's Unit</label>
-                <div class="control-col">
-                    <select name="introducer_unit" id="introducer_unit" class="form-select">
-                        <option value="">Select</option>
-                        @foreach ($units as $unit)
-                            <option value="{{ $unit->name }}" @selected(old('introducer_unit') == $unit->id)>{{ $unit->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div class="form-section-title">Membership</div>
-        <div class="form-group row">
+        <div class="form-section-title spouse-view">Membership</div>
+        <div class="form-group row spouse-view">
             <div class="col-md-2">
                 <label for="verification" class="form-label">Need Verification Process?</label>
                 <div class="control-col">
@@ -365,33 +279,23 @@
                     <small id="spouseMIDHelp" class="form-text text-muted">If Yes, the request will be sent to verification process. Otherwise you should add the MID now</strong></small>
                 </div>
             </div>
-            <div class="col-md-2" id="midPrimary">
-                <div class="form-group">
-                    <label for="primary_mid" class="form-label">Primary Member MID<span class="asterisk">*</span></strong></label>
-                    <div class="control-col">
-                        <input type="text" name="primary_mid" id="primary_mid" class="form-control @error('primary_mid') is-invalid @enderror" value="{{ old('primary_mid') }}" aria-describedby="primaryMIDHelp">
-                        <small id="primaryMIDHelp" class="form-text text-muted">Suggested MID: <strong>{{ $suggested_mid }}</strong></small>
-                    </div>
-                </div>
-                <div>
-                    <label for="primary_start_date" class="form-label">Primary Member Start Date<span class="asterisk">*</span></strong></label>
-                    <div class="control-col">
-                        <input type="date" name="primary_start_date" id="primary_start_date" class="form-control @error('primary_start_date') is-invalid @enderror" value="{{ old('primary_start_date') ? old('primary_start_date') : date('Y-m-d') }}" >
-                    </div>
-                </div>
-            </div>
             <div class="col-md-2" id="midSpouse">
                 <div class="form-group">
-                    <label for="spouse_mid" class="form-label">Spouse MID<span class="asterisk">*</span></label>
+                    <label for="mid" class="form-label">MID<span class="asterisk">*</span></label>
                     <div class="control-col">
-                        <input type="text" name="spouse_mid" id="spouse_mid" class="form-control @error('spouse_mid') is-invalid @enderror" value="{{ old('spouse_mid') }}" aria-describedby="spouseMIDHelp">
-                        <small id="spouseMIDHelp" class="form-text text-muted">Suggested MID: <strong>{{ $suggested_mid+1 }}</strong></small>
+                        @if($parent->membership->joined_as == 'old')
+                            <input type="hidden" name="mid" value="{{ $parent->membership->mid }}">
+                            <input type="text"  id="mid" class="form-control" value="{{ old('mid') ? old('mid') : $parent->membership->mid }}" disabled>
+                        @else
+                            <input type="text" name="mid" id="mid" class="form-control @error('mid') is-invalid @enderror" value="{{ old('mid') }}" aria-describedby="spouseMIDHelp">
+                            <small id="spouseMIDHelp" class="form-text text-muted">Suggested MID: <strong>{{ $suggested_mid+1 }}</strong></small>
+                        @endif
                     </div>
                 </div>
                 <div>
-                    <label for="spouse_start_date" class="form-label">Spouse Start Date<span class="asterisk">*</span></strong></label>
+                    <label for="start_date" class="form-label">Start Date<span class="asterisk">*</span></strong></label>
                     <div class="control-col">
-                        <input type="date" name="spouse_start_date" id="spouse_start_date" class="form-control @error('spouse_start_date') is-invalid @enderror" value="{{ old('spouse_start_date') ? old('spouse_start_date') : date('Y-m-d') }}" >
+                        <input type="date" name="start_date" id="start_date" class="form-control @error('start_date') is-invalid @enderror" value="{{ old('start_date') ? old('start_date') : date('Y-m-d') }}" >
                     </div>
                 </div>
             </div>
@@ -404,76 +308,43 @@
 @endsection
 @section('page_scripts')
 <script type="text/javascript">
-    $('.date').datepicker({  
-       format: 'yyyy-mm-dd'
-     });  
+    $(document).ready(function(){
+        let profile_type = $('#profile_type').find(":selected").val();
+        changeSpouseView(profile_type);
+        $('#profile_type').on('change', function(){
+            let profile_type = $('#profile_type').find(":selected").val();
+            changeSpouseView(profile_type);
+        });
 
-     $(document).ready(function(){
-        
-        var typeInput  = $("input[name$='type']");
         var verificationInput = $("input[name$='verification']");
-        var type = typeInput.filter(':checked').val();
         var verification = verificationInput.filter(':checked').val() == 'yes' ? true : false;
-
-        $('#midPrimary').hide();
         $('#midSpouse').hide();
         if(verification){
-            $('#midPrimary').hide();
-            $('#midSpouse').hide();
+            handleMID(true);
         }else{
-            $('#midPrimary').show();
-            if(type == 'family'){
-                $('#midSpouse').show();
-            }
+            handleMID(false);
         }
-        
-
-        if(typeInput.is(':checked')){
-            if(typeInput.filter(':checked').val() == 'family'){
-                $('#family_details').show();
-                type = 'family';
-                handleMID(true, true, verification);
-            }
-        }
-
-        typeInput.on('click', function(){
-            type = $(this).val();
-            if(type == 'family'){
-                $('#family_details').show();
-                handleMID(true, true, verification);
-            }else{
-                $('#family_details').hide();
-                handleMID(true, false, verification);
-            }
-        });
-
-        $("input[type$=file]").on('change', function(){
-            $(this).next('.form-text').removeClass('error');
-            var imageKb = this.files[0].size/1024;
-            var imageMb = imageKb / 1024;
-            if(imageMb > 2){
-                $(this).addClass('is-invalid').val('').next('.form-text').addClass('error').text('The file should be less than 2MB');
-            }
-        });
 
         verificationInput.on('click', function(){
             var v = $(this).val();
             if(v == 'yes'){
-                verification = true;
-                handleMID(false, false, false);
+                handleMID(true);
             }else{
-                verification = false;
-                handleMID(true, type == 'family' ? true : false, false);
+                handleMID(false);
             }
         });
     });
-    function handleMID($primary = false, $spouse = false, $verification = false){
-        if($primary && !$verification){
-            $('#midPrimary').show();
+
+    function changeSpouseView(profile_type){
+        if(profile_type === 'child'){
+            $('.spouse-view').hide();
         }else{
-            $('#midPrimary').hide();
+            $('.spouse-view').show();
         }
-        if($spouse && !$verification){
+    }
+
+    function handleMID($verification = false){
+        if(!$verification){
             $('#midSpouse').show();
         }else{
             $('#midSpouse').hide();

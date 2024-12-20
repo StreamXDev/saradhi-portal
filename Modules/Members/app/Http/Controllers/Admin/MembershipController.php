@@ -62,6 +62,9 @@ class MembershipController extends Controller
             case 'approved':
                 $results = $results->where('request_status_id', 6)->paginate();
                 break;
+            case 'rejected':
+                $results = $results->where('request_status_id', 1)->paginate();
+                break;
             default:
                 $results = $results->where('request_status_id', 3)->paginate();
                 $type = 'submitted';
@@ -113,6 +116,7 @@ class MembershipController extends Controller
             if($request->input('action') == 'reject'){
                 $new_status = MemberEnum::where('type', 'request_status')->where('order', 0)->first();
                 $rejected = $current_status_id;
+
             }else{
                 $new_status = MemberEnum::where('type', 'request_status')->where('order', $next_status_order)->first();
             }
@@ -206,6 +210,5 @@ class MembershipController extends Controller
             $messages
         ];
     }
-
  
 }
