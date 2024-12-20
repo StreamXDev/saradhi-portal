@@ -19,7 +19,7 @@ class ArticlesController extends Controller
      */
     public function index()
     {
-        $articles = Article::orderBy('created_at', 'desc')->paginate(25);
+        $articles = Article::orderBy('order', 'asc')->paginate(25);
         return view('posts::admin.articles.index', compact('articles'));
     }
 
@@ -119,6 +119,7 @@ class ArticlesController extends Controller
             'body' => $input['body'],
             'thumb' => $input['thumb'],
             'date' => $input['date'],
+            'order' => $input['order'],
             'active' => isset($input['active']) ? 1: 0
         ]);
 

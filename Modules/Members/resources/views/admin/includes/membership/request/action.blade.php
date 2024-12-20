@@ -18,6 +18,12 @@
                                 <div class="col"><input type="text" name="mid" id="mid" class="form-control"></div>
                             </div>
                             <div class="form-group">
+                                <label for="start_date" class="control-label">Joining Date <span class="asterisk">*</span></label>
+                                <div class="col">
+                                    <input type="date" name="start_date" id="start_date" class="form-control @error('start_date') is-invalid @enderror" value="{{ old('start_date') ? old('start_date') : date('Y-m-d') }}" >
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <textarea name="remark" id="remark" rows="5" class="form-control" placeholder="Enter comments"></textarea>
                             </div>
                         </div>

@@ -12,6 +12,7 @@
             <tr>
                 <th></th>
                 <th>Title</th>
+                <th>order</th>
                 <th>Status</th>
                 <th></th>
             </tr>
@@ -26,15 +27,17 @@
                     </span>
                 </td>
                 <td>{{$article->title}}</td>
+                <td>{{$article->order}}</td>
                 <td>{{$article->active ? 'Published' : 'Unpublished' }}</td>
                 <td>
                     <div class="actions">
+                        <a href="/admin/articles/{{ $article->id }}" class="btn"><i class="fa-solid fa-eye"></i></a>
+                        <a href="/admin/articles/{{$article->id}}/edit" class="btn"><i class="fa-solid fa-pencil"></i></a>
                         <form method="POST" action="{{ route('admin.articles.destroy', $article->id) }}" onSubmit="if(!confirm('Are you sure want to delete this article?')){return false;}">
                             @csrf
                             @method('delete')
                             <button type="submit" class="btn"><i class="fa-solid fa-trash"></i></button>
                         </form>
-                        <a href="/admin/articles/{{ $article->id }}" class="btn"><i class="fa-solid fa-eye"></i></a>
                     </div>
                 </td>
             </tr>

@@ -46,6 +46,12 @@
                     <input type="date" name="date" id="date" class="form-control" value="{{$article->date}}">
                 </div>
             </div>
+            <div class="col-md-2">
+                <label for="order" class="form-label">Order</label>
+                <div class="control-col">
+                    <input type="text" name="order" id="order" class="form-control" value="{{$article->order}}">
+                </div>
+            </div>
         </div>
         <div class="form-group row">
             <div class="col-md-2">
