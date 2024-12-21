@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Modules\Posts\Models\Ad;
 
@@ -18,7 +19,8 @@ class AdsController extends Controller
     public function index()
     {
         $ads = Ad::orderBy('order', 'asc')->paginate(25);
-        return view('posts::admin.ads.index', compact('ads'));
+        $menuParent = 'ads';
+        return view('posts::admin.ads.index', compact(['ads','menuParent']));
     }
 
     /**
@@ -69,7 +71,10 @@ class AdsController extends Controller
      */
     public function show($id)
     {
-        return view('posts::admin.ads.show');
+        $ad = Ad::where('id', $id)->first();
+        $backTo = '/admin/ads';
+        $menuParent = 'ads';
+        return view('posts::admin.ads.show', compact(['ad','backTo', 'menuParent']));
     }
 
     /**
@@ -77,7 +82,9 @@ class AdsController extends Controller
      */
     public function edit($id)
     {
-        return view('posts::admin.ads.edit');
+        $ad = Ad::where('id', $id)->first();
+        $menuParent = 'ads';
+        return view('posts::admin.ads.edit', compact(['ad', 'menuParent']));
     }
 
     /**
@@ -85,7 +92,41 @@ class AdsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'link' => 'required|string',
+        ]);
+
+        if($validator->fails()){
+            return Redirect::back()->withErrors($validator)->withInput();       
+        }
+
+        $input = $request->all();
+
+        $ad = Ad::where('id', $id)->first();
+
+        if(isset($input['image'])){
+            $existing_thumb = $ad->image;
+            if($existing_thumb){
+                Storage::delete('public/images/ads/'.$existing_thumb);
+            }
+            $thumbName = 'ad_thumb_'.time().'.'.$request->image->extension(); 
+            $request->thumb->storeAs('public/images/ads', $thumbName);
+            $input['image'] = $thumbName;
+        }else{
+            $input['image'] = $ad->image;
+        }
+
+        DB::beginTransaction();
+        Ad::where('id', $id)->update([
+            'link' => $input['link'],
+            'image' => $input['image'],
+            'order' => $input['order'],
+            'active' => isset($input['active']) ? 1: 0
+        ]);
+
+        DB::commit();
+
+        return redirect('/admin/ads/'.$id);
     }
 
     /**
@@ -93,6 +134,17 @@ class AdsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $ad = Ad::findOrFail($id);
+
+        $existing_thumb = $ad->image;
+        if($existing_thumb){
+            Storage::delete('public/images/ads/'.$existing_thumb);
+            
+        }
+        $ad->delete();
+
+        return redirect()->back()->with(
+            ['message' => 'Ad Deleted']
+        );
     }
 }

@@ -14,7 +14,7 @@
 
 <li>
     <a href="#" class="nav-item btn-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#member_menu" aria-expanded="true"><i class="icon" data-feather="users"></i>Members</a>
-    <div class="collapse sub-nav" id="member_menu">
+    <div class="collapse sub-nav @if(isset($menuParent) && $menuParent == 'members') show @endif" id="member_menu">
         <ul class="nav btn-toggle-nav">
             <li><a href="/admin/members" class="nav-item">List</a></li>
             @can('user.create')<li><a href="/admin/members/member/create" class="nav-item">Add New</a></li>@endcan
@@ -24,7 +24,7 @@
 
 <li>
     <a href="#" class="nav-item btn-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#trustee_menu" aria-expanded="true"><i class="icon" data-feather="layers"></i>Trustees</a>
-    <div class="collapse sub-nav" id="trustee_menu">
+    <div class="collapse sub-nav @if(isset($menuParent) && $menuParent == 'trustees') show @endif" id="trustee_menu">
         <ul class="nav btn-toggle-nav">
             <li><a href="/admin/trustees" class="nav-item">List</a></li>
         </ul>
@@ -32,7 +32,7 @@
 </li>
 <li>
     <a href="#" class="nav-item btn-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#committee_menu" aria-expanded="true"><i class="icon" data-feather="umbrella"></i>Committees</a>
-    <div class="collapse sub-nav" id="committee_menu">
+    <div class="collapse sub-nav @if(isset($menuParent) && $menuParent == 'committees') show @endif" id="committee_menu">
         <ul class="nav btn-toggle-nav">
             <li><a href="/admin/committee" class="nav-item">List</a></li>
         </ul>

@@ -20,7 +20,8 @@ class ArticlesController extends Controller
     public function index()
     {
         $articles = Article::orderBy('order', 'asc')->paginate(25);
-        return view('posts::admin.articles.index', compact('articles'));
+        $menuParent = 'articles';
+        return view('posts::admin.articles.index', compact([['articles','menuParent']]));
     }
 
     /**
@@ -72,7 +73,9 @@ class ArticlesController extends Controller
     public function show($id)
     {
         $article = Article::where('id', $id)->first();
-        return view('posts::admin.articles.show', compact('article'));
+        $backTo = '/admin/articles';
+        $menuParent = 'articles';
+        return view('posts::admin.articles.show', compact(['article','backTo', 'menuParent']));
     }
 
     /**
@@ -81,7 +84,8 @@ class ArticlesController extends Controller
     public function edit($id)
     {
         $article = Article::where('id', $id)->first();
-        return view('posts::admin.articles.edit', compact('article'));
+        $menuParent = 'articles';
+        return view('posts::admin.articles.edit', compact(['article', 'menuParent']));
     }
 
     /**

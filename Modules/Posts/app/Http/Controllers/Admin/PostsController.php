@@ -74,7 +74,8 @@ class PostsController extends Controller
     public function show($id)
     {
         $post = Post::where('id', $id)->first();
-        return view('posts::admin.news.show', compact('post'));
+        $backTo = '/admin/posts';
+        return view('posts::admin.news.show', compact(['post','backTo']));
     }
 
     /**

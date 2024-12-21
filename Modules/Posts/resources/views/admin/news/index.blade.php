@@ -33,12 +33,13 @@
                 <td>{{$post->active ? 'Published' : 'Unpublished' }}</td>
                 <td>
                     <div class="actions">
+                        <a href="/admin/posts/{{ $post->id }}" class="btn"><i class="fa-solid fa-eye"></i></a>
+                        <a href="/admin/posts/{{$post->id}}/edit" class="btn btn-outline-primary"><i class="fa-solid fa-pencil"></i></a>
                         <form method="POST" action="{{ route('admin.posts.destroy', $post->id) }}" onSubmit="if(!confirm('Are you sure want to delete this news?')){return false;}">
                             @csrf
                             @method('delete')
                             <button type="submit" class="btn"><i class="fa-solid fa-trash"></i></button>
                         </form>
-                        <a href="/admin/posts/{{ $post->id }}" class="btn"><i class="fa-solid fa-eye"></i></a>
                     </div>
                 </td>
             </tr>

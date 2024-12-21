@@ -32,6 +32,12 @@
                 <td>
                     <div class="actions">
                         <a href="/admin/ads/{{ $ad->id }}" class="btn"><i class="fa-solid fa-eye"></i></a>
+                        <a href="/admin/ads/{{$ad->id}}/edit" class="btn"><i class="fa-solid fa-pencil"></i></a>
+                        <form method="POST" action="{{ route('admin.ads.destroy', $ad->id) }}" onSubmit="if(!confirm('Are you sure want to delete this ad?')){return false;}">
+                            @csrf
+                            @method('delete')
+                            <button type="submit" class="btn"><i class="fa-solid fa-trash"></i></button>
+                        </form>
                     </div>
                 </td>
             </tr>

@@ -25,7 +25,7 @@
         </div>
         <div class="form-group row">
             <div class="col-md-2">
-                <label for="order" class="form-label">Position</label>
+                <label for="order" class="form-label">Order</label>
                 <div class="control-col">
                     <input type="text" name="order" id="order" class="form-control">
                 </div>
