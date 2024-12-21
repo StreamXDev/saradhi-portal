@@ -9,10 +9,10 @@
     'membership_request.export',
 ])
     
-    <li><a href="/admin/members/requests" class="nav-item" ><i class="icon" data-feather="star"></i>Pending Requests</a></li>
+    <li><a href="/admin/members/requests" class="nav-item @if(isset($menuParent) && $menuParent == 'requests') active @endif" ><i class="icon" data-feather="star"></i>Pending Requests</a></li>
 @endcanany
 
-<li>
+<li class="@if(isset($menuParent) && $menuParent == 'members') active @endif">
     <a href="#" class="nav-item btn-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#member_menu" aria-expanded="true"><i class="icon" data-feather="users"></i>Members</a>
     <div class="collapse sub-nav @if(isset($menuParent) && $menuParent == 'members') show @endif" id="member_menu">
         <ul class="nav btn-toggle-nav">

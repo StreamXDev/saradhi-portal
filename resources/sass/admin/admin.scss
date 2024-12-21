@@ -1169,6 +1169,8 @@ table.list{
             justify-content: space-between;
             .actions{
                 margin-left: auto;
+                display: flex;
+                align-items: center;
             }
         }
     }

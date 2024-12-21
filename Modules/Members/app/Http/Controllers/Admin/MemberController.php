@@ -48,6 +48,7 @@ class MemberController extends Controller
      */
     public function index(Request $request)
     {
+        $menuParent = 'members';
         list($members, $filters) = $this->memberSearch();
         $members = $members->paginate();
         foreach($members as $member){
@@ -61,7 +62,7 @@ class MemberController extends Controller
         if($request->get('export')){
             return $this->exportListToExcel($members);
         }
-        return view('members::admin.member.list', compact('members', 'filters', 'units'));
+        return view('members::admin.member.list', compact('members', 'filters', 'units', 'menuParent'));
     }
 
     public function memberSearch()
@@ -124,7 +125,7 @@ class MemberController extends Controller
      */
     public function show($id, $prevPage = null)
     {
-        
+        $menuParent = 'members';
         $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'relations.relatedMember.user', 'relations.relatedMember.membership', 'relations.relatedMember.details', 'relations.relatedDependent', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
         //dd($member);
         $statuses = requestStatusDisplay($id);
@@ -191,7 +192,7 @@ class MemberController extends Controller
                 }
             }
         }
-        return view('members::admin.member.show', compact('member', 'statuses', 'current_status', 'request_action', 'suggested_mid', 'countries', 'units', 'blood_groups', 'gender', 'district_kerala', 'backTo', 'duplicates'));
+        return view('members::admin.member.show', compact('member', 'statuses', 'current_status', 'request_action', 'suggested_mid', 'countries', 'units', 'blood_groups', 'gender', 'district_kerala', 'duplicates', 'backTo',  'menuParent'));
     }
 
     /**
@@ -234,6 +235,7 @@ class MemberController extends Controller
      */
     public function create()
     {
+        $menuParent = 'members';
         $countries = Country::with('regions')->where('active', 1)->get();
         $units = MemberUnit::select('id', 'slug', 'name')->where('active', 1)->get();
         $blood_groups = MemberEnum::select('id', 'slug', 'name')->where('type', 'blood_group')->get();
@@ -255,7 +257,7 @@ class MemberController extends Controller
             ['name' => 'Wayanada', 'slug' => 'wayanad'],
             ['name' => 'Other', 'slug' => 'other'],
         );
-        return view('members::admin.member.create', compact('countries', 'units', 'blood_groups', 'district_kerala', 'suggested_mid'));
+        return view('members::admin.member.create', compact('countries', 'units', 'blood_groups', 'district_kerala', 'suggested_mid', 'menuParent'));
     }
 
     /**
@@ -1250,5 +1252,28 @@ class MemberController extends Controller
             $rules,
             $messages
         ];
+    }
+
+    public function deleteFamilyMember(Request $request)
+    {
+
+        $admin = Auth::user();
+        $validator = Validator::make($request->all(), ['dependent_id' => 'required', 'primary_member' => 'required']);
+        if($validator->fails()){
+            return Redirect::back()->withErrors($validator)->withInput()->with('error', 'Some fields are not valid');       
+        }
+        $input = $request->all();
+        $dependent = MemberDependent::findOrFail($input['dependent_id']);
+        MemberRelation::where('dependent_id', $input['dependent_id'])->delete();
+        MemberRelation::where('related_dependent_id', $input['dependent_id'])->delete();
+
+        $existing_thumb = $dependent->avatar;
+        if($existing_thumb){
+            Storage::delete('public/images/'.$existing_thumb);
+            
+        }
+        $dependent->delete();
+
+        return redirect('/admin/members/member/view/'.$input['primary_member']);
     }
 }

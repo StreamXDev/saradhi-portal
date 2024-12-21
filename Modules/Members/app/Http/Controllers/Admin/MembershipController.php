@@ -43,6 +43,7 @@ class MembershipController extends Controller
      */
     public function requests(Request $request)
     {
+        $menuParent = 'requests';
         $results = MembershipRequest::with(['member', 'details', 'user', 'member.relations.relationship'])->where('checked', 0)->orderBy('id', 'desc');
         if($request->query('type')){
             $type = $request->query('type');
@@ -82,7 +83,7 @@ class MembershipController extends Controller
         $requests = requestsByPermission($results);
 
         //dd($requests);
-        return view('members::admin.membership.request', compact('requests','type'));
+        return view('members::admin.membership.request', compact('requests','type', 'menuParent'));
     }
 
     public function changeStatus(Request $request)
