@@ -18,7 +18,7 @@
     </div>
 </li>
 <li>
-    <a href="#" class="nav-item btn-toggle" data-bs-toggle="collapse" data-bs-target="#articles_menu" aria-expanded="true"><i class="icon" data-feather="book-open"></i>Krithikal</a>
+    <a href="#" class="nav-item btn-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#articles_menu" aria-expanded="true"><i class="icon" data-feather="book-open"></i>Krithikal</a>
     <div class="collapse sub-nav @if(isset($menuParent) && $menuParent == 'articles') show @endif" id="articles_menu">
         <ul class="nav btn-toggle-nav">
             <li><a href="/admin/articles" class="nav-item">List</a></li>

@@ -19,7 +19,7 @@ class ArticlesController extends Controller
      */
     public function index()
     {
-        $articles = Article::orderBy('order', 'asc')->paginate(25);
+        $articles = Article::orderBy('order', 'asc')->paginate(20);
         $menuParent = 'articles';
         return view('posts::admin.articles.index', compact([['articles','menuParent']]));
     }
