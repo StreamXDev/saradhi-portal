@@ -481,6 +481,16 @@
                 </ul>
             </div>
         </div>
+        @else
+        <div class="card">
+            <div class="card-header">
+                <div class="title">Trustee Details</div>
+            </div>
+            <div class="card-body">
+                <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createTrustee">Add to Trustees</a>
+                @include('members::admin.member.create_trustee')
+            </div>
+        </div>
         @endif
         <div class="card">
             <div class="card-header">

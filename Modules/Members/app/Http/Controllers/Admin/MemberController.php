@@ -778,7 +778,9 @@ class MemberController extends Controller
             }
             Membership::where('user_id', $user_id)->update($membershipUpdateData);
         }elseif(isset($input['edit_trustee'])){
-            MemberTrustee::where('user_id',$user_id)->update([
+            MemberTrustee::updateOrCreate([
+                'user_id' => $user_id,
+            ],[
                 'tid' => $input['tid'],
                 'title' => $input['title'],
                 'joining_date' => $input['joining_date'],
