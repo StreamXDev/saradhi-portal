@@ -13,17 +13,25 @@
     <form action="" method="">
         <div class="form-group no-margin">
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <input type="text" name="search_by" id="search_by" placeholder="Name/Email/Phone/MID" class="form-control" value="{{ $filters['search_by'] }}">
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-2">
                     <select name="status" id="search_status" class="form-select">
                         <option value="">Status</option>
                         <option value="active" @if($filters['status'] == 'active') selected @endif>Active</option>
                         <option value="dormant" @if($filters['status'] == 'dormant') selected @endif>Dormant</option>
                     </select>
                 </div>
-                <div class="col-md-4" style="display: flex; align-items:center; column-gap:0.5rem">
+                <div class="col-md-2">
+                    <select name="unit" id="search_unit" class="form-select">
+                        <option value="">Unit</option>
+                        @foreach ($units as $unit)
+                            <option value="{{$unit->id}}">{{$unit->name}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-5" style="display: flex; align-items:center; column-gap:0.5rem">
                     <input type="submit" name="search" value="Search" class="btn btn-primary">
                     <input type="button" value="CLEAR" class="btn btn-outline-default" onClick="clearForm();">
                     <button type="submit" name="export" value="export" class="btn btn-outline-default btn-right" style="margin-left: auto"><i class="fa-regular fa-file-excel"></i> Export</button>

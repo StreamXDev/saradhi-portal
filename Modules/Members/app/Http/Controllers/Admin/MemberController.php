@@ -91,6 +91,9 @@ class MemberController extends Controller
                 })
                 ->orWhereHas('membership', function($q) use ($input) {
                     return $q->where('mid', $input);
+                })
+                ->orWhereHas('details', function($q) use ($input) {
+                    return $q->where('civil_id', $input);
                 });
 
             $filters->put('search_by', request()->get('search_by'));
@@ -103,14 +106,15 @@ class MemberController extends Controller
             });
             $filters->put('status', request()->get('status'));
         }
-        /*
+        
         if (request()->get('unit') != null){
+            $input = request()->get('unit');
             $members->WhereHas('details', function($q) use ($input) {
                 return $q->where('member_unit_id', request()->get('unit'));
             });
             $filters->put('unit', request()->get('unit'));
         }
-            */
+    
 
         //dd($members->toSql());
 

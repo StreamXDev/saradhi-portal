@@ -79,6 +79,7 @@ Route::prefix('admin/committee')->middleware(['auth:sanctum', 'verified_email', 
     Route::controller(CommitteeController::class)->group(function(){
         Route::get('/', 'index');
         Route::get('/create', 'create');
+        Route::get('autocomplete', 'autocomplete')->name('admin.committee.autocomplete');
     });
 });
 

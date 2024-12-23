@@ -3,6 +3,8 @@
 namespace Modules\Members\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use GuzzleHttp\Psr7\Request;
+use Modules\Members\Models\Member;
 use Modules\Members\Models\MemberCommittee;
 use Modules\Members\Models\MemberEnum;
 use Modules\Members\Models\MemberUnit;
@@ -19,10 +21,27 @@ class CommitteeController extends Controller
         return view('members::admin.committee.list', compact('committees'));
     }
 
+    /**
+     * Show the users for creating.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function autocomplete(Request $request)
+    {
+        $data = [];
+        $data = Member::with('user')
+                ->where('name', 'LIKE', '%'. $request->get('query'). '%')
+                ->take(10)
+                ->get();
+       
+        return response()->json($data);
+    }
+
     public function create()
     {
-        $committee_types = MemberEnum::select('id', 'slug', 'name')->where('type', 'committee_type')->get();
+        $committee_types = MemberEnum::select('id', 'slug', 'name', 'category')->where('type', 'committee_type')->get();
+        $designations = MemberEnum::select('id', 'slug', 'name', 'category')->where('type', 'designation')->get();
         $units = MemberUnit::get();
-        return view('members::admin.committee.create', compact('committee_types','units'));
+        return view('members::admin.committee.create', compact('committee_types', 'designations', 'units'));
     }
 }

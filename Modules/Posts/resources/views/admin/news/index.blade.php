@@ -46,5 +46,6 @@
             @endforeach
         </tbody>
     </table>
+    <div class="pagination-container">{{ $posts->appends(request()->query())->links() }}</div>
 </div>
 @endsection
