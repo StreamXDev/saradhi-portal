@@ -27,7 +27,7 @@ class MemberCommittee extends Model
     
     public function committee_type(): BelongsTo
     {
-        return $this->belongsTo(MemberEnum::class)->select('id', 'slug', 'name', 'order');
+        return $this->belongsTo(MemberEnum::class)->select('id', 'slug', 'name', 'order', 'category');
     }
 
     public function committee_members(): HasMany

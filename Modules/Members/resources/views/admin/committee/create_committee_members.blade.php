@@ -4,7 +4,7 @@
 @section('content')
 <div class="page-title">
     <div class="title-container">
-        <h1 class="title">Create Committee</h1>
+        <h1 class="title">Add Committee Members</h1>
     </div>
     <div class="actions">
         
@@ -14,41 +14,47 @@
     <div class="row">
         <div class="col-md-6">
             <div class="form-container">
-                <form action="{{ route('admin.committee.create') }}" method="POST">
+                <form action="{{ route('admin.committee.create.member') }}" method="POST">
                     @csrf
-                    <div class="form-group row">
-                        <div class="col">
-                            <label for="committee_type_id" class="form-label">Committee Type</label>
-                            <select name="committee_type_id" id="committee_type_id" class="form-select">
+                    <input type="hidden" name="committee_id" value="{{$committee->id}}" >
+                    <div class="form-group row" id="item">
+                        <div class="col-md-4">
+                            <label for="designation_title" class="form-label">Designation</label>
+                            <select name="title" id="designation_title" class="form-select">
                                 <option value="">Select</option>
-                                @foreach ($committee_types as $committee_type)
-                                    <option value="{{$committee_type->id}}" data-category="{{$committee_type->category}}">{{$committee_type->name}}</option>
+                                @foreach ($designations as $designation)
+                                    <option value="{{$designation->id}}" data-title="{{$designation->name}}">{{$designation->name}}</option>
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col">
-                            <div id="unitContainer">
-                                <label for="member_unit_id" class="form-label">Unit</label>
-                                <select name="member_unit_id" id="member_unit_id" class="form-select">
-                                    <option value="">Select</option>
-                                    @foreach ($units as $unit)
-                                        <option value="{{$unit->id}}">{{$unit->name}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group row" id="item">
                         <div class="col-md-4">
-                            <label for="formed_on" class="form-label">Starting from</label>
-                            <input type="date" name="formed_on" id="formed_on" class="form-control">
+                            <label for="" class="form-label">Select Member</label>
+                            <input class="typeahead form-control" id="search" type="text" autocomplete="off" placeholder="Search Name">
                         </div>
                     </div>
-                    
+                    <div class="volunteer-list">
+                        <table class="table table-bordered typeHead-result" >
+                            <thead>
+                                <tr>
+                                    <th>Designation</th>
+                                    <th>Member</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="typeHeadResult"></tbody>
+                        </table>
+                    </div>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary">Create</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
                     </div>
                 </form>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+                <div><strong>{{$committee->committee_type->name}}</strong></div>
+                @if($committee->unit)<div><span class="label">Unit: </span><span>{{$committee->unit->name}}</span></div>@endif
+                <div><span class="label">Formed On: </span><span>{{$committee->formed_on}}</span></div>
             </div>
         </div>
     </div>
@@ -58,11 +64,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
 <script>
     $(document).ready(function(){
-        $('#unitContainer').hide();
-        $('#committee_type').on('change', function(){
-            var category = $(this).find(':selected').data('category');
-            showUnit(category);
-        });
+        
 
         var designation_title = $('#designation_title').find(':selected').data('title');
         var designation_id = $('#designation_title').find(':selected').val();
@@ -106,14 +108,6 @@
     function toggleSearchInput(handle){
         if(handle == ''){
             $('#search').prop('disabled', true);
-        }
-    }
-
-    function showUnit(category){
-        if(category == 'unit'){
-            $('#unitContainer').show();
-        }else{
-            $('#unitContainer').hide();
         }
     }
 

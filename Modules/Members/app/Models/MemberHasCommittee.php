@@ -9,7 +9,7 @@ class MemberHasCommittee extends Model
 {
     protected $with = ['designation'];
 
-    protected $fillable = ['year'];
+    protected $fillable = ['member_committee_id', 'user_id', 'designation_id','active'];
 
     public function member(): BelongsTo
     {

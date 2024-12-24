@@ -5,7 +5,6 @@ namespace Modules\Events\Http\Controllers\Admin\Events;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Carbon\Carbon;
-use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;

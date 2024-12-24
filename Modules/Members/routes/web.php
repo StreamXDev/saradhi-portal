@@ -78,8 +78,12 @@ Route::prefix('admin/members')->middleware(['auth:sanctum', 'verified_email', 'i
 Route::prefix('admin/committee')->middleware(['auth:sanctum', 'verified_email', 'is_admin'])->group(function() {
     Route::controller(CommitteeController::class)->group(function(){
         Route::get('/', 'index');
+        Route::get('/show/{id}', 'show');
         Route::get('/create', 'create');
         Route::get('autocomplete', 'autocomplete')->name('admin.committee.autocomplete');
+        Route::post('/create', 'store')->name('admin.committee.create');
+        Route::get('/create_member/{id}', 'createCommitteeMember');
+        Route::post('/create_member', 'storeCommitteeMember')->name('admin.committee.create.member');
     });
 });
 

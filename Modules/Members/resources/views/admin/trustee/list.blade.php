@@ -19,6 +19,7 @@
                     <th>Name</th>
                     <th>Trustee ID</th>
                     <th>Status</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>

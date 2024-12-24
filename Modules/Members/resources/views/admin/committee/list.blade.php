@@ -15,7 +15,6 @@
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Type</th>
                     <th>Unit/Group</th>
                     <th>Year</th>
                     <th>Formed On</th>
@@ -25,7 +24,6 @@
             <tbody>
                 @foreach ($committees as $committee)    
                     <tr>
-                        <td>{{ $committee->committee_type->name }}</td>
                         <td>{{ $committee->committee_type->name }}</td>
                         <td>{{ $committee->unit ? $committee->unit->name : '--' }}</td>
                         <td>{{ $committee->year }}</td>
