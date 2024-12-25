@@ -7,7 +7,9 @@
         <div><small class="text-muted">Showing <strong>{{$trustees->currentPage()}}</strong> to <strong>{{$trustees->count()}}</strong> of <strong>{{$trustees->total()}}</strong> results</small></div>
     </div>
     <div class="actions">
-        
+        <form action="" method="GET">
+            <button name="export" value="true" class="btn btn-outline-default">Export</button>
+        </form>
     </div>
 </div>
 <div class="page-content">

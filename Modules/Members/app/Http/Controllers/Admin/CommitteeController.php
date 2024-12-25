@@ -21,15 +21,18 @@ class CommitteeController extends Controller
      */
     public function index()
     {
+        $menuParent = 'committees';
         $committees = MemberCommittee::where('active', 1)->paginate(25); 
         //dd($committees);
-        return view('members::admin.committee.list', compact('committees'));
+        return view('members::admin.committee.list', compact('committees', 'menuParent'));
     }
 
-    public function show($id)
+    public function show($id, $prevPage = null)
     {
+        $menuParent = 'committees';
+        $backTo = $prevPage ?  '/admin/committee?page='.$prevPage : null;
         $committee = MemberCommittee::with('unit', 'committee_members', 'committee_members.member', 'committee_members.member.user', 'committee_members.member.membership')->where('id', $id)->first();
-        return view('members::admin.committee.show', compact('committee'));
+        return view('members::admin.committee.show', compact('committee', 'menuParent', 'backTo'));
     }
 
     /**
@@ -52,9 +55,10 @@ class CommitteeController extends Controller
 
     public function create()
     {
+        $menuParent = 'committees';
         $committee_types = MemberEnum::select('id', 'slug', 'name', 'category')->where('type', 'committee_type')->get();
         $units = MemberUnit::get();
-        return view('members::admin.committee.create', compact('committee_types', 'units'));
+        return view('members::admin.committee.create', compact('committee_types', 'units', 'menuParent'));
     }
 
     public function store(Request $request)
@@ -83,9 +87,10 @@ class CommitteeController extends Controller
 
     public function createCommitteeMember($id)
     {
+        $menuParent = 'committees';
         $committee = MemberCommittee::with('unit')->where('id', $id)->first();
         $designations = MemberEnum::select('id', 'slug', 'name', 'category')->where('type', 'designation')->get();
-        return view('members::admin.committee.create_committee_members', compact('committee', 'designations'));
+        return view('members::admin.committee.create_committee_members', compact('committee', 'designations', 'menuParent'));
     }
 
     public function storeCommitteeMember(Request $request)
@@ -114,5 +119,15 @@ class CommitteeController extends Controller
         }
         DB::commit();
         return redirect('/admin/committee/show/'.$input['committee_id']);
+    }
+
+    public function edit($id)
+    {
+        $menuParent = 'committees';
+        $backTo =  '/admin/committee/show/'.$id;
+        $committee = MemberCommittee::where('id', $id)->first();
+        $units = MemberUnit::get();
+        $designations = MemberEnum::select('id', 'slug', 'name', 'category')->where('type', 'designation')->get();
+        return view('members::admin.committee.edit', compact('committee', 'designations', 'units', 'backTo', 'menuParent'));
     }
 }

@@ -24,7 +24,8 @@
         "files": [
             "app/Helpers/membershipRequestHelper.php",
             "app/Exports/MemberExport.php",
-            "app/Exports/MembersListExport.php"
+            "app/Exports/MembersListExport.php",
+            "app/Exports/TrusteesListExport.php"
         ]
     },
     "autoload-dev": {

@@ -28,7 +28,12 @@
                         <td>{{ $committee->unit ? $committee->unit->name : '--' }}</td>
                         <td>{{ $committee->year }}</td>
                         <td>{{ $committee->formed_on }}</td>
-                        <td></td>
+                        <td>
+                            <div class="actions">
+                                <a href="/admin/committee/show/{{ $committee->id }}/{{$committees->currentPage()}}" class="btn"><i class="fa-solid fa-eye"></i></a>
+                                <a href="/admin/committee/edit/{{$committee->id}}" class="btn"><i class="fa-solid fa-pencil"></i></a>
+                            </div>
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
@@ -40,4 +45,3 @@
 
 
 @endsection
-@section('page_scripts')
