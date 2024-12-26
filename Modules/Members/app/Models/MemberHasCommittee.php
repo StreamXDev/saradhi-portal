@@ -2,23 +2,30 @@
 
 namespace Modules\Members\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class MemberHasCommittee extends Model
 {
-    protected $with = ['designation'];
+    protected $with = ['designation', 'user'];
 
     protected $fillable = ['member_committee_id', 'user_id', 'designation_id','active'];
 
-    public function member(): BelongsTo
+    public function user(): HasOne
     {
-        return $this->belongsTo(Member::class, 'user_id', 'user_id');
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
 
-    public function committee(): BelongsTo
+    public function member(): HasOne
     {
-        return $this->belongsTo(MemberCommittee::class);
+        return $this->hasOne(Member::class, 'user_id', 'user_id');
+    }
+
+    public function committee(): HasOne
+    {
+        return $this->hasOne(MemberCommittee::class);
     }
 
     public function designation(): BelongsTo

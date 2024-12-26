@@ -85,6 +85,7 @@ Route::prefix('admin/committee')->middleware(['auth:sanctum', 'verified_email', 
         Route::get('/create_member/{id}', 'createCommitteeMember');
         Route::post('/create_member', 'storeCommitteeMember')->name('admin.committee.create.member');
         Route::get('/edit/{id}', 'edit');
+        Route::post('/update', 'update')->name('admin.committee.update');
     });
 });
 

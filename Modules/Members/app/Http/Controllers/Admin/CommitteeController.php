@@ -31,8 +31,9 @@ class CommitteeController extends Controller
     {
         $menuParent = 'committees';
         $backTo = $prevPage ?  '/admin/committee?page='.$prevPage : null;
-        $committee = MemberCommittee::with('unit', 'committee_members', 'committee_members.member', 'committee_members.member.user', 'committee_members.member.membership')->where('id', $id)->first();
-        return view('members::admin.committee.show', compact('committee', 'menuParent', 'backTo'));
+        $committee = MemberCommittee::with('unit')->where('id', $id)->first();
+        $members = MemberHasCommittee::with('member', 'member.membership')->where('member_committee_id', $committee->id)->orderBy('designation_id', 'asc')->get();
+        return view('members::admin.committee.show', compact('committee', 'members', 'menuParent', 'backTo'));
     }
 
     /**
@@ -126,8 +127,52 @@ class CommitteeController extends Controller
         $menuParent = 'committees';
         $backTo =  '/admin/committee/show/'.$id;
         $committee = MemberCommittee::where('id', $id)->first();
+        $members = MemberHasCommittee::with('member', 'member.membership')->where('member_committee_id', $committee->id)->orderBy('designation_id', 'asc')->get();
         $units = MemberUnit::get();
         $designations = MemberEnum::select('id', 'slug', 'name', 'category')->where('type', 'designation')->get();
-        return view('members::admin.committee.edit', compact('committee', 'designations', 'units', 'backTo', 'menuParent'));
+        return view('members::admin.committee.edit', compact('committee', 'members', 'designations', 'units', 'backTo', 'menuParent'));
+    }
+
+    public function update(Request $request)
+    {
+        $input = $request->all();
+        $validator = Validator::make($request->all(), 
+            [
+                'committee_id' => 'required',
+                'formed_on' => 'required|date_format:Y-m-d'
+            ],[
+                'committee_id.required' => 'Committee ID is required',
+                'formed_on.required' => 'Committee formation date is required',
+                'formed_on.date_format' => 'Invalid committee formation date'
+            ]
+        );
+        if($validator->fails()){
+            return Redirect::back()->withErrors($validator)->withInput()->with('error', 'Some fields are not valid');       
+        }
+        $committee = MemberCommittee::where('id', $input['committee_id'])->first();
+        
+        
+        $designations = $input['designation'];
+        $members = $input['members'];
+        DB::beginTransaction();
+        // Removing old data
+        MemberHasCommittee::where('member_committee_id', $committee->id)->delete();
+
+        // Storing new data
+        MemberCommittee::where('id', $committee->id)->update([
+            'member_unit_id' => isset($input['member_unit_id']) ? $input['member_unit_id'] : null,
+            'formed_on' => $input['formed_on'],
+            'year' => date('Y', strtotime($input['formed_on'])),
+            'active' => $input['status']
+        ]);
+        foreach($designations as $key => $designation){
+            MemberHasCommittee::create([
+                'member_committee_id' => $committee->id,
+                'user_id' => $members[$key],
+                'designation_id' => $designation
+            ]);
+        }
+        DB::commit();
+        return redirect('/admin/committee/show/'.$input['committee_id']);
     }
 }

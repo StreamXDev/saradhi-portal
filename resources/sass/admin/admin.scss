@@ -1487,3 +1487,28 @@ table.list{
         }
     }
 }
+.user-pill{
+    display: flex;
+    align-items: center;
+    column-gap: 0.5rem;
+}
+table.table{
+    td.actions, td .actions{
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+}
+.add-designation{
+    .title{
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        font-weight: 600;
+        color: teal;
+    }
+    margin: 0.5rem 0;
+    padding: 1rem;
+    background-color: #eee;
+    border-radius: 6px;
+}

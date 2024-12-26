@@ -92,9 +92,12 @@
                     '<tr id="thrRow'+item.user.id+'">'
                     +'<td><input type="hidden" name="designation[]" class="form-control" value="'+designation_id+'">'+designation_title+'</td>'
                     +'<td><input type="hidden" name="members[]" value="'+item.user.id+'">'
-                        +'<div class="profile-pill"><div class="details"><div class="title">'+item.user.name+'</div><div>'+item.user.email+'</div><div>MID: '+item.membership.mid+'</div></div></div>'
+                        +'<div class="profile-pill">'
+                            +`<div class="avatar">${item.user.avatar !== null ? '<img src="/storage/images/'+item.user.avatar+'"></div>' : item.gender == 'male' ? '<img src="/images/avatar-male.jpeg">' : '<img src="/images/avatar-female.png">'}</div>`
+                            +'<div class="details"><div class="title">'+item.user.name+'</div><div>'+item.user.email+'</div><div>MID: '+item.membership.mid+'</div></div>'
+                        +'</div>'
                     +'</td>' 
-                    +'<td><a class="btn btn-xs btn-outline-danger btn-remove-typeHead" data-id="'+item.user.id+'">Remove</a></td>'
+                    +'<td><div class="actions"><a class="btn btn-remove-typeHead" data-id="'+item.user.id+'"><i class="fa-solid fa-trash"></i></a></div></td>'
                     +'</tr>'
                 );       
             }

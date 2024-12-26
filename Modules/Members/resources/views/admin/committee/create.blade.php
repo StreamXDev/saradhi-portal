@@ -59,55 +59,11 @@
 <script>
     $(document).ready(function(){
         $('#unitContainer').hide();
-        $('#committee_type').on('change', function(){
+        $('#committee_type_id').on('change', function(){
             var category = $(this).find(':selected').data('category');
             showUnit(category);
         });
-
-        var designation_title = $('#designation_title').find(':selected').data('title');
-        var designation_id = $('#designation_title').find(':selected').val();
-        toggleSearchInput(designation_id);
-        $('#designation_title').on('change', function(){
-            designation_title = $(this).find(':selected').data('title');
-            designation_id = $(this).find(':selected').val();
-            $('#search').prop('disabled', false);
-            toggleSearchInput(designation_id);
-        });
-
-        var path = "{{ route('admin.committee.autocomplete') }}";   
-        $('#search').typeahead( {
-            name: 'best-pictures',
-            displayKey: 'value',
-            source: function (query, process) {
-                return $.get(path, {
-                    query: query
-                }, function (data) {
-                    return process(data);
-                })
-            },
-            updater: function (item) {
-                $('#typeHeadResult').append(
-                    '<tr id="thrRow'+item.user.id+'">'
-                    +'<td><input type="hidden" name="designation[]" class="form-control" value="'+designation_id+'">'+designation_title+'</td>'
-                    +'<td><input type="hidden" name="members[]" value="'+item.user.id+'">'
-                        +'<div class="profile-pill"><div class="details"><div class="title">'+item.user.name+'</div><div>'+item.user.email+'</div><div>MID: '+item.membership.mid+'</div></div></div>'
-                    +'</td>' 
-                    +'<td><a class="btn btn-xs btn-outline-danger btn-remove-typeHead" data-id="'+item.user.id+'">Remove</a></td>'
-                    +'</tr>'
-                );       
-            }
-        });
-        $(document).on('click', '.btn-remove-typeHead',function(){
-            var id = $(this).data("id");
-            $(this).closest('#thrRow'+id).remove();
-        });
     });
-
-    function toggleSearchInput(handle){
-        if(handle == ''){
-            $('#search').prop('disabled', true);
-        }
-    }
 
     function showUnit(category){
         if(category == 'unit'){
