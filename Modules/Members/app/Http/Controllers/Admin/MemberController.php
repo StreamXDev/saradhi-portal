@@ -630,7 +630,7 @@ class MemberController extends Controller
                 'emergency_country_code' => 'required|numeric',
                 'emergency_phone' => 'required|numeric',
                 'member_unit_id' => 'required|numeric',
-                'civil_id' => 'required',
+                'civil_id' => 'required|digits:12',
             ]);
         }elseif(isset($input['edit_personal'])){
             $validator = Validator::make($request->all(), [

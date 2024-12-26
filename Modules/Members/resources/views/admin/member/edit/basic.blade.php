@@ -101,7 +101,7 @@
                     <div class="col-md-8">
                         <label for="civil_id" class="form-label">Civil ID<span class="asterisk">*</span></label>
                         <div class="control-col">
-                            <input type="text" name="civil_id" id="civil_id" class="form-control @error('civil_id') is-invalid @enderror" value="{{ $member->details->civil_id }}">
+                            <input type="text" name="civil_id" minlength="12" maxlength="12" id="civil_id" class="form-control @error('civil_id') is-invalid @enderror" value="{{ $member->details->civil_id }}">
                         </div>
                     </div>
                 </div>
