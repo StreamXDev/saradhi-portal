@@ -30,7 +30,7 @@ class CommitteeController extends Controller
     public function show($id, $prevPage = null)
     {
         $menuParent = 'committees';
-        $backTo = $prevPage ?  '/admin/committee?page='.$prevPage : null;
+        $backTo = $prevPage ?  '/admin/committee?page='.$prevPage : '/admin/committee';
         $committee = MemberCommittee::with('unit')->where('id', $id)->first();
         $members = MemberHasCommittee::with('member', 'member.membership')->where('member_committee_id', $committee->id)->orderBy('designation_id', 'asc')->get();
         return view('members::admin.committee.show', compact('committee', 'members', 'menuParent', 'backTo'));
