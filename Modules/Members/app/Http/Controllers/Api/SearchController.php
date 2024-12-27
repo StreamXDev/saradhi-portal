@@ -32,7 +32,7 @@ class SearchController extends BaseController
 
     public function search()
     {
-        $members = Member::with(['membership', 'details','user'])->where('active', 1)->orderBy(Membership::select('mid')->whereColumn('memberships.user_id', 'members.user_id'));
+        //$members = Member::with(['membership', 'details','user'])->where('active', 1)->orderBy(Membership::select('mid')->whereColumn('memberships.user_id', 'members.user_id'));
         $filters = collect(
             [
                 'search_by' => '',
