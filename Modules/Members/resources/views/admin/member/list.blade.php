@@ -27,7 +27,7 @@
                     <select name="unit" id="search_unit" class="form-select">
                         <option value="">Unit</option>
                         @foreach ($units as $unit)
-                            <option value="{{$unit->id}}">{{$unit->name}}</option>
+                            <option value="{{$unit->id}}" @selected($filters['unit'] == $unit->id ? true : false)>{{$unit->name}}</option>
                         @endforeach
                     </select>
                 </div>
