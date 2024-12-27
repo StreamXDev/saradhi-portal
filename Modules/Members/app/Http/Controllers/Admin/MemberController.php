@@ -51,6 +51,8 @@ class MemberController extends Controller
         $menuParent = 'members';
         list($members, $filters) = $this->memberSearch();
         $members = $members->paginate();
+
+        dd($members);
         foreach($members as $member){
             $member->duplicate_civil_id = false;
             $duplicate = MemberDetail::select('user_id')->where('civil_id',$member->details->civil_id)->where('user_id', '!=', $member->user_id)->first();
@@ -68,7 +70,7 @@ class MemberController extends Controller
     public function memberSearch()
     {
 
-        $members = Member::with(['membership', 'details','user'])->where('active', 1)->orderBy(Membership::select('mid')->whereColumn('memberships.user_id', 'members.user_id'));
+        $members = Member::with(['membership', 'details','user'])->orderBy(Membership::select('mid')->whereColumn('memberships.user_id', 'members.user_id'))->where('active',1);
 
         $filters = collect(
             [
@@ -80,8 +82,7 @@ class MemberController extends Controller
 
         if (request()->get('search_by') != null){
             $input = request()->get('search_by');
-            $members->where('name', 'LIKE', '%' .$input. '%')
-                ->orWhereHas('user', function($q) use ($input) {
+            $members->whereHas('user', function($q) use ($input) {
                     return $q->where('name', 'LIKE', '%' . $input . '%');
                 })
                 ->orWhereHas('user', function($q) use ($input) {

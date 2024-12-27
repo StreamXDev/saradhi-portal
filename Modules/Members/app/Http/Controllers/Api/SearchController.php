@@ -32,7 +32,7 @@ class SearchController extends BaseController
 
     public function search()
     {
-        $members = Member::with(['membership', 'details','user'])->where('active', 1)->orderBy(Membership::select('mid')->whereColumn('memberships.user_id', 'members.user_id'));
+        $members = Member::with(['membership', 'details','user'])->orderBy(Membership::select('mid')->whereColumn('memberships.user_id', 'members.user_id'))->where('active', 1);
         $filters = collect(
             [
                 'search_by' => '',
@@ -44,19 +44,18 @@ class SearchController extends BaseController
 
         if (request()->get('search_by') != null){
             $input = request()->get('search_by');
-            $members->where('name', 'LIKE', '%' .$input. '%')
-                ->orWhereHas('user', function($q) use ($input) {
-                    return $q->where('name', 'LIKE', '%' . $input . '%');
-                })
-                ->orWhereHas('user', function($q) use ($input) {
-                    return $q->where('email', $input);
-                })
-                ->orWhereHas('user', function($q) use ($input) {
-                    return $q->where('phone', $input);
-                })
-                ->orWhereHas('membership', function($q) use ($input) {
-                    return $q->where('mid', $input);
-                });
+            $members->whereHas('user', function($q) use ($input) {
+                return $q->where('name', 'LIKE', '%' . $input . '%');
+            })
+            ->orWhereHas('user', function($q) use ($input) {
+                return $q->where('email', $input);
+            })
+            ->orWhereHas('user', function($q) use ($input) {
+                return $q->where('phone', $input);
+            })
+            ->orWhereHas('membership', function($q) use ($input) {
+                return $q->where('mid', $input);
+            });
 
             $filters->put('search_by', request()->get('search_by'));
         }
