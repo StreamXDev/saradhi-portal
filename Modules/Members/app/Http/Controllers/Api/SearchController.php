@@ -42,6 +42,12 @@ class SearchController extends BaseController
             ]
         );
 
+        if (request()->get('blood_group') != null){
+            $input = request()->get('blood_group');
+            $members->where('blood_group', 'LIKE', '%' . $input . '%');
+            $filters->put('blood_group', request()->get('blood_group'));
+        }
+
         if (request()->get('search_by') != null){
             $input = request()->get('search_by');
             $members->whereHas('user', function($q) use ($input) {
@@ -60,12 +66,6 @@ class SearchController extends BaseController
             $filters->put('search_by', request()->get('search_by'));
         }
 
-        if (request()->get('blood_group') != null){
-            $input = request()->get('blood_group');
-            $members->where('blood_group', 'LIKE', '%' . $input . '%');
-            $filters->put('blood_group', request()->get('blood_group'));
-        }
-        //return $this->sendResponse($members->toSql());
 
         $results  = $members->paginate(20);
         foreach($results as $key => $result){

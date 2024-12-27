@@ -51,7 +51,6 @@ class MemberController extends Controller
         $menuParent = 'members';
         list($members, $filters) = $this->memberSearch();
         $members = $members->paginate();
-
         foreach($members as $member){
             $member->duplicate_civil_id = false;
             $duplicate = MemberDetail::select('user_id')->where('civil_id',$member->details->civil_id)->where('user_id', '!=', $member->user_id)->first();
@@ -79,6 +78,22 @@ class MemberController extends Controller
             ]
         );
 
+        if (request()->get('status') != null){
+            $input = request()->get('status');
+            $members->whereHas('membership', function($q) use ($input) {
+                return $q->where('status', $input);
+            });
+            $filters->put('status', request()->get('status'));
+        }
+        
+        if (request()->get('unit') != null){
+            $input = request()->get('unit');
+            $members->whereHas('details', function($q) use ($input) {
+                return $q->where('member_unit_id', request()->get('unit'));
+            });
+            $filters->put('unit', request()->get('unit'));
+        }
+
         if (request()->get('search_by') != null){
             $input = request()->get('search_by');
             $members->whereHas('user', function($q) use ($input) {
@@ -95,23 +110,9 @@ class MemberController extends Controller
                 });
 
             $filters->put('search_by', request()->get('search_by'));
-
-        }
-        if (request()->get('status') != null){
-            $input = request()->get('status');
-            $members->WhereHas('membership', function($q) use ($input) {
-                return $q->where('status', $input);
-            });
-            $filters->put('status', request()->get('status'));
+            
         }
         
-        if (request()->get('unit') != null){
-            $input = request()->get('unit');
-            $members->WhereHas('details', function($q) use ($input) {
-                return $q->where('member_unit_id', request()->get('unit'));
-            });
-            $filters->put('unit', request()->get('unit'));
-        }
     
 
         //dd($members->toSql());
