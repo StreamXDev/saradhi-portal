@@ -80,7 +80,8 @@ class MemberController extends Controller
 
         if (request()->get('search_by') != null){
             $input = request()->get('search_by');
-            $members->WhereHas('user', function($q) use ($input) {
+            $members->where('name', 'LIKE', '%' .$input. '%')
+                ->orWhereHas('user', function($q) use ($input) {
                     return $q->where('name', 'LIKE', '%' . $input . '%');
                 })
                 ->orWhereHas('user', function($q) use ($input) {
@@ -91,9 +92,6 @@ class MemberController extends Controller
                 })
                 ->orWhereHas('membership', function($q) use ($input) {
                     return $q->where('mid', $input);
-                })
-                ->orWhereHas('details', function($q) use ($input) {
-                    return $q->where('civil_id', $input);
                 });
 
             $filters->put('search_by', request()->get('search_by'));
