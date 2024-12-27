@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Modules\Members\Models\Member;
 use Modules\Members\Models\MemberEnum;
+use Modules\Members\Models\Membership;
 use Modules\Members\Models\MemberUnit;
 
 class SearchController extends BaseController
@@ -31,7 +32,7 @@ class SearchController extends BaseController
 
     public function search()
     {
-        $members = Member::with(['membership', 'details','user'])->where('active', 1)->orderBy('id','desc');
+        $members = Member::with(['membership', 'details','user'])->where('active', 1)->orderBy(Membership::select('mid')->whereColumn('memberships.user_id', 'members.user_id'));
         $filters = collect(
             [
                 'search_by' => '',
