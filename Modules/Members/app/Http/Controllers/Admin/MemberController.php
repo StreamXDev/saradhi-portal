@@ -52,7 +52,6 @@ class MemberController extends Controller
         list($members, $filters) = $this->memberSearch();
         $members = $members->paginate();
 
-        dd($members);
         foreach($members as $member){
             $member->duplicate_civil_id = false;
             $duplicate = MemberDetail::select('user_id')->where('civil_id',$member->details->civil_id)->where('user_id', '!=', $member->user_id)->first();
