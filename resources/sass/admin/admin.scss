@@ -160,6 +160,10 @@ a{
     &::after{
         content: none;
     }
+    &.avatar-lg{
+        width: 60px;
+        height: 60px;
+    }
 }
 .avatar-dropdown{
     padding: 0;

@@ -22,6 +22,7 @@ use Modules\Members\Models\Member;
 use Modules\Members\Models\MemberDependent;
 use Modules\Members\Models\MemberDetail;
 use Modules\Members\Models\MemberEnum;
+use Modules\Members\Models\MemberHasCommittee;
 use Modules\Members\Models\MemberLocalAddress;
 use Modules\Members\Models\MemberPermanentAddress;
 use Modules\Members\Models\MemberRelation;
@@ -195,7 +196,9 @@ class MemberController extends Controller
                 }
             }
         }
-        return view('members::admin.member.show', compact('member', 'statuses', 'current_status', 'request_action', 'suggested_mid', 'countries', 'units', 'blood_groups', 'gender', 'district_kerala', 'duplicates', 'backTo',  'menuParent'));
+
+        $committees = MemberHasCommittee::where('user_id', $id)->get();
+        return view('members::admin.member.show', compact('member', 'statuses', 'current_status', 'request_action', 'suggested_mid', 'countries', 'units', 'blood_groups', 'gender', 'district_kerala', 'duplicates', 'committees', 'backTo',  'menuParent'));
     }
 
     /**
@@ -603,6 +606,39 @@ class MemberController extends Controller
     }
 
     /**
+     * Edit profile
+     */
+    public function edit($id)
+    {
+        $menuParent = 'members';
+        $member = Member::with('user','details', 'localAddress', 'permanentAddress')->where('user_id', $id)->first();
+        //dd($member);
+        $countries = Country::with('regions')->where('active', 1)->get();
+        $units = MemberUnit::select('id', 'slug', 'name')->where('active', 1)->get();
+        $blood_groups = MemberEnum::select('id', 'slug', 'name')->where('type', 'blood_group')->get();
+        $district_kerala = array(
+            ['name' => 'Alappuzha', 'slug' => 'alappuzha'],
+            ['name' => 'Ernakulam', 'slug' => 'ernakulam'],
+            ['name' => 'Idukki', 'slug' => 'idukki'],
+            ['name' => 'Kannur', 'slug' => 'kannur'],
+            ['name' => 'Kasaragod', 'slug' => 'kasaragod'],
+            ['name' => 'Kollam', 'slug' => 'kollam'],
+            ['name' => 'Kottayam', 'slug' => 'kottayam'],
+            ['name' => 'Kozhikkode', 'slug' => 'kozhikkode'],
+            ['name' => 'Malappuram', 'slug' => 'malappuram'],
+            ['name' => 'Palakkad', 'slug' => 'palakkad'],
+            ['name' => 'Pathanamthitta', 'slug' => 'pathanamthitta'],
+            ['name' => 'Thiruvananthapuram', 'slug' => 'thriuvananthapuram'],
+            ['name' => 'Thrissur', 'slug' => 'thrissur'],
+            ['name' => 'Wayanada', 'slug' => 'wayanad'],
+            ['name' => 'Other', 'slug' => 'other'],
+        );
+        return view('members::admin.member.edit', compact('member', 'countries', 'units', 'blood_groups', 'district_kerala', 'menuParent'));
+        
+    }
+
+
+    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request)
@@ -617,7 +653,8 @@ class MemberController extends Controller
                 'local_address_area' => 'required',
                 'local_address_building' => 'required',
             ]);
-        }elseif(isset($input['edit_basic'])){
+        }
+        if(isset($input['edit_basic'])){
             $validator = Validator::make($request->all(), [
                 'user_id' => 'bail|required',
                 'name' => 'required',
@@ -631,7 +668,8 @@ class MemberController extends Controller
                 'member_unit_id' => 'required|numeric',
                 'civil_id' => 'required|digits:12',
             ]);
-        }elseif(isset($input['edit_personal'])){
+        }
+        if(isset($input['edit_personal'])){
             $validator = Validator::make($request->all(), [
                 'user_id' => 'bail|required',
                 'gender' => 'required',
@@ -640,7 +678,8 @@ class MemberController extends Controller
                 'passport_no' => 'required',
                 'passport_expiry' => 'required',
             ]);
-        }elseif(isset($input['edit_membership'])){
+        }
+        if(isset($input['edit_membership'])){
             if(isset($input['current_type']) && $input['current_type'] == 'single'){
                 $validator = Validator::make($request->all(), [
                     'user_id' => 'bail|required',
@@ -654,14 +693,16 @@ class MemberController extends Controller
                     'mid'     => 'required',
                 ]);
             }
-        }elseif(isset($input['edit_trustee'])){
+        }
+        if(isset($input['edit_trustee'])){
             $validator = Validator::make($request->all(), [
                 'tid' => 'required|unique:member_trustees,tid,'.$input['user_id'].',user_id',
                 'title' => 'required|string',
                 'joining_date' => 'required|date_format:Y-m-d',
                 'status' => 'required'
             ]);
-        }elseif(isset($input['edit_email'])){
+        }
+        if(isset($input['edit_email'])){
             $validator = Validator::make($request->all(), [
                 'user_id' => 'bail|required',
                 'email' => 'required|email|unique:users,email,'.$input['user_id'],
@@ -689,7 +730,8 @@ class MemberController extends Controller
                 'district' => $input['permanent_address_district'],
                 'contact' => $input['permanent_address_country_code'].$input['permanent_address_contact']
             ]);
-        }elseif(isset($input['edit_basic'])){
+        }
+        if(isset($input['edit_basic'])){
             
             User::where('id', $user_id)->update([
                 'name' => $input['name'],
@@ -735,7 +777,8 @@ class MemberController extends Controller
                     'photo_civil_id_back' => $civil_id_back_name,
                 ]);
             }
-        }elseif(isset($input['edit_personal'])){
+        }
+        if(isset($input['edit_personal'])){
             Member::where('user_id', $user_id)->update([
                 'gender' => $input['gender'],
                 'blood_group' => $input['blood_group'],
@@ -762,7 +805,8 @@ class MemberController extends Controller
                     'photo_passport_back' => $passport_back_name,
                 ]);
             }
-        }elseif(isset($input['edit_membership'])){
+        }
+        if(isset($input['edit_membership'])){
             if(isset($input['current_type']) && $input['current_type'] == 'single'){
                 $membershipUpdateData = [
                     'mid' => $input['mid'],
@@ -776,7 +820,8 @@ class MemberController extends Controller
                 ];
             }
             Membership::where('user_id', $user_id)->update($membershipUpdateData);
-        }elseif(isset($input['edit_trustee'])){
+        }
+        if(isset($input['edit_trustee'])){
             MemberTrustee::updateOrCreate([
                 'user_id' => $user_id,
             ],[
@@ -786,7 +831,8 @@ class MemberController extends Controller
                 'status' => $input['status'],
                 'active' => $input['status'] === 'active' ? 1 : 0
             ]);
-        }elseif(isset($input['edit_email'])){
+        }
+        if(isset($input['edit_email'])){
             User::where('id', $user_id)->update([
                 'email' => $input['email'],
             ]);

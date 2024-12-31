@@ -345,7 +345,7 @@
                                             <div class="card-footer">
                                                 <div class="actions">
                                                     <a href="/admin/members/member/view/{{ $relative->relatedMember->user->id}}" class="btn btn-xs icon" ><i class="icon" data-feather="eye"></i></a>
-                                                    <a href="#" class="btn btn-xs icon" ><i class="icon" data-feather="edit-2"></i></a>
+                                                    <!-- <a href="/admin/members/member/edit/{{ $relative->relatedMember->user->id}}" class="btn btn-xs icon" ><i class="icon" data-feather="edit-2"></i></a> -->
                                                 </div>
                                             </div>
                                         </div>
@@ -491,6 +491,23 @@
                 @include('members::admin.member.create_trustee')
             </div>
         </div>
+        @endif
+        @if(!$committees->isEmpty())
+            <div class="card">
+                <div class="card-header">
+                    <div class="title">Committee Details</div>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        @foreach ($committees as $item)
+                            <li>
+                                <div><strong>{{$item->designation->name}}</strong></div>
+                                @if($item->committee->unit){{$item->committee->unit->name}}@endif {{$item->committee->committee_type->name}}
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
         @endif
         <div class="card">
             <div class="card-header">

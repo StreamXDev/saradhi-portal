@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class MemberHasCommittee extends Model
 {
-    protected $with = ['designation', 'user'];
+    protected $with = ['designation', 'user', 'committee'];
 
     protected $fillable = ['member_committee_id', 'user_id', 'designation_id','active'];
 
@@ -25,7 +25,7 @@ class MemberHasCommittee extends Model
 
     public function committee(): HasOne
     {
-        return $this->hasOne(MemberCommittee::class);
+        return $this->hasOne(MemberCommittee::class, 'id', 'member_committee_id');
     }
 
     public function designation(): BelongsTo
