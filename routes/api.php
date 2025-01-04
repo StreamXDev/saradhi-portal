@@ -26,6 +26,6 @@ Route::controller(EmailVerificationController::class)->group(function(){
 
 Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::put('device_token', [FcmController::class, 'updateDeviceToken']);
+    Route::post('send_fcm_notification', [FcmController::class, 'sendFcmNotification']);
 });
-
 
