@@ -25,6 +25,10 @@ class FcmController extends BaseController
 
         $user->update(['fcm_token' => $request->token]);
 
+        $data = [
+            'tokenSent' => true,
+        ];
+
         return $this->sendResponse($data, 'Device token updated successfully for id:'.$user->id);
     }
 
