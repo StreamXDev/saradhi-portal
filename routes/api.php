@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\EmailVerificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FcmController;
 
 Auth::routes(['verify' => true]);
 
@@ -24,7 +25,7 @@ Route::controller(EmailVerificationController::class)->group(function(){
 });
 
 Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
-    Route::get('/test', function (){
-        return 'tttt';
-    });
+    Route::put('device_token', [FcmController::class, 'updateDeviceToken']);
 });
+
+

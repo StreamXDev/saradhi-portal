@@ -38,7 +38,7 @@
                                     @endif
                                 </div>
                                 <div class="value">
-                                    {{ $member->name }} is {{$relation->relationship->slug }} of <strong>{{ $relation->relatedMember->name }}</strong>
+                                    {{$relation->relationship->slug }}: <strong>{{ $relation->relatedMember->name }}</strong>
                                 </div>
                                 <a href="/admin/members/member/view/{{ $relation->relatedMember->user->id}}" class="btn btn-default">VIEW</a>
                             </div>

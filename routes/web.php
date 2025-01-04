@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FcmController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -36,6 +37,10 @@ Route::group(['middleware' => ['auth', 'verified', 'is_admin']], function() {
             Route::get('/' , 'index');
             Route::get('/dashboard' , 'index');
         });
+        Route::post('send_fcm_notification', [FcmController::class, 'sendFcmNotification']);
     });
 });
+
+
+
 
