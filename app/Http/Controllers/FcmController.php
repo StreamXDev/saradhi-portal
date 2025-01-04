@@ -15,9 +15,9 @@ class FcmController extends Controller
     {
         
         $logged_user = Auth::user();
-        
+
         $request->validate([
-            'token' => 'required|string',
+            'fcm_token' => 'required|string',
         ]);
 
         $user = User::where('id', $logged_user->id)->first();
