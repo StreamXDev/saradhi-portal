@@ -23,7 +23,7 @@ class FcmController extends BaseController
 
         $user = User::where('id', $logged_user->id)->first();
 
-        $user->update(['fcm_token' => $request->token]);
+        $user->update(['fcm_token' => $request->fcm_token]);
 
         $data = [
             'tokenSent' => true,
