@@ -24,7 +24,7 @@ class FcmController extends Controller
 
         $user->update(['fcm_token' => $request->token]);
 
-        return response()->json(['message' => 'Device token updated successfully']);
+        return response()->json(['message' => 'Device token updated successfully for id:'.$user->id]);
     }
 
     public function sendFcmNotification(Request $request)
