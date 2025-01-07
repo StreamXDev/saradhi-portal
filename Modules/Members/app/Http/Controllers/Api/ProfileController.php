@@ -236,7 +236,7 @@ class ProfileController extends BaseController
             'member' => $member,
             'statuses' => $statuses,
             'unit_change_enabled' => true, // If the unit change feature is enabled, the action will be shown on app
-            'unit_change_request' => 'pending', //should be added the unit change request status
+            'unit_change_request' => false, //should be added the unit change request status
             'app_action' => $app_action
         ];
 
