@@ -200,6 +200,22 @@ class ProfileController extends BaseController
             }
         }
 
+        $app_action = false;
+        if($profileCompleted){
+            if(!$proofPending){
+                if(!$activeMembership){
+                    $app_action = 'member_card';
+                }else{
+                    $app_action = 'inactive_membership';
+                }
+            }else{
+                $app_action = 'add_proof';
+            }
+        }else{
+            $app_action = 'complete_profile';
+        }
+
+
         $data = [
             'is_member' => $member ? true : false,
             'profile_completed' => $profileCompleted,
@@ -212,6 +228,7 @@ class ProfileController extends BaseController
             'user' => $user,
             'member' => $member,
             'statuses' => $statuses,
+            'app_action' => $app_action
         ];
 
         return $data;

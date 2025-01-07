@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Nwidart\Modules\Facades\Module;
 
 class BaseController extends Controller
 {
@@ -14,6 +15,7 @@ class BaseController extends Controller
      */
     public function sendResponse($result, $message = null)
     {
+        $result['action_btn'] = 'member';
         $response = [
             'success' => true,
             'data'    => $result,
