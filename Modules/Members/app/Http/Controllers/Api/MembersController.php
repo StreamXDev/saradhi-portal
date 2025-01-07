@@ -590,5 +590,15 @@ class MembersController extends BaseController
             $messages
         ];
     }
+
+    public function getUnits()
+    {
+        
+        $units = MemberUnit::where('active', 1)->get();
+        $data = [
+            'units' => $units
+        ];
+        return $this->sendResponse($data, 'Profile Details');
+    }
     
 }

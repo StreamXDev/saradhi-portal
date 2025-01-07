@@ -23,6 +23,8 @@ Route::middleware(['auth:sanctum','verified_email'])->prefix('member')->group(fu
         Route::get('details', 'createDetails');
         Route::post('details', 'storeDetails');
         Route::post('proof', 'uploadProof');
+        Route::get('units', 'getUnits');
+
     });
     Route::controller(AddressController::class)->prefix('address')->group(function(){
         Route::middleware(VerifyProfileStatus::class)->group(function () {
