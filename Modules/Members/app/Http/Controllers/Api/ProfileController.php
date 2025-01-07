@@ -136,6 +136,7 @@ class ProfileController extends BaseController
         $profileCompleted = false;
         $pendingApproval = false;
         $activeMembership = false;
+        $dormantMembership = false;
         $currentStatus = null;
         $proofPending = false;
         $proofPendingTypes = [];
@@ -164,6 +165,7 @@ class ProfileController extends BaseController
         //Member ID
         if($member->membership){
             $activeMembership = $member->membership->status === 'active' ? true : false;
+            $dormantMembership = $member->membership->status === 'dormant' ? true : false;
             $idQr = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->name,  'Membership ID' => $member->membership->mid, 'Civil ID' => $member->details->civil_id]));
             $member->membership->qrCode = 'data:image/png;base64, ' . base64_encode($idQr);
         }
@@ -203,10 +205,14 @@ class ProfileController extends BaseController
         $app_action = false;
         if($profileCompleted){
             if(!$proofPending){
-                if(!$activeMembership){
+                if($activeMembership){
                     $app_action = 'member_card';
                 }else{
-                    $app_action = 'inactive_membership';
+                    if($dormantMembership){
+                        $app_action = 'dormant_membership';
+                    }else{
+                        $app_action = 'inactive_membership';
+                    }
                 }
             }else{
                 $app_action = 'add_proof';
@@ -220,6 +226,7 @@ class ProfileController extends BaseController
             'is_member' => $member ? true : false,
             'profile_completed' => $profileCompleted,
             'active_membership' => $activeMembership,
+            'dormant_membership' => $dormantMembership,
             'pending_approval' => $pendingApproval,
             'current_status' => $currentStatus,
             'proof_pending' => $proofPending,
@@ -228,6 +235,8 @@ class ProfileController extends BaseController
             'user' => $user,
             'member' => $member,
             'statuses' => $statuses,
+            'unit_change_enabled' => false, // If the unit change feature is enabled, the action will be shown on app
+            'unit_change_request' => false, //should be added the unit change request status
             'app_action' => $app_action
         ];
 
