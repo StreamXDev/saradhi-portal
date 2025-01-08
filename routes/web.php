@@ -36,6 +36,7 @@ Route::group(['middleware' => ['auth', 'verified', 'is_admin']], function() {
         Route::controller(DashboardController::class)->group(function(){
             Route::get('/' , 'index');
             Route::get('/dashboard' , 'index');
+            Route::post('/result' , 'sargaResult')->name('admin.result');
         });
         Route::post('send_fcm_notification', [FcmController::class, 'sendFcmNotification']);
     });

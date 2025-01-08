@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class DashboardController extends Controller
 {
@@ -21,5 +22,19 @@ class DashboardController extends Controller
     public function index()
     {
         return view('admin.dashboard.index');
+    }
+
+    public function sargaResult(Request $request)
+    {
+        $input = $request->all();
+
+        if($input['result']){
+            Storage::delete('public/result.pdf');
+
+            $avatarName = 'result.pdf'; 
+            $request->result->storeAs('public',$avatarName);
+        }
+
+        return redirect('admin/dashboard')->with('success', 'Result updated successfully');
     }
 }
