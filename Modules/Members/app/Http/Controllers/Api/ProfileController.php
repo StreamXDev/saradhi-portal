@@ -211,7 +211,11 @@ class ProfileController extends BaseController
                     if($dormantMembership){
                         $app_action = 'dormant_membership';
                     }else{
-                        $app_action = 'inactive_membership';
+                        if($pendingApproval){
+                            $app_action = 'pending_approval';
+                        }else{
+                            $app_action = 'inactive_membership';
+                        }
                     }
                 }
             }else{
