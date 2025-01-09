@@ -147,7 +147,7 @@ class ProfileController extends BaseController
         if($member && $member->details){
             $profileCompleted =  true;
             if($member->membership->status === 'inactive'){
-                if(!$member->details->photo_civil_id_front || $member->details->photo_civil_id_back || $member->details->photo_passport_front || $member->details->photo_passport_back){
+                if(!$member->details->photo_civil_id_front || !$member->details->photo_civil_id_back || !$member->details->photo_passport_front || !$member->details->photo_passport_back){
                     $proofPending = true;
                     $proofPendingTypes[] = 'self';
                 }
