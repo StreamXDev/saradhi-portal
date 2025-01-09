@@ -30,7 +30,7 @@ class FcmController extends BaseController
         }else if($input['os'] === 'android'){
             $user->update(['fcm_token_android' => $input['token']]);
         }
-        
+
         $data = [
             'tokenSent' => true,
         ];
@@ -47,10 +47,13 @@ class FcmController extends BaseController
         ]);
 
         $user = User::find($request->user_id);
-        $fcm = $user->fcm_token;
+        $fcm_ios = $user->fcm_token_ios;
+        $fcm_android = $user->fcm_token_android;
 
-        if (!$fcm) {
-            return response()->json(['message' => 'User does not have a device token'], 400);
+        $has_toke = true;
+
+        if (!$fcm_ios || !$fcm_android) {
+            //return response()->json(['message' => 'User does not have a device token'], 400);
         }
 
         $title = $request->title;
@@ -71,28 +74,55 @@ class FcmController extends BaseController
             'Content-Type: application/json'
         ];
 
-        $data = [
-            "message" => [
-                "token" => $fcm,
-                "notification" => [
-                    "title" => $title,
-                    "body" => $description,
-                ],
-            ]
-        ];
-        $payload = json_encode($data);
+        if($fcm_ios){
+            $data = [
+                "message" => [
+                    "token" => $fcm_ios,
+                    "notification" => [
+                        "title" => $title,
+                        "body" => $description,
+                    ],
+                ]
+            ];
+            $payload = json_encode($data);
+    
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send");
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+            curl_setopt($ch, CURLOPT_VERBOSE, true); // Enable verbose output for debugging
+            $response = curl_exec($ch);
+            $err = curl_error($ch);
+            curl_close($ch);
+        }
+        if($fcm_android){
+            $data = [
+                "message" => [
+                    "token" => $fcm_android,
+                    "notification" => [
+                        "title" => $title,
+                        "body" => $description,
+                    ],
+                ]
+            ];
+            $payload = json_encode($data);
+    
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send");
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+            curl_setopt($ch, CURLOPT_VERBOSE, true); // Enable verbose output for debugging
+            $response = curl_exec($ch);
+            $err = curl_error($ch);
+            curl_close($ch);
+        }
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send");
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-        curl_setopt($ch, CURLOPT_VERBOSE, true); // Enable verbose output for debugging
-        $response = curl_exec($ch);
-        $err = curl_error($ch);
-        curl_close($ch);
 
         if ($err) {
             return response()->json([
