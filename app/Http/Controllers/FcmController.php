@@ -16,15 +16,21 @@ class FcmController extends BaseController
     {
         
         $logged_user = Auth::user();
+        $input = $request->all();
 
         $request->validate([
-            'fcm_token' => 'required|string',
+            'token' => 'required|string',
+            'os' => 'required|string'
         ]);
 
         $user = User::where('id', $logged_user->id)->first();
 
-        $user->update(['fcm_token' => $request->fcm_token]);
-
+        if($input['os'] === 'ios'){
+            $user->update(['fcm_token_ios' => $input['token']]);
+        }else if($input['os'] === 'android'){
+            $user->update(['fcm_token_android' => $input['token']]);
+        }
+        
         $data = [
             'tokenSent' => true,
         ];
@@ -49,7 +55,7 @@ class FcmController extends BaseController
 
         $title = $request->title;
         $description = $request->body;
-        $projectId = env('FIREBASE_PROJECT_NUMBER'); # INSERT COPIED PROJECT ID
+        $projectId = env('FIREBASE_PROJECT_NUMBER'); 
 
         $credentialsFilePath = Storage::path('json/service-account.json');
         $client = new GoogleClient();

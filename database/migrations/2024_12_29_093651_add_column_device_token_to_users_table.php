@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('fcm_token')->nullable();
+            $table->text('fcm_token_os')->nullable();
+            $table->text('fcm_token_android')->nullable();
         });
     }
 
@@ -22,7 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('fcm_token');
+            $table->dropColumn('fcm_token_ios');
+            $table->dropColumn('fcm_token_android');
         });
     }
 };
