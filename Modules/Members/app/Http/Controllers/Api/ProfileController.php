@@ -231,7 +231,7 @@ class ProfileController extends BaseController
             'current_status' => $currentStatus,
             'proof_pending' => $proofPending,
             'proof_pending_types' => $proofPendingTypes,
-            'family_request' => $member->membership->type === 'family' ? true : false,
+            'family_request' => $profileCompleted ? ($member->membership->type === 'family' ? true : false) : null,
             'user' => $user,
             'member' => $member,
             'statuses' => $statuses,
