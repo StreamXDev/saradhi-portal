@@ -33,7 +33,7 @@ class AuthController extends BaseController
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'email' => 'bail|email|unique:users,email',
+            'email' => 'bail|required|email|unique:users,email',
             'password' => ['required', 'confirmed', Password::min(8)->numbers()->letters()->symbols()],
         ]);
         if($validator->fails()){
