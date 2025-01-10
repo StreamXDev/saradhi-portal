@@ -525,6 +525,9 @@ class MembersController extends BaseController
             'passport_expiry'   => ['required', 'date_format:Y-m-d'],
             'governorate'        => ['required', 'string'],
             'local_address_area'=> ['required', 'string'],
+            'permanent_address_line_1'=> ['required', 'string'],
+            'permanent_address_line_2'=> ['required', 'string'],
+            'permanent_address_district'=> ['required', 'string'],
             'type'              => ['required', 'string'],
             'photo'             => ['required']
         ];
@@ -551,6 +554,9 @@ class MembersController extends BaseController
             'passport_expiry.date_format' => 'Should be Y-m-d format',
             'governorate.required' => 'Governorate is required',
             'local_address_area.required' => 'Area is required',
+            'permanent_address_line_1.required' => 'India address is required',
+            'permanent_address_line_2.required' => 'Street/Area is required',
+            'permanent_address_district.required' => 'District is required',
             'type.required' => 'Membership type is required',
             'photo.required' => 'Photo is required'
         ];
