@@ -316,6 +316,15 @@ class MembersController extends BaseController
                     $proofPendingTypes[] = 'spouse';
                 }
             }
+
+            $app_action = false;
+            if($profileCompleted){
+                if($proofPending){
+                    $app_action = 'add_proof';
+                }
+            }else{
+                $app_action = 'complete_profile';
+            }
             
             $response = [
                 'success' => true,
@@ -330,6 +339,7 @@ class MembersController extends BaseController
                 'user' => $user,
                 'member' => $member,
                 'statuses' => $statuses,
+                'app_action' => $app_action
             ];
             if($input['type'] === 'family'){
                 $response['spouse'] = $spouse_user;
