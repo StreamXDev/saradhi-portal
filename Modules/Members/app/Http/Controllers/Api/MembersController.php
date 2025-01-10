@@ -489,7 +489,7 @@ class MembersController extends BaseController
             if($currentStatus){
                 $pendingApproval = $currentStatus->request_status->slug === 'confirmed' ? false : true;
             }
-            
+
             $response = [
                 'success' => true,
                 'profile_completed' => true,
@@ -499,6 +499,7 @@ class MembersController extends BaseController
                 'proof_pending' => false,
                 'proof_pending_types' => [],
                 'statuses' => $statuses,
+                'app_action' => 'pending_approval'
             ];
             return $this->sendResponse($response, 'Your document proof successfully and the Membership request sent to verification');
         }catch (\Exception $e) {
