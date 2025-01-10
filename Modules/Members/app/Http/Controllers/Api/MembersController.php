@@ -522,7 +522,7 @@ class MembersController extends BaseController
             'gender'            => ['required', 'string'],
             'dob'               => ['required', 'date_format:Y-m-d'],
             'blood_group'       => ['required', 'string'],
-            'civil_id'          => ['required', 'digits:12'],
+            'civil_id'          => 'required|digits:12|unique:member_details,civil_id',
             'passport_no'       => ['required', 'string'],
             'passport_expiry'   => ['required', 'date_format:Y-m-d'],
             'governorate'        => ['required', 'string'],
