@@ -403,10 +403,10 @@ class MembersController extends BaseController
             
             if(isset($request->proofTypeSelf)){
                 // Storing files
-                $civil_id_front_name = 'cvf'.$user->id.'_'.time().'.'.mime2ext($input['photo_civil_id_front']); 
-                $civil_id_back_name = 'cvb'.$user->id.'_'.time().'.'.mime2ext($input['photo_civil_id_back']); 
-                $passport_front_name = 'ppf'.$user->id.'_'.time().'.'.mime2ext($input['photo_passport_front']); 
-                $passport_back_name = 'ppb'.$user->id.'_'.time().'.'.mime2ext($input['photo_passport_back']); 
+                $civil_id_front_name = 'cvf'.$user->id.'_'.time().'.'.mime2ext($input['cvf_mime']); 
+                $civil_id_back_name = 'cvb'.$user->id.'_'.time().'.'.mime2ext($input['cvb_mime']); 
+                $passport_front_name = 'ppf'.$user->id.'_'.time().'.'.mime2ext($input['ppf_mime']); 
+                $passport_back_name = 'ppb'.$user->id.'_'.time().'.'.mime2ext($input['ppb_mime']); 
                 Storage::put('public/images/'.$civil_id_front_name, base64_decode($input['photo_civil_id_front']));
                 Storage::put('public/images/'.$civil_id_back_name, base64_decode($input['photo_civil_id_back']));
                 Storage::put('public/images/'.$passport_front_name, base64_decode($input['photo_passport_front']));
@@ -444,10 +444,10 @@ class MembersController extends BaseController
             
             if(isset($request->proofTypeSpouse)){
                 // Storing spouse files
-                $spouse_civil_id_front_name = 'cvf'.$spouseUser->id.'_'.time().'.'.mime2ext($input['spouse_photo_civil_id_front']); 
-                $spouse_civil_id_back_name = 'cvb'.$spouseUser->id.'_'.time().'.'.mime2ext($input['spouse_photo_civil_id_back']); 
-                $spouse_passport_front_name = 'ppf'.$spouseUser->id.'_'.time().'.'.mime2ext($input['spouse_photo_passport_front']);  
-                $spouse_passport_back_name = 'ppb'.$spouseUser->id.'_'.time().'.'.mime2ext($input['spouse_photo_passport_back']); 
+                $spouse_civil_id_front_name = 'cvf'.$spouseUser->id.'_'.time().'.'.mime2ext($input['scvf_mime']); 
+                $spouse_civil_id_back_name = 'cvb'.$spouseUser->id.'_'.time().'.'.mime2ext($input['scvb_mime']); 
+                $spouse_passport_front_name = 'ppf'.$spouseUser->id.'_'.time().'.'.mime2ext($input['sppf_mime']);  
+                $spouse_passport_back_name = 'ppb'.$spouseUser->id.'_'.time().'.'.mime2ext($input['sppb_mime']); 
                 Storage::put('public/images/'.$spouse_civil_id_front_name, base64_decode($input['spouse_photo_civil_id_front']));
                 Storage::put('public/images/'.$spouse_civil_id_back_name, base64_decode($input['spouse_photo_civil_id_back']));
                 Storage::put('public/images/'.$spouse_passport_front_name, base64_decode($input['spouse_photo_passport_front']));
