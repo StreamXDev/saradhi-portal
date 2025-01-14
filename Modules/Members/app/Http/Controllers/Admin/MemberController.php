@@ -113,10 +113,6 @@ class MemberController extends Controller
             $filters->put('search_by', request()->get('search_by'));
             
         }
-        
-    
-
-        //dd($members->toSql());
 
         return [
             $members,

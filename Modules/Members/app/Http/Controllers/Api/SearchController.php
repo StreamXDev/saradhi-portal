@@ -41,10 +41,11 @@ class SearchController extends BaseController
                 'status' => '',
             ]
         );
+        
 
         if (request()->get('blood_group') != null){
             $input = request()->get('blood_group');
-            $members->where('blood_group', 'LIKE', '%' . $input . '%');
+            $members->where('blood_group',  $input);
             $filters->put('blood_group', request()->get('blood_group'));
         }
 
@@ -65,7 +66,6 @@ class SearchController extends BaseController
 
             $filters->put('search_by', request()->get('search_by'));
         }
-
 
         $results  = $members->paginate(20);
         foreach($results as $key => $result){
