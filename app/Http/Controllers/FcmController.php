@@ -69,6 +69,8 @@ class FcmController extends BaseController
 
         $access_token = $token['access_token'];
 
+        return response()->json(['token' => $access_token]);
+
         $headers = [
             "Authorization: Bearer $access_token",
             'Content-Type: application/json'
