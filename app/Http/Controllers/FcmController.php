@@ -50,9 +50,8 @@ class FcmController extends BaseController
         $fcm_ios = $user->fcm_token_ios;
         $fcm_android = $user->fcm_token_android;
 
-        $has_toke = true;
 
-        if (!$fcm_ios || !$fcm_android) {
+        if (!$fcm_ios && !$fcm_android) {
             //return response()->json(['message' => 'User does not have a device token'], 400);
         }
 
@@ -68,8 +67,6 @@ class FcmController extends BaseController
         $token = $client->getAccessToken();
 
         $access_token = $token['access_token'];
-
-        return response()->json(['token' => $access_token]);
 
         $headers = [
             "Authorization: Bearer $access_token",
