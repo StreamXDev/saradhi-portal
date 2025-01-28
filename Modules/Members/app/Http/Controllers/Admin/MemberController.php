@@ -642,6 +642,8 @@ class MemberController extends Controller
         
         $input = $request->all();
 
+        $validator = false;
+
         if(isset($input['edit_address'])){
             $validator = Validator::make($request->all(), [
                 'user_id' => 'bail|required',
@@ -704,9 +706,10 @@ class MemberController extends Controller
                 'email' => 'required|email|unique:users,email,'.$input['user_id'],
             ]);
         }
- 
-        if ($validator->fails()) {
-            return Redirect::back()->withErrors($validator)->with('error', 'Some fields are not valid');
+        if($validator){
+            if ($validator->fails()) {
+                return Redirect::back()->withErrors($validator)->with('error', 'Some fields are not valid');
+            }
         }
         
         $user_id = $input['user_id'];
