@@ -10,7 +10,7 @@
     <div class="col-md-4">
         <div class="page-content">
             <div>
-                <h6><strong>Upload Sargasangamam Result</strong></h6>
+                <h6><strong>Upload Futurologia Result</strong></h6>
                 <form action="{{ route('admin.result') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <input type="file" name="result" id="result">
