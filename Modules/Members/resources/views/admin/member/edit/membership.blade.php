@@ -23,6 +23,14 @@
                 @endif
                 <div class="form-group row">
                     <div class="col-md-8">
+                        <label for="dob" class="form-label">Expiry Date</label>
+                        <div class="control-col">
+                            <input type="date" name="expiry_date" id="expiry_date" class="form-control @error('expiry_date') is-invalid @enderror" value="{{ $member->membership->expiry_date }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-8">
                         <label for="status">Status</label>
                         <div class="control-col">
                             <select name="status" id="status" class="form-select">

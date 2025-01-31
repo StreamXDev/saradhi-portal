@@ -810,11 +810,13 @@ class MemberController extends Controller
                 $membershipUpdateData = [
                     'mid' => $input['mid'],
                     'type' => $input['type'],
+                    'expiry_date' => $input['expiry_date'],
                     'status' => $input['status'],
                 ];
             }else{
                 $membershipUpdateData = [
                     'mid' => $input['mid'],
+                    'expiry_date' => $input['expiry_date'],
                     'status' => $input['status'],
                 ];
             }
