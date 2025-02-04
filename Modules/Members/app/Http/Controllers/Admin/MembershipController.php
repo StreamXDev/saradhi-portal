@@ -94,20 +94,37 @@ class MembershipController extends Controller
         $user_id = $input['user_id'];
         $current_status_id = $input['current_status_id'];
         $active_request = MembershipRequest::where('user_id', $user_id)->where('request_status_id', $current_status_id)->where('checked', 0)->first();
-
         if($active_request){
-
-            if($request->input('action') == 'reject' && $active_request->slug == 'rejected'){
-                return redirect()->back()->with('error', 'The request already rejected');
-            }
 
             $current_status = MemberEnum::where('type', 'request_status')->where('id', $current_status_id)->first();
             $current_status_order = $current_status->order;
-            $next_status_order = $current_status_order + 1;
+
+            if($request->input('action') == 'revise'){
+                if($current_status->slug == 'rejected'){
+                    $previous_status_id = $active_request->rejected;
+                    MembershipRequest::where('user_id', $user_id)->where('request_status_id', $previous_status_id)->update([
+                        'checked' => 0
+                    ]);
+                }else{
+                    $previous_status_order = $current_status_order - 1;
+                    $previous_status =  MemberEnum::where('type', 'request_status')->where('order',  $previous_status_order)->first();
+                    MembershipRequest::where('user_id', $user_id)->where('request_status_id', $previous_status->id)->update([
+                        'checked' => 0
+                    ]);
+                }
+                $active_request->delete();
+                return redirect()->back();
+            }
+
+            if($request->input('action') == 'reject' && $current_status->slug == 'rejected'){
+                return redirect()->back()->with('error', 'The request already rejected');
+            }
+
             
+            $next_status_order = $current_status_order + 1;
             if($current_status->order == 0){ //if current status is rejected
-                $rejected_status = MembershipRequest::where('user_id', $user_id)->where('request_status_id', $current_status_id)->first();
-                $next_status_order = $rejected_status->rejected;
+                $old_status_order = MembershipRequest::where('user_id', $user_id)->where('request_status_id', $current_status->rejected)->first();
+                $next_status_order = $old_status_order + 1;
             }
             
             $active_request->checked = 1;
@@ -117,7 +134,6 @@ class MembershipController extends Controller
             if($request->input('action') == 'reject'){
                 $new_status = MemberEnum::where('type', 'request_status')->where('order', 0)->first();
                 $rejected = $current_status_id;
-
             }else{
                 $new_status = MemberEnum::where('type', 'request_status')->where('order', $next_status_order)->first();
             }

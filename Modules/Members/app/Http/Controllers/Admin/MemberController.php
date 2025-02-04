@@ -356,6 +356,7 @@ class MemberController extends Controller
         Membership::create([
             'user_id' => $user->id,
             'type' => $input['type'],
+            'family_in' => $input['family_in'],
             'introducer_name' => $input['introducer_name'],
             'introducer_phone' => $input['introducer_country_code'].$input['introducer_phone'],
             'introducer_mid' => $input['introducer_mid'],
@@ -678,19 +679,13 @@ class MemberController extends Controller
             ]);
         }
         if(isset($input['edit_membership'])){
-            if(isset($input['current_type']) && $input['current_type'] == 'single'){
-                $validator = Validator::make($request->all(), [
-                    'user_id' => 'bail|required',
-                    'mid'     => 'required',
-                    'status'  => 'required',
-                    'type'    => 'required'
-                ]);
-            }else{
-                $validator = Validator::make($request->all(), [
-                    'user_id' => 'bail|required',
-                    'mid'     => 'required',
-                ]);
-            }
+            $validator = Validator::make($request->all(), [
+                'user_id' => 'bail|required',
+                'mid'     => 'required',
+                'status'  => 'required',
+                'type'    => 'required',
+                'family_in' => 'required'
+            ]);
         }
         if(isset($input['edit_trustee'])){
             $validator = Validator::make($request->all(), [
@@ -806,20 +801,13 @@ class MemberController extends Controller
             }
         }
         if(isset($input['edit_membership'])){
-            if(isset($input['current_type']) && $input['current_type'] == 'single'){
-                $membershipUpdateData = [
-                    'mid' => $input['mid'],
-                    'type' => $input['type'],
-                    'expiry_date' => $input['expiry_date'],
-                    'status' => $input['status'],
-                ];
-            }else{
-                $membershipUpdateData = [
-                    'mid' => $input['mid'],
-                    'expiry_date' => $input['expiry_date'],
-                    'status' => $input['status'],
-                ];
-            }
+            $membershipUpdateData = [
+                'mid' => $input['mid'],
+                'type' => $input['type'],
+                'family_in' => $input['family_in'],
+                'expiry_date' => $input['expiry_date'],
+                'status' => $input['status'],
+            ];
             Membership::where('user_id', $user_id)->update($membershipUpdateData);
         }
         if(isset($input['edit_trustee'])){
@@ -1327,5 +1315,21 @@ class MemberController extends Controller
         $dependent->delete();
 
         return redirect('/admin/members/member/view/'.$input['primary_member']);
+    }
+
+    public function changeFamilyStatus()
+    {
+        
+        //DB::beginTransaction();
+
+        Membership::where('type', 'single')->update([
+            'family_in' => 'india'
+        ]);
+        Membership::where('type', 'family')->update([
+            'family_in' => 'kuwait'
+        ]);
+
+        //DB::commit();
+
     }
 }

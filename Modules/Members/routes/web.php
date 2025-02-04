@@ -73,6 +73,7 @@ Route::prefix('admin/members')->middleware(['auth:sanctum', 'verified_email', 'i
         Route::get('/member/family/create/{id?}','createFamilyMember');
         Route::post('/member/family/create/','storeFamilyMember')->name('admin.member.family');
         Route::post('/member/family/delete/{id?}','deleteFamilyMember')->name('admin.member.family.delete');
+        Route::get('/change_family_status', 'changeFamilyStatus');
     });
 });
 

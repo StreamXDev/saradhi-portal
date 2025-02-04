@@ -146,6 +146,7 @@ class MembersController extends BaseController
             Membership::create([
                 'user_id' => $user->id,
                 'type' => $input['type'],
+                'family_in' => isset($input['family_in']) ? $input['family_in'] : ($input['type'] == 'family' ? 'kuwait' : 'india'),
                 'introducer_name' => isset($input['introducer_name']) ? $input['introducer_name'] : null,
                 'introducer_phone' => $introducer_phone,
                 'introducer_phone_code' => $introducer_country_code,

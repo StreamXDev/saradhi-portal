@@ -53,6 +53,7 @@
                             <div class="form-group"><strong>Are you sure want to Reject the request?</strong></div>
                             <input type="hidden" name="user_id" value="{{ $member->user_id }}">
                             <input type="hidden" name="current_status_id" value="{{ $request_action->request_status_id }}">
+                            <input type="hidden" name="action" value="reject">
                             <div class="form-group">
                                 <textarea name="remark" id="remark" cols="30" rows="5" placeholder="Enter comment" class="form-control"></textarea>
                             </div>
@@ -79,12 +80,13 @@
                     </div>
                     <div class="modal-body">
                         @if($current_status->rejected != null)
-                            <div class="form-group">The request is already rejected. Do you want to {{ $request_action->action['slug'] }} the action?</div>
+                            <div class="form-group text-danger">The request is already rejected. Do you want to {{ $request_action->action['slug'] }} the action?</div>
                         @else
                             <div class="form-group"><strong>Are you sure want to {{ $request_action->action['slug'] }} the request?</strong></div>
                         @endif
                         <input type="hidden" name="user_id" value="{{ $member->user_id }}">
                         <input type="hidden" name="current_status_id" value="{{ $request_action->request_status_id }}">
+                        <input type="hidden" name="action" value="{{ $request_action->action['slug'] }}">
                         <div class="form-group">
                             <textarea name="remark" id="remark" cols="30" rows="5" placeholder="Enter comment (Optional)" class="form-control"></textarea>
                         </div>

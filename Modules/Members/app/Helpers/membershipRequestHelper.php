@@ -156,7 +156,7 @@ if(! function_exists('requestStatusDisplay')){
                     for($i=0; $i < count($statuses); $i++){
                         if($statuses[$i]->id == $active->rejected){
                             //array_splice($statuses[$i], $i, 0 , $statuses[0]);
-                            $statuses[$i] = $statuses[0];
+                            $statuses[$i+1] = $statuses[0];
                             //$i+1;
                         }
                     }
@@ -168,7 +168,7 @@ if(! function_exists('requestStatusDisplay')){
             }
             foreach($statuses as $key => $value){
                 foreach($actives as $active){
-                    if($value->id == $active->request_status_id  ||  $value->id == $active->request_status_id && $active->rejected ){ //add the request status history to the list
+                    if($value->id == $active->request_status_id){ //add the request status history to the list
                         $statuses[$key]['checked'] = true;
                         $statuses[$key]->updated_at = $active->created_at;
                     }
@@ -180,9 +180,6 @@ if(! function_exists('requestStatusDisplay')){
             $data = array();
             foreach($statuses as $status){
                 $data[] = $status;
-                // if($status->slug == 'rejected'){
-                //     break;
-                // }
             }
             return $data;
         }

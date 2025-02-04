@@ -55,7 +55,15 @@
                         With Family
                     </label>
                 </div>
-                @if($member->membership->type == 'family') <small>You cannot change the membership type bcause the user has already added family member(s)</small>@endif
+                <div class="col-md-6 col-lg-4">
+                    <label for="family_in" class="form-label">Family In <span class="asterisk">*</span></label>
+                    <div class="control-col">
+                        <select name="family_in" id="family_in" class="form-select">
+                            <option value="kuwait" @selected($member->membership->family_in == 'kuwait')>Kuwait</option>
+                            <option value="india" @selected($member->membership->family_in == 'india')>India</option>
+                        </select>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

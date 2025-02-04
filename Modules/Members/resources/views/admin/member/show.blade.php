@@ -405,7 +405,7 @@
                                 <div class="title">{{ $status->name }}</div>
                                 @if($status->checked)<div class="date">On {{ date('d-m-Y h:i a', strtotime($status->updated_at)) }}</div>@endif
                                 <div class="description">{{ $status->description }}</div>
-                                @if($status->remark)<div class="remark"><strong>Remark:</strong>{{ $status->remark }}</div>@endif
+                                @if($status->remark)<div class="remark"><strong>Remark: </strong>{{ $status->remark }}</div>@endif
                             </li>
                         @endforeach
                     </ul>
@@ -435,7 +435,12 @@
                         <span class="label">Membership Type</span>
                         <div class="value">{{ ucfirst($member->membership->type) }}</div>
                     </li>
-                    
+                    @if($member->type == 'primary')
+                    <li>
+                        <span class="label">Family In</span>
+                        <div class="value">{{ ucfirst($member->membership->family_in) }}</div>
+                    </li>
+                    @endif
                     <li>
                         <span class="label">Membership Status</span>
                         <div class="value {{ $member->membership->status =='active' ? 'text-success' : 'text-danger' }}">{{ ucfirst($member->membership->status) }}</div>
