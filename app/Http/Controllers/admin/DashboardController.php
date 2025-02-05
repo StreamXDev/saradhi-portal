@@ -28,13 +28,15 @@ class DashboardController extends Controller
     {
         $input = $request->all();
 
-        if($input['result']){
+        if(isset($input['result'])){
             Storage::delete('public/result.pdf');
 
             $avatarName = 'result.pdf'; 
             $request->result->storeAs('public',$avatarName);
-        }
 
-        return redirect('admin/dashboard')->with('success', 'Result updated successfully');
+            return redirect('admin/dashboard')->with('success', 'Result updated successfully');
+        }
+        return redirect('admin/dashboard');
+
     }
 }
