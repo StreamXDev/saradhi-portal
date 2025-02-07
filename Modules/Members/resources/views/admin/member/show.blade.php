@@ -336,8 +336,7 @@
                                                     <div class="footer">
                                                         <div class="info">By <span class="name">{{$item->createdBy->name}}</span> on <span class="date">{{$item->created_at}}</span></div>
                                                         <div class="actions">
-                                                            <a href="#"><i class="icon" data-feather="edit-2"></i></a>
-                                                            <a href="#"><i class="icon" data-feather="trash"></i></a>
+                                                            <a href="/admin/members/member/notes/delete/{{$item->id}}" onclick="return confirm('Are you sure want to delete?');"><i class="icon" data-feather="trash"></i></a>
                                                         </div>
                                                     </div>
                                                 </li>      

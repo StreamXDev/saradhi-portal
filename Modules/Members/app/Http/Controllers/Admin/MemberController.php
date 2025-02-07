@@ -1341,6 +1341,20 @@ class MemberController extends Controller
         return redirect('/admin/members/member/view/'.$input['user_id']);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function delete_note($id)
+    {
+        $note = MemberNote::findOrFail($id);
+
+        $note->delete();
+
+        return redirect()->back()->with(
+            ['message' => 'Note Deleted']
+        );
+    }
+
     /** 
      * Updating all rows family_in status to india or kuwait, 
      * To use only once. can delete after
