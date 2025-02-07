@@ -31,4 +31,18 @@ class TrusteeController extends Controller
         $trustees = MemberTrustee::with('user', 'member')->orderBy('tid', 'asc')->get();
         return Excel::download(new TrusteesListExport($trustees), 'trustees.xlsx');
     }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function delete($id)
+    {
+        $trustee = MemberTrustee::findOrFail($id);
+
+        $trustee->delete();
+
+        return redirect()->back()->with(
+            ['message' => 'Trustee has been Deleted']
+        );
+    }
 }

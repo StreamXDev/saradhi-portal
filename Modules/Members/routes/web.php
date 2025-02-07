@@ -95,5 +95,6 @@ Route::prefix('admin/committee')->middleware(['auth:sanctum', 'verified_email', 
 Route::prefix('admin/trustees')->middleware(['auth:sanctum', 'verified_email', 'is_admin'])->group(function() {
     Route::controller(TrusteeController::class)->group(function(){
         Route::get('/', 'index');
+        Route::get('/delete/{id?}', 'delete');
     });
 });

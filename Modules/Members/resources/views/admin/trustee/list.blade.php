@@ -42,6 +42,7 @@
                         <td>
                             <div class="actions">
                                 <a href="/admin/members/member/view/{{ $trustee->user->id }}" class="btn"><i class="fa-solid fa-eye"></i></a>
+                                <a href="/admin/trustees/delete/{{$trustee->id}}" class="btn" onclick="return confirm('Are you sure want to delete?');"><i class="fa-solid fa-trash"></i></a>
                             </div>
                         </td>
                     </tr>
