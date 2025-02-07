@@ -310,6 +310,43 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="page-col-wrapper">
+                            <div class="col-main">
+                                <div class="card notes">
+                                    <div class="card-header">
+                                        <div class="title">Notes and Remarks</div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="notes-form">
+                                            <form action="{{ route('admin.member.notes.add') }}" method="post">
+                                                @csrf
+                                                <input type="hidden" name="user_id" value="{{$member->user_id}}">
+                                                <div class="form-group">
+                                                    <textarea name="note" id="note"  rows="3" class="form-control" placeholder="Write notes"></textarea>
+                                                </div> 
+                                                <div class="form-group">
+                                                    <button type="submit" name="submit" class="btn btn-xs btn-outline-info">Save Note</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <ul class="notes-list">
+                                            @foreach ($member->notes as $item)    
+                                                <li>
+                                                    <div class="text">{{ $item->notes }}</div>    
+                                                    <div class="footer">
+                                                        <div class="info">By <span class="name">{{$item->createdBy->name}}</span> on <span class="date">{{$item->created_at}}</span></div>
+                                                        <div class="actions">
+                                                            <a href="#"><i class="icon" data-feather="edit-2"></i></a>
+                                                            <a href="#"><i class="icon" data-feather="trash"></i></a>
+                                                        </div>
+                                                    </div>
+                                                </li>      
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
                     </div>
                     <div class="tab-pane fade" id="membership_tab_pane" role="tabpanel" aria-labelledby="membership_tab" tabindex="0">Membership</div>
                     <div class="tab-pane fade" id="relation_tab_pane" role="tabpanel" aria-labelledby="relation_tab" tabindex="0">

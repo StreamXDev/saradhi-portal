@@ -45,6 +45,7 @@ class MembershipController extends Controller
     {
         $menuParent = 'requests';
         $results = MembershipRequest::with(['member', 'details', 'user', 'member.relations.relationship'])->where('checked', 0)->orderBy('id', 'desc');
+        
         if($request->query('type')){
             $type = $request->query('type');
         }else{
@@ -81,7 +82,6 @@ class MembershipController extends Controller
             }
         };
         $requests = requestsByPermission($results);
-
         //dd($requests);
         return view('members::admin.membership.request', compact('requests','type', 'menuParent'));
     }

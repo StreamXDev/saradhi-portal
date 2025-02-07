@@ -55,6 +55,11 @@ class Member extends Model
         return $this->hasOne(MemberPermanentAddress::class, 'user_id', 'user_id');
     }
     
+    public function notes(): HasMany
+    {
+        return $this->hasMany(MemberNote::class, 'user_id', 'user_id');
+    }
+
     public function relations(): HasMany
     {
         return $this->hasMany(MemberRelation::class, 'member_id', 'id');

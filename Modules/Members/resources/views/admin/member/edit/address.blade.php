@@ -29,13 +29,13 @@
                     <div class="col-md-6">
                         <label for="local_address_area" class="form-label">Area, Street & Block Number <span class="asterisk">*</span></label>
                         <div class="control-col">
-                            <input type="text" name="local_address_area" id="local_address_area " class="form-control @error('local_address_area') is-invalid @enderror" value="{{ $member->localAddress && $member->localAddress->line_1 }}">
+                            <input type="text" name="local_address_area" id="local_address_area " class="form-control @error('local_address_area') is-invalid @enderror" value="@isset($member->localAddress){{$member->localAddress->line_1}}@endisset">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <label for="local_address_building" class="form-label">Building Number <span class="asterisk">*</span></label>
                         <div class="control-col">
-                            <input type="text" name="local_address_building" id="local_address_building" class="form-control @error('local_address_building') is-invalid @enderror" value="{{ $member->localAddress && $member->localAddress->building }}">
+                            <input type="text" name="local_address_building" id="local_address_building" class="form-control @error('local_address_building') is-invalid @enderror" value="@isset($member->localAddress){{$member->localAddress->building}}@endisset">
                         </div>
                     </div>
                 </div>
@@ -43,13 +43,13 @@
                     <div class="col-md-6">
                         <label for="local_address_flat" class="form-label">Flat Number <span class="asterisk">*</span></label>
                         <div class="control-col">
-                            <input type="text" name="local_address_flat" id="local_address_flat" class="form-control @error('local_address_flat') is-invalid @enderror" value="{{ $member->localAddress && $member->localAddress->flat }}">
+                            <input type="text" name="local_address_flat" id="local_address_flat" class="form-control @error('local_address_flat') is-invalid @enderror" value="@isset($member->localAddress){{$member->localAddress->flat}}@endisset">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <label for="local_address_floor" class="form-label">Floor Number <span class="asterisk">*</span></label>
                         <div class="control-col">
-                            <input type="text" name="local_address_floor" id="local_address_floor" class="form-control @error('local_address_floor') is-invalid @enderror" value="{{ $member->localAddress && $member->localAddress->floor }}">
+                            <input type="text" name="local_address_floor" id="local_address_floor" class="form-control @error('local_address_floor') is-invalid @enderror" value="@isset($member->localAddress){{ $member->localAddress->floor}}@endisset">
                         </div>
                     </div>
                 </div>

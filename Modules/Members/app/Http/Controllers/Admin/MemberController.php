@@ -24,6 +24,7 @@ use Modules\Members\Models\MemberDetail;
 use Modules\Members\Models\MemberEnum;
 use Modules\Members\Models\MemberHasCommittee;
 use Modules\Members\Models\MemberLocalAddress;
+use Modules\Members\Models\MemberNote;
 use Modules\Members\Models\MemberPermanentAddress;
 use Modules\Members\Models\MemberRelation;
 use Modules\Members\Models\Membership;
@@ -126,7 +127,7 @@ class MemberController extends Controller
     public function show($id, $prevPage = null)
     {
         $menuParent = 'members';
-        $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'relations', 'relations.relatedMember.user', 'relations.relatedMember.membership', 'relations.relatedMember.details', 'relations.relatedDependent', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
+        $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'notes', 'relations', 'relations.relatedMember.user', 'relations.relatedMember.membership', 'relations.relatedMember.details', 'relations.relatedDependent', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
         //dd($member);
         $statuses = requestStatusDisplay($id);
         $current_status = MembershipRequest::where('user_id', $id)->latest('id')->first();
@@ -192,7 +193,7 @@ class MemberController extends Controller
                 }
             }
         }
-
+        //dd($member);
         $committees = MemberHasCommittee::where('user_id', $id)->get();
         return view('members::admin.member.show', compact('member', 'statuses', 'current_status', 'request_action', 'suggested_mid', 'countries', 'units', 'blood_groups', 'gender', 'district_kerala', 'duplicates', 'committees', 'backTo',  'menuParent'));
     }
@@ -1317,6 +1318,33 @@ class MemberController extends Controller
         return redirect('/admin/members/member/view/'.$input['primary_member']);
     }
 
+
+    public function add_note(Request $request)
+    {
+        $admin = Auth::user();
+        $input = $request->all();
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'bail|required',
+            'note' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return Redirect::back()->withErrors($validator)->with('error', 'Some fields are not valid');
+        }
+
+        $new_note = MemberNote::create([
+            'user_id' => $input['user_id'],
+            'notes' => $input['note'],
+            'created_by' => $admin->id
+        ]);
+
+        return redirect('/admin/members/member/view/'.$input['user_id']);
+    }
+
+    /** 
+     * Updating all rows family_in status to india or kuwait, 
+     * To use only once. can delete after
+     */
     public function changeFamilyStatus()
     {
         

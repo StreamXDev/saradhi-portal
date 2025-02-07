@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('uc_request', function (Blueprint $table) {
+        Schema::create('member_notes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained();
+            $table->text('notes');
+            $table->foreignId('created_by')->references('id')->on('users');
             $table->timestamps();
         });
     }
@@ -23,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('uc_request');
+        Schema::dropIfExists('member_notes');
     }
 };
