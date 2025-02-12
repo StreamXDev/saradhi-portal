@@ -956,7 +956,16 @@ table.list{
         border-color: #e0d753;
         background-color: #faf7cd;
         color: #a39905;
-
+    }
+    &.expired{
+        border-color: #ddd;
+        background-color: #eee;
+        color: #333;
+    }
+    &.suspended{
+        border-color: red;
+        background-color: red;
+        color: #fff;
     }
 }
 .request-status-list{

@@ -469,14 +469,8 @@
                     </li>
                     <li>
                         <span class="label">Membership Type</span>
-                        <div class="value">{{ ucfirst($member->membership->type) }}</div>
+                        <div class="value">{{ $member->membership->family_in == 'kuwait' ? 'Family' : 'Single' }}</div>
                     </li>
-                    @if($member->type == 'primary')
-                    <li>
-                        <span class="label">Family In</span>
-                        <div class="value">{{ ucfirst($member->membership->family_in) }}</div>
-                    </li>
-                    @endif
                     <li>
                         <span class="label">Membership Status</span>
                         <div class="value {{ $member->membership->status =='active' ? 'text-success' : 'text-danger' }}">{{ ucfirst($member->membership->status) }}</div>
@@ -580,6 +574,11 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+        <div style="color: #999">
+            <small>U: {{$member->user->id}}</small> | 
+            <small>M: {{$member->id}}</small> | 
+            <small>MS: {{$member->membership->mid}}</small>
         </div>
     </div>
 </div>

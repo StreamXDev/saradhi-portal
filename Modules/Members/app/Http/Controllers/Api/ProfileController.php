@@ -137,6 +137,8 @@ class ProfileController extends BaseController
         $pendingApproval = false;
         $activeMembership = false;
         $dormantMembership = false;
+        $expiredMembership = false;
+        $suspendedMembership = false;
         $currentStatus = null;
         $proofPending = false;
         $proofPendingTypes = [];
@@ -166,6 +168,8 @@ class ProfileController extends BaseController
         if($member->membership){
             $activeMembership = $member->membership->status === 'active' ? true : false;
             $dormantMembership = $member->membership->status === 'dormant' ? true : false;
+            $expiredMembership = $member->membership->status === 'expired' ? true : false;
+            $suspendedMembership = $member->membership->status === 'suspended' ? true : false;
             $idQr = QrCode::format('png')->size(300)->generate(json_encode(['Name' =>  $member->name,  'Membership ID' => $member->membership->mid, 'Civil ID' => $member->details->civil_id]));
             $member->membership->qrCode = 'data:image/png;base64, ' . base64_encode($idQr);
         }
@@ -210,6 +214,10 @@ class ProfileController extends BaseController
                 }else{
                     if($dormantMembership){
                         $app_action = 'dormant_membership';
+                    }else if($expiredMembership){
+                        $app_action = 'expired_membership';
+                    }else if($suspendedMembership){
+                        $app_action = 'suspended_membership';
                     }else{
                         if($pendingApproval){
                             $app_action = 'pending_approval';
@@ -231,6 +239,8 @@ class ProfileController extends BaseController
             'profile_completed' => $profileCompleted,
             'active_membership' => $activeMembership,
             'dormant_membership' => $dormantMembership,
+            'expired_membership' => $expiredMembership,
+            'suspended_membership' => $suspendedMembership,
             'pending_approval' => $pendingApproval,
             'current_status' => $currentStatus,
             'proof_pending' => $proofPending,

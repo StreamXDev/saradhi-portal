@@ -21,6 +21,8 @@
                         <option value="">Status</option>
                         <option value="active" @if($filters['status'] == 'active') selected @endif>Active</option>
                         <option value="dormant" @if($filters['status'] == 'dormant') selected @endif>Dormant</option>
+                        <option value="expired" @if($filters['status'] == 'expired') selected @endif>Expired</option>
+                        <option value="suspended" @if($filters['status'] == 'suspended') selected @endif>Suspended</option>
                     </select>
                 </div>
                 <div class="col-md-2">

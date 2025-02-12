@@ -35,33 +35,22 @@
                         <div class="control-col">
                             <select name="status" id="status" class="form-select">
                                 <option value="active" @selected($member->membership->status == 'active')>Active</option>
-                                <option value="dormant"@selected($member->membership->status == 'dormant')>Dormant</option>
+                                <option value="dormant" @selected($member->membership->status == 'dormant')>Dormant</option>
+                                <option value="expired" @selected($member->membership->status == 'expired')>Expired</option>
+                                <option value="suspended" @selected($member->membership->status == 'suspended')>Suspended</option>
                             </select>
                         </div>
                     </div>
                 </div>
-                <label class="form-label">Membership Type</label>
-                <div class="form-check">
-                    <div>
-                        <input class="form-check-input" type="radio" name="type" id="type_single" value="single" @disabled($member->membership->type == 'family')  @checked($member->membership->type == 'single')>
-                        <label class="form-check-label" for="type_single">
-                            Single  
-                        </label>
-                    </div>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="type" id="type_family" value="family" @checked($member->membership->type == 'family')>
-                    <label class="form-check-label" for="type_family">
-                        With Family
-                    </label>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <label for="family_in" class="form-label">Family In <span class="asterisk">*</span></label>
-                    <div class="control-col">
-                        <select name="family_in" id="family_in" class="form-select">
-                            <option value="kuwait" @selected($member->membership->family_in == 'kuwait')>Kuwait</option>
-                            <option value="india" @selected($member->membership->family_in == 'india')>India</option>
-                        </select>
+                <div class="form-group row">
+                    <div class="col-md-8">
+                        <label class="form-label">With Family</label>
+                        <div class="control-col">
+                            <select name="family_in" id="family_in" class="form-select">
+                                <option value="kuwait" @selected($member->membership->family_in == 'kuwait')>Yes</option>
+                                <option value="india" @selected($member->membership->family_in == 'india')>No</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>

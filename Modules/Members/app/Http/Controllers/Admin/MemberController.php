@@ -684,7 +684,6 @@ class MemberController extends Controller
                 'user_id' => 'bail|required',
                 'mid'     => 'required',
                 'status'  => 'required',
-                'type'    => 'required',
                 'family_in' => 'required'
             ]);
         }
@@ -804,7 +803,6 @@ class MemberController extends Controller
         if(isset($input['edit_membership'])){
             $membershipUpdateData = [
                 'mid' => $input['mid'],
-                'type' => $input['type'],
                 'family_in' => $input['family_in'],
                 'expiry_date' => $input['expiry_date'],
                 'status' => $input['status'],
@@ -1293,6 +1291,34 @@ class MemberController extends Controller
             $rules,
             $messages
         ];
+    }
+
+    public function editFamilyMember($id)
+    {
+        $menuParent = 'members';
+        $member = Member::with('user','details', 'localAddress', 'permanentAddress')->where('user_id', $id)->first();
+        //dd($member);
+        $countries = Country::with('regions')->where('active', 1)->get();
+        $units = MemberUnit::select('id', 'slug', 'name')->where('active', 1)->get();
+        $blood_groups = MemberEnum::select('id', 'slug', 'name')->where('type', 'blood_group')->get();
+        $district_kerala = array(
+            ['name' => 'Alappuzha', 'slug' => 'alappuzha'],
+            ['name' => 'Ernakulam', 'slug' => 'ernakulam'],
+            ['name' => 'Idukki', 'slug' => 'idukki'],
+            ['name' => 'Kannur', 'slug' => 'kannur'],
+            ['name' => 'Kasaragod', 'slug' => 'kasaragod'],
+            ['name' => 'Kollam', 'slug' => 'kollam'],
+            ['name' => 'Kottayam', 'slug' => 'kottayam'],
+            ['name' => 'Kozhikkode', 'slug' => 'kozhikkode'],
+            ['name' => 'Malappuram', 'slug' => 'malappuram'],
+            ['name' => 'Palakkad', 'slug' => 'palakkad'],
+            ['name' => 'Pathanamthitta', 'slug' => 'pathanamthitta'],
+            ['name' => 'Thiruvananthapuram', 'slug' => 'thriuvananthapuram'],
+            ['name' => 'Thrissur', 'slug' => 'thrissur'],
+            ['name' => 'Wayanada', 'slug' => 'wayanad'],
+            ['name' => 'Other', 'slug' => 'other'],
+        );
+        return view('members::admin.member.edit.family', compact('member', 'countries', 'units', 'blood_groups', 'district_kerala', 'menuParent'));
     }
 
     public function deleteFamilyMember(Request $request)
