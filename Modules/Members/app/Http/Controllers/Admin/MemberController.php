@@ -1296,29 +1296,9 @@ class MemberController extends Controller
     public function editFamilyMember($id)
     {
         $menuParent = 'members';
-        $member = Member::with('user','details', 'localAddress', 'permanentAddress')->where('user_id', $id)->first();
-        //dd($member);
-        $countries = Country::with('regions')->where('active', 1)->get();
-        $units = MemberUnit::select('id', 'slug', 'name')->where('active', 1)->get();
+        $member = MemberDependent::where('id', $id)->first();
         $blood_groups = MemberEnum::select('id', 'slug', 'name')->where('type', 'blood_group')->get();
-        $district_kerala = array(
-            ['name' => 'Alappuzha', 'slug' => 'alappuzha'],
-            ['name' => 'Ernakulam', 'slug' => 'ernakulam'],
-            ['name' => 'Idukki', 'slug' => 'idukki'],
-            ['name' => 'Kannur', 'slug' => 'kannur'],
-            ['name' => 'Kasaragod', 'slug' => 'kasaragod'],
-            ['name' => 'Kollam', 'slug' => 'kollam'],
-            ['name' => 'Kottayam', 'slug' => 'kottayam'],
-            ['name' => 'Kozhikkode', 'slug' => 'kozhikkode'],
-            ['name' => 'Malappuram', 'slug' => 'malappuram'],
-            ['name' => 'Palakkad', 'slug' => 'palakkad'],
-            ['name' => 'Pathanamthitta', 'slug' => 'pathanamthitta'],
-            ['name' => 'Thiruvananthapuram', 'slug' => 'thriuvananthapuram'],
-            ['name' => 'Thrissur', 'slug' => 'thrissur'],
-            ['name' => 'Wayanada', 'slug' => 'wayanad'],
-            ['name' => 'Other', 'slug' => 'other'],
-        );
-        return view('members::admin.member.edit.family', compact('member', 'countries', 'units', 'blood_groups', 'district_kerala', 'menuParent'));
+        return view('members::admin.member.edit.family', compact('member', 'blood_groups', 'menuParent'));
     }
 
     public function deleteFamilyMember(Request $request)
