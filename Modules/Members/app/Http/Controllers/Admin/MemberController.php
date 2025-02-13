@@ -1298,7 +1298,50 @@ class MemberController extends Controller
         $menuParent = 'members';
         $member = MemberDependent::where('id', $id)->first();
         $blood_groups = MemberEnum::select('id', 'slug', 'name')->where('type', 'blood_group')->get();
-        return view('members::admin.member.edit.family', compact('member', 'blood_groups', 'menuParent'));
+        $countries = Country::with('regions')->where('active', 1)->get();
+        return view('members::admin.member.edit.family', compact('member', 'blood_groups', 'countries', 'menuParent'));
+    }
+
+    public function updateFamilyMember(Request $request)
+    {
+        $input = $request->all();
+        $validator = Validator::make($request->all(), [
+            'id' => 'bail|required',
+            'name' => 'required',
+            'dob' => 'required',
+            'gender' => 'required',
+            'blood_group' => 'required',
+            'passport_no' => 'required',
+            'passport_expiry' => 'required',
+        ]);
+
+        $child = MemberDependent::where('id', $input['id'])->first();
+
+        if ($validator->fails()) {
+            return Redirect::back()->withErrors($validator)->with('error', 'Some fields are not valid');
+        }
+
+        if($request->avatar !== null){
+            $child_avatar = 'cvf'.$input['id'].'_'.time().'.'.$request->avatar->extension(); 
+            $request->avatar->storeAs('public/images', $child_avatar);
+            MemberDependent::where('id', $input['id'])->update([
+                'avatar' => $child_avatar,
+            ]);
+        }
+
+        MemberDependent::where('id', $input['id'])->update([
+            'name' => $input['name'],
+            'email' => $input['email'],
+            'calling_code' => $input['tel_country_code'],
+            'phone' => $input['phone'],
+            'dob' => $input['dob'],
+            'gender' => $input['gender'],
+            'blood_group' => $input['blood_group'],
+            'passport_no' => $input['passport_no'],
+            'passport_expiry' => $input['passport_expiry'],
+        ]);
+
+        return redirect('/admin/members/member/view/'.$child->parent_user_id);
     }
 
     public function deleteFamilyMember(Request $request)

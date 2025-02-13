@@ -72,6 +72,8 @@ Route::prefix('admin/members')->middleware(['auth:sanctum', 'verified_email', 'i
         Route::post('/member/merge', 'merge')->name('admin.member.merge');
         Route::get('/member/family/create/{id?}','createFamilyMember');
         Route::post('/member/family/create/','storeFamilyMember')->name('admin.member.family');
+        Route::get('/member/family/edit/{id?}','editFamilyMember');
+        Route::post('/member/family/update','updateFamilyMember')->name('admin.member.family.update');
         Route::post('/member/family/delete/{id?}','deleteFamilyMember')->name('admin.member.family.delete');
         Route::post('/member/notes/add', 'add_note')->name('admin.member.notes.add');
         Route::get('/member/notes/delete/{id?}', 'delete_note');
