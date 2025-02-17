@@ -99,13 +99,13 @@ class MemberController extends Controller
         if (request()->get('search_by') != null){
             $input = request()->get('search_by');
             $members->whereHas('user', function($q) use ($input) {
-                    return $q->where('name', 'LIKE', '%' . $input . '%');
+                    return $q->where('name', 'LIKE', '%' . $input . '%')->where('active',1);
                 })
                 ->orWhereHas('user', function($q) use ($input) {
-                    return $q->where('email', $input);
+                    return $q->where('email', $input)->where('active',1);
                 })
                 ->orWhereHas('user', function($q) use ($input) {
-                    return $q->where('phone', $input);
+                    return $q->where('phone', $input)->where('active',1);
                 })
                 ->orWhereHas('membership', function($q) use ($input) {
                     return $q->where('mid', $input);
