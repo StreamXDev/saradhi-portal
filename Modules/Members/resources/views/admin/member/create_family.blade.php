@@ -285,7 +285,8 @@
                     <div class="control-col">
                         @if($parent->membership->joined_as == 'old')
                             <input type="hidden" name="mid" value="{{ $parent->membership->mid }}">
-                            <input type="text"  id="mid" class="form-control" value="{{ old('mid') ? old('mid') : $parent->membership->mid }}" disabled>
+                            <input type="text"  id="mid" class="form-control" value="{{ old('mid') ? old('mid') : $parent->membership->mid }}" >
+                            <small id="spouseMIDHelp" class="form-text text-muted">Suggested MID: <strong>{{ $suggested_mid+1 }}</strong></small>
                         @else
                             <input type="text" name="mid" id="mid" class="form-control @error('mid') is-invalid @enderror" value="{{ old('mid') }}" aria-describedby="spouseMIDHelp">
                             <small id="spouseMIDHelp" class="form-text text-muted">Suggested MID: <strong>{{ $suggested_mid+1 }}</strong></small>
