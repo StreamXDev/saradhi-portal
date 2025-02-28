@@ -408,11 +408,13 @@ class ProfileController extends BaseController
             ];
             DB::beginTransaction();
             $child = MemberDependent::create($childInput);
-            $child_avatar = 'av'.$child->id.'_'.time().'.'.mime2ext($input['avatar_mime']);
-            Storage::put('public/images/'.$child_avatar, base64_decode($input['avatar']));
-            MemberDependent::where('id', $child->id)->update([
-                'avatar' => $child_avatar,
-            ]);
+            if(isset($input['avatar'])){
+                $child_avatar = 'av'.$child->id.'_'.time().'.'.mime2ext($input['avatar_mime']);
+                Storage::put('public/images/'.$child_avatar, base64_decode($input['avatar']));
+                MemberDependent::where('id', $child->id)->update([
+                    'avatar' => $child_avatar,
+                ]);
+            }
 
             $relations_against_primary_member = MemberRelation::where('member_id', $requesting_member->id)->get();
             $parent_primary = $requesting_member->id;
@@ -569,8 +571,6 @@ class ProfileController extends BaseController
         
         if($request->type === 'child'){
             $rules['name'] = ['required', 'string'];
-            $rules['email'] = [Rule::unique(MemberDependent::class, 'email')];
-            $rules['phone'] = [Rule::unique(MemberDependent::class, 'phone')];
             $rules['gender'] = ['required', 'string'];
             $rules['dob'] = ['required', 'date_format:Y-m-d'];
             $rules['blood_group'] = ['required', 'string'];
@@ -579,8 +579,6 @@ class ProfileController extends BaseController
             $rules['passport_expiry'] = ['required', 'date_format:Y-m-d'];
 
             $messages['name.required'] = 'Name is required';
-            $messages['email.unique'] = 'Email already registered';
-            $messages['phone.unique'] = 'Number already used';
             $messages['gender.required'] = 'Gender is required';
             $messages['dob.required'] = 'DOB is required';
             $messages['dob.date_format'] = 'Should be Y-m-d format';
