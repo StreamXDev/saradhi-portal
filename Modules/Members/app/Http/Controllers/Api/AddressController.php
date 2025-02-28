@@ -142,10 +142,10 @@ class AddressController extends BaseController
                     'building' => $input['local_address_building'],
                     'flat' => $input['local_address_flat'],
                     'floor' => $input['local_address_floor'],
-                    'city' => isset($input['city']) ? $input['city'] : $address->city,
-                    'zip' => isset($input['zip']) ? $input['zip'] : $address->zip,
+                    'city' => isset($input['local_address_city']) ? $input['local_address_city'] : $address->city,
+                    'zip' => isset($input['local_address_zip']) ? $input['local_address_zip'] : $address->zip,
                 ]);
-            }else if($type === 'indian'){
+            }else if($type === 'permanent'){
                 $address = MemberPermanentAddress::where('user_id', $user->id)->first();
                 $address->update([
                     'line_1' => $input['permanent_address_line_1'],

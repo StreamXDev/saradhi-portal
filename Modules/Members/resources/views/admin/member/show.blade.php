@@ -409,7 +409,7 @@
                                             <div class="card-footer">
                                                 <div class="actions">
                                                     <a href="/admin/members/member/family/edit/{{$relative->relatedDependent->id}}" class="btn btn-xs icon" ><i class="icon" data-feather="edit-2"></i></a>
-                                                    <form action="{{ route('admin.member.family.delete') }}" method="POST" onSubmit="if(!confirm('Are you sure want to deleted?')){return false;}">
+                                                    <form action="{{ route('admin.member.family.delete') }}" method="POST" onSubmit="if(!confirm('Are you sure want to delete?')){return false;}">
                                                         @csrf
                                                         <input type="hidden" name="dependent_id" value="{{$relative->relatedDependent->id}}">
                                                         <input type="hidden" name="primary_member" value="{{$member->user_id}}">
