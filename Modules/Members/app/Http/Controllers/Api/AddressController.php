@@ -119,7 +119,7 @@ class AddressController extends BaseController
                 'local_address_flat' => 'Flat is required',
                 'local_address_floor' => 'Floor is required',
             ]);
-        }else if($type === 'indian'){
+        }else if($type === 'permanent'){
             $validator = Validator::make($request->all(), [
                 'permanent_address_line_1' => 'required|string',
             ],[
