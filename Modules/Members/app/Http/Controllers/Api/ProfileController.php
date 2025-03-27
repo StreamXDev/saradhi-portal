@@ -349,6 +349,7 @@ class ProfileController extends BaseController
             Membership::create([
                 'user_id' => $dependent_user->id,
                 'type' => $input['type'],
+                'family_in' => isset($input['family_in']) ? $input['family_in'] : ($input['type'] == 'family' ? 'kuwait' : 'india'),
                 'introducer_name' => $user->name,
                 'introducer_phone' => $user->calling_code.$user->phone,
                 'introducer_mid' => $requesting_member->membership->mid,

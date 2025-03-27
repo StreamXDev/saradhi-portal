@@ -355,6 +355,7 @@ class MembersController extends Controller
         Membership::create([
             'user_id' => $user->id,
             'type' => $input['type'],
+            'family_in' => isset($input['family_in']) ? $input['family_in'] : ($input['type'] == 'family' ? 'kuwait' : 'india'),
             'introducer_name' => $input['introducer_name'],
             'introducer_phone' => $input['introducer_country_code'].$input['introducer_phone'],
             'introducer_mid' => $input['introducer_mid'],
@@ -474,6 +475,7 @@ class MembersController extends Controller
             Membership::create([
                 'user_id' => $spouse_user->id,
                 'type' => $input['type'],
+                'family_in' => isset($input['family_in']) ? $input['family_in'] : ($input['type'] == 'family' ? 'kuwait' : 'india'),
                 'introducer_name' => $input['introducer_name'],
                 'introducer_phone' => $input['introducer_country_code'].$input['introducer_phone'],
                 'introducer_mid' => $input['introducer_mid'],

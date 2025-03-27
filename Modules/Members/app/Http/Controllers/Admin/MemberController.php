@@ -357,7 +357,7 @@ class MemberController extends Controller
         Membership::create([
             'user_id' => $user->id,
             'type' => $input['type'],
-            'family_in' => $input['family_in'],
+            'family_in' => isset($input['family_in']) ? $input['family_in'] : ($input['type'] == 'family' ? 'kuwait' : 'india'),
             'introducer_name' => $input['introducer_name'],
             'introducer_phone' => $input['introducer_country_code'].$input['introducer_phone'],
             'introducer_mid' => $input['introducer_mid'],
@@ -473,6 +473,7 @@ class MemberController extends Controller
             Membership::create([
                 'user_id' => $spouse_user->id,
                 'type' => $input['type'],
+                'family_in' => isset($input['family_in']) ? $input['family_in'] : ($input['type'] == 'family' ? 'kuwait' : 'india'),
                 'introducer_name' => $input['introducer_name'],
                 'introducer_phone' => $input['introducer_country_code'].$input['introducer_phone'],
                 'introducer_mid' => $input['introducer_mid'],
@@ -1089,6 +1090,7 @@ class MemberController extends Controller
             Membership::create([
                 'user_id' => $user->id,
                 'type' => 'family',
+                'family_in' => isset($input['family_in']) ? $input['family_in'] : 'kuwait',
                 'mid' => $input['verification']  == 'yes' ? null : $input['mid'],
                 'start_date' => $input['verification']  == 'yes' ? null : $input['start_date'],
                 'updated_date' => $input['verification']  == 'yes' ? null : $input['start_date'],
