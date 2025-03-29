@@ -50,7 +50,15 @@
                             <tr>
                                 <td>{{$person->name}}</td>
                                 <td>{{$person->invitee_type->name}}</td>
-                                <td>{{$person->unit}}</td>
+                                <td>
+                                    @if($person->unit)
+                                        {{$person->unit}}
+                                    @else
+                                        @if($person->member_details)
+                                            {{$person->member_details->member_unit->name}}
+                                        @endif
+                                    @endif
+                                </td>
                                 <td><small>{{date('M d, Y H:i a', strtotime($person->admitted_on))}}<span class="col-info block">by <a href="/admin/members/member/view/{{$person->admittedBy->id}}" target="_blank">{{$person->admittedBy->name}}</a></span></small></td>
                             </tr>
                             @endforeach

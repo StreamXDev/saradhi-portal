@@ -18,6 +18,7 @@ use Modules\Events\Models\Event;
 use Modules\Events\Models\EventEnum;
 use Modules\Events\Models\EventParticipant;
 use Modules\Events\Models\EventVolunteer;
+use Modules\Members\Models\MemberDetail;
 use Modules\Members\Models\Member;
 use Modules\Members\Models\MemberUnit;
 use Nwidart\Modules\Facades\Module;
@@ -50,9 +51,12 @@ class EventController extends Controller
      */
     public function show(Request $request, $id)
     {
+        DB::beginTransaction();
         $event = Event::where('id', $id)->first();
         $volunteers = EventVolunteer::with('user')->where('event_id', $id)->paginate(25);
-        $participants = EventParticipant::with('user','admittedBy','invitee_type')->where('event_id', $id)->where('admitted',1)->paginate(25);
+        $participants = EventParticipant::with('user', 'member_details','admittedBy','invitee_type')->where('event_id', $id)->where('admitted',1)->paginate(25);
+        
+        DB::commit();
         return view('events::admin.events.show', compact('event','volunteers', 'participants'));
     }
 

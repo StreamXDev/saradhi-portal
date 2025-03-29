@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Modules\Members\Models\MemberDetail;
 
 class EventParticipant extends Model
 {
@@ -25,11 +26,14 @@ class EventParticipant extends Model
     {
         return $this->hasOne(User::class, 'id','user_id');
     }
+    public function member_details():HasOne
+    {
+        return $this->hasOne(MemberDetail::class, 'user_id', 'user_id');
+    }
     public function admittedBy():HasOne
     {
         return $this->hasOne(User::class, 'id','admitted_by');
     }
-
     public function invitee_type(): BelongsTo
     {
         return $this->belongsTo(EventEnum::class, 'type', 'id')->select('id', 'slug', 'name', 'order', 'category','description', 'pass_width_cm', 'pass_height_cm');
