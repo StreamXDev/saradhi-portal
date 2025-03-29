@@ -156,8 +156,7 @@ class EventController extends Controller
     }
 
     public function exportParticipants(Request $request, $id){
-        $participants = EventParticipant::with('user','invitee_type')->where('event_id', $id)->get();
-        //dd($participants);
+        $participants = EventParticipant::with('user','invitee_type','member_details','admittedBy')->where('event_id', $id)->get();
         return Excel::download(new ParticipantsExport($participants), 'participants.xlsx');
     }
     

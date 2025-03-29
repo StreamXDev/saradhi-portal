@@ -32,7 +32,7 @@ class ParticipantsExport implements FromCollection, WithHeadings, WithMapping
            $guest->name, 
            $guest->company, 
            $guest->designation, 
-           $guest->unit, 
+           $guest->unit ?? ($guest->member_details ? $guest->member_details->member_unit->name : ''), 
            $guest->invitee_type->name,
            $guest->pack_count,
            $guest->admit_count
