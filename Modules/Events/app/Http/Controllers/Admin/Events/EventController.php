@@ -52,7 +52,7 @@ class EventController extends Controller
     {
         $event = Event::where('id', $id)->first();
         $volunteers = EventVolunteer::with('user')->where('event_id', $id)->paginate(25);
-        $participants = EventParticipant::with('user','admittedBy','invitee_type')->where('event_id', $id)->where('admitted',1)->paginate(2);
+        $participants = EventParticipant::with('user','admittedBy','invitee_type')->where('event_id', $id)->where('admitted',1)->paginate(25);
         return view('events::admin.events.show', compact('event','volunteers', 'participants'));
     }
 
