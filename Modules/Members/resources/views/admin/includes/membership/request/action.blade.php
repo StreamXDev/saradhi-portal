@@ -36,7 +36,6 @@
             </div>
         </div>
     @endif
-@else
 
     @if($current_status->rejected == null)
         <button class="btn btn-xs btn-danger" data-bs-toggle="modal" data-bs-target="#requestActionReject">Reject</button>
@@ -67,7 +66,7 @@
             </div>
         </div>
     @endif
-
+@else
     <button class="btn btn-xs @if($current_status->rejected == null) btn-success @else btn-warning @endif" data-bs-toggle="modal" data-bs-target="#requestActionModal">{{ $request_action->action['name'] }}</button>
     <div class="modal fade" id="requestActionModal" tabindex="-1" aria-labelledby="requestActionModalLabel" aria-hidden="true">
         <div class="modal-dialog">
