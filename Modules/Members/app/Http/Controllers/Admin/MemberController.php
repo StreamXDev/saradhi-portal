@@ -130,7 +130,7 @@ class MemberController extends Controller
         $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'notes', 'relations', 'relations.relatedMember.user', 'relations.relatedMember.membership', 'relations.relatedMember.details', 'relations.relatedDependent', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
         
         if(!$member){
-            return Redirect::route('admin/members')->with('error', 'Member not found');
+            return redirect('/admin/members');
         }
 
         $statuses = requestStatusDisplay($id);
