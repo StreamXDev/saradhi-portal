@@ -128,7 +128,11 @@ class MemberController extends Controller
     {
         $menuParent = 'members';
         $member = Member::with(['user', 'details', 'membership', 'localAddress', 'permanentAddress', 'notes', 'relations', 'relations.relatedMember.user', 'relations.relatedMember.membership', 'relations.relatedMember.details', 'relations.relatedDependent', 'requests', 'committees', 'trustee'])->where('user_id' , $id)->first();
-        //dd($member);
+        
+        if(!$member){
+            return Redirect::route('admin.member.list')->with('error', 'Member not found');
+        }
+
         $statuses = requestStatusDisplay($id);
         $current_status = MembershipRequest::where('user_id', $id)->latest('id')->first();
         $request_action = requestByPermission($current_status);
