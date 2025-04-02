@@ -38,7 +38,7 @@
                                     @endif
                                 </div>
                                 <div class="value">
-                                    {{$relation->relationship->slug }}: <strong>{{ $relation->relatedMember->name }}</strong>
+                                    {{ ucfirst($relation->relationship->slug) }} of: <strong>{{ $relation->relatedMember->name }}</strong>
                                 </div>
                                 <a href="/admin/members/member/view/{{ $relation->relatedMember->user->id}}" class="btn btn-default">VIEW</a>
                             </div>
