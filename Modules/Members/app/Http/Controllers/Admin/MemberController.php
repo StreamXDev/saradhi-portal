@@ -1429,4 +1429,17 @@ class MemberController extends Controller
         //DB::commit();
 
     }
+
+    /**
+     * Updating membership status (Active, dormant, etc.)
+     * Warning: Script is direct updating the database
+     */
+    public function updateMemberStatus()
+    {
+        $year = date('Y');
+        $lastDate = date('Y-m-d',strtotime($year ."-1-1"));
+        Membership::where('expiry_date', '<', $lastDate )->where('status','active')->update([
+            'status' => 'dormant'
+        ]);
+    }
 }

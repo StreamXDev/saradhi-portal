@@ -77,6 +77,8 @@ Route::prefix('admin/members')->middleware(['auth:sanctum', 'verified_email', 'i
         Route::post('/member/family/delete/{id?}','deleteFamilyMember')->name('admin.member.family.delete');
         Route::post('/member/notes/add', 'add_note')->name('admin.member.notes.add');
         Route::get('/member/notes/delete/{id?}', 'delete_note');
+
+        Route::get('/status/update', 'updateMemberStatus');
     });
 });
 
