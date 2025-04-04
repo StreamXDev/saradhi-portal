@@ -98,7 +98,6 @@ class FcmController extends BaseController
             curl_close($ch);
         }
         if($fcm_android){
-            /*
             $data = [
                 "message" => [
                     "token" => $fcm_android,
@@ -121,7 +120,6 @@ class FcmController extends BaseController
             $response = curl_exec($ch);
             $err = curl_error($ch);
             curl_close($ch);
-            */
         }
 
 
