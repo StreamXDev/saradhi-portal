@@ -15,6 +15,16 @@ use Modules\PushNotification\Models\PnMessage;
 class NotificationController extends Controller
 {
     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    function __construct()
+    {
+        $this->middleware('permission:notification.create|notification.send', ['only' => ['index','storeAndSend']]);
+    }
+    
+    /**
      * Notification massage 
      */
     public function index()
