@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FcmController;
+use Modules\PushNotification\Http\Controllers\Api\DeviceApiController;
 
 Auth::routes(['verify' => true]);
 
@@ -25,7 +26,18 @@ Route::controller(EmailVerificationController::class)->group(function(){
 });
 
 Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
-    Route::put('device_token', [FcmController::class, 'updateDeviceToken']);
+    //Route::put('device_token', [FcmController::class, 'updateDeviceToken']);
+    /* 
+    Route::put('device_token', function(){
+        return redirect('/notification/store');
+    });
+    */
     Route::post('send_fcm_notification', [FcmController::class, 'sendFcmNotification']);
+});
+
+Route::middleware(['auth:sanctum','verified_email'])->group(function () {
+    Route::controller(DeviceApiController::class)->group(function(){
+        Route::put('device_token', 'storeDevice');
+    });
 });
 

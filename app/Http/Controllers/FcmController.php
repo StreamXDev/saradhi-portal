@@ -9,21 +9,26 @@ use Google\Client as GoogleClient;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Validator;
 
 class FcmController extends BaseController
 {
+    
     public function updateDeviceToken(Request $request)
     {
         
-        $logged_user = Auth::user();
+        $user = Auth::user();
         $input = $request->all();
 
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'token' => 'required|string',
             'os' => 'required|string'
         ]);
 
-        $user = User::where('id', $logged_user->id)->first();
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error', $validator->errors()); 
+        }
+
 
         if($input['os'] === 'ios'){
             $user->update(['fcm_token_ios' => $input['token']]);

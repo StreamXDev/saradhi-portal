@@ -2,5 +2,7 @@
     "Members": true,
     "Imports": true,
     "Events": true,
-    "Posts": true
+    "Posts": true,
+    "Notification": false,
+    "PushNotification": true
 }
