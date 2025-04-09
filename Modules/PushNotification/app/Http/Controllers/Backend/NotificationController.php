@@ -60,8 +60,8 @@ class NotificationController extends Controller
         ]);
 
         foreach($users as $key => $user){
-            if($user->id == 1){
-                $devicesSent = $this->notify($user->id, $message->title,$message->description);
+            if($user->id == 1 || $user->id == 2561 || $user->id == 4826 || $user->id == 5488 || $user->id == 4420){
+                $devicesSent = $this->notify($user->id, $message->title, $message->description);
                 if(count($devicesSent) > 0){
                     PnMessage::where([
                         'id' => $message->id
