@@ -36,8 +36,8 @@ class DeviceApiController extends BaseController
         ]);
 
         $data = [
-            'success' => true,
+            'tokenSent' => true,
         ];
-        return $this->sendResponse($data, 'Device added successfully.');
+        return $this->sendResponse($data, 'Device token updated successfully for id:'.$user->id);
     }
 }
