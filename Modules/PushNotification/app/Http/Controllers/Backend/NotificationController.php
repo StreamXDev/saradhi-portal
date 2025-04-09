@@ -5,8 +5,10 @@ namespace Modules\PushNotification\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Google\Client as GoogleClient;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Modules\PushNotification\Models\PnDelivery;
 use Modules\PushNotification\Models\PnDevice;
@@ -99,11 +101,50 @@ class NotificationController extends Controller
         $devicesSent = [];
         foreach($devices as $device){
             //send notification to device
-            $sent = true;
+            $projectId = env('FIREBASE_PROJECT_NUMBER'); 
 
-            if($sent){
-                $devicesSent[] = $device;
-            } 
+            $credentialsFilePath = Storage::path('json/service-account.json');
+            $client = new GoogleClient();
+            $client->setAuthConfig($credentialsFilePath);
+            $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+            $client->refreshTokenWithAssertion();
+            $token = $client->getAccessToken();
+
+            $access_token = $token['access_token'];
+
+            $headers = [
+                "Authorization: Bearer $access_token",
+                'Content-Type: application/json'
+            ];
+
+            $data = [
+                "message" => [
+                    "token" => $device->token,
+                    "notification" => [
+                        "title" => $title,
+                        "body" => $description,
+                    ],
+                ]
+            ];
+            $payload = json_encode($data);
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send");
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+            curl_setopt($ch, CURLOPT_VERBOSE, true); // Enable verbose output for debugging
+            $response = curl_exec($ch);
+            $err = curl_error($ch);
+            curl_close($ch);
+
+            $devicesSent[] = $device;
+
+            if ($err) {
+                $devicesSent[]['error'] = $response;
+            }
         }
         
         return $devicesSent;
