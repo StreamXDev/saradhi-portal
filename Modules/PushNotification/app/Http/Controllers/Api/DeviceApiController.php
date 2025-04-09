@@ -35,9 +35,9 @@ class DeviceApiController extends BaseController
             'last_active' => now()
         ]);
 
-        $response = [
+        $data = [
             'success' => true,
         ];
-        return $this->sendResponse($response, 'Device added successfully.');
+        return $this->sendResponse($data, 'Device added successfully.');
     }
 }
