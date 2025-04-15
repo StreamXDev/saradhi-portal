@@ -13,8 +13,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/linkstorage', function () {
-    Artisan::call('storage:link') ;// this will do the command line job
+Route::get('/cache', function() {
+    Artisan::call("config:clear");
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
+    Artisan::call("optimize:clear");
+    Artisan::call('storage:link') ;
+    return "Optimized Cache and storage linked";
 });
 
 Auth::routes(['verify' => true]);
@@ -30,6 +35,10 @@ Route::controller(SocialAuthController::class)->group(function(){
 
 
 Route::group(['middleware' => ['auth', 'verified', 'is_admin']], function() {
+    Route::get('/migrate', function(){
+        Artisan::call('migrate');
+        return 'New DB migrated';
+    });
     Route::prefix('/admin')->group(function() {
         Route::resource('/roles', RoleController::class);
         Route::resource('/users', UserController::class);
