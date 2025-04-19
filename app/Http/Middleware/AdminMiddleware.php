@@ -19,7 +19,7 @@ class AdminMiddleware
         $user = Auth::user();
 
         if(Auth::check()){
-            if($user->hasAnyRole(['superadmin','admin','president','secretary','treasurer', 'jt_treasurer'])){
+            if($user->hasAnyRole(['superadmin','admin','president','secretary','treasurer', 'jt-treasurer'])){
                 return $next($request);
             }
         }
