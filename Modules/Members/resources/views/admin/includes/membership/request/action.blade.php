@@ -1,5 +1,6 @@
 @if($current_status->request_status->slug == 'approved' && $request_action->action['slug'] == 'confirm')
     @if(Auth::user()->can('membership_request.confirm'))
+        <button class="btn btn-xs @if($current_status->rejected == null) btn-success @else btn-warning @endif" data-bs-toggle="modal" data-bs-target="#requestActionModal">{{ $request_action->action['name'] }}</button>
         <button class="btn btn-success btn-xs" data-bs-toggle="modal" data-bs-target="#requestConfirmModal">Confirm</button>
 
         <div class="modal fade" id="requestConfirmModal" tabindex="-1" aria-labelledby="requestConfirmModalLabel" aria-hidden="true">
