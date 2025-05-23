@@ -32,6 +32,7 @@ class MembersListExport implements FromCollection, WithHeadings, WithMapping, Sh
     public function map($member): array
     { 
         return [
+            $member->user->id+250000,
             $member->membership->mid,
             $member->user->name,
             $member->user->email,
@@ -72,6 +73,7 @@ class MembersListExport implements FromCollection, WithHeadings, WithMapping, Sh
     public function headings(): array
     {
         return [
+            'ID',
             'MID', 
             'Name',
             'Email',
