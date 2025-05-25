@@ -35,7 +35,8 @@ class ParticipantsExport implements FromCollection, WithHeadings, WithMapping
            $guest->unit ?? ($guest->member_details ? $guest->member_details->member_unit->name : ''), 
            $guest->invitee_type->name,
            $guest->pack_count,
-           $guest->admit_count
+           $guest->admit_count,
+           date('M d, Y H:i a', strtotime($guest->admitted_on))
         ];
     }
 
@@ -53,7 +54,8 @@ class ParticipantsExport implements FromCollection, WithHeadings, WithMapping
             'Unit',
             'Type',
             'No. Invitees',
-            'Attended'
+            'Attended',
+            'Admitted On'
         ];
     }
 
