@@ -59,7 +59,13 @@
                                         @endif
                                     @endif
                                 </td>
-                                <td><small>{{date('M d, Y H:i a', strtotime($person->admitted_on))}}<span class="col-info block">by <a href="/admin/members/member/view/{{$person->admittedBy->id}}" target="_blank">{{$person->admittedBy->name}}</a></span></small></td>
+                                @php 
+                                    date_default_timezone_set('Asia/Kuwait');
+                                    $utc_admitted = strtotime($person->admitted_on);
+                                    $offset = date("Z");
+                                    $local_ts = $utc_ts + $offset;
+                                @endphp
+                                <td><small>{{date('M d, Y H:i a', strtotime($local_ts))}}<span class="col-info block">by <a href="/admin/members/member/view/{{$person->admittedBy->id}}" target="_blank">{{$person->admittedBy->name}}</a></span></small></td>
                             </tr>
                             @endforeach
                         </tbody>
