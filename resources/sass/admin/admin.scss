@@ -328,6 +328,7 @@ a{
         }
     }
 }
+
 .table-boxed{
     border-collapse:separate; 
     border-spacing: 0 1em;
@@ -386,6 +387,21 @@ table.list{
         overflow:hidden;
         img{
             width: 100%;
+        }
+    }
+    td.name{
+        font-size: 1em;
+        font-weight: 400;
+        color: #222;
+        .info{
+            font-size: 0.8em;
+            font-weight: 400;
+            color: #666;
+            a{
+                text-decoration: none;
+                color: inherit;
+                &:hover{color: $color-primary;}
+            }
         }
     }
 }

@@ -69,7 +69,16 @@
                     @endif
                     </div>
                 </td>
-                <td>{{ ucwords(strtolower($member->name)) }}</td>
+                <td class="name">
+                    {{ ucwords(strtolower($member->name)) }}
+                    <div class="info">
+                        @foreach ($member->relations as $relation)
+                            @if($relation->relatedMember)
+                                {{ ucfirst($relation->relationship->slug) }} of: <a href="/admin/members/member/view/{{ $relation->relatedMember->user->id}}" class="link">{{ ucwords(strtolower($relation->relatedMember->name)) }} - {{ $relation->relatedMember->membership->mid}}</a>
+                            @endif
+                        @endforeach
+                    </div>
+                </td>
                 <td>{{ $member->user->email }}</td>
                 <td>@if($member->membership) {{ $member->membership->mid }} @endif</td>
                 <td><span class="@if($member->duplicate_civil_id)text-danger @endif">@if($member->details) {{ $member->details->civil_id }} @endif</span></td>

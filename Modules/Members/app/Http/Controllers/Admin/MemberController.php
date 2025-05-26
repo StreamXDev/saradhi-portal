@@ -70,7 +70,7 @@ class MemberController extends Controller
     public function memberSearch()
     {
 
-        $members = Member::with(['membership', 'details','user'])->orderBy(Membership::select('mid')->whereColumn('memberships.user_id', 'members.user_id'))->where('active',1);
+        $members = Member::with(['membership', 'details','user', 'relations', 'relations.relatedMember.user', 'relations.relatedMember.membership'])->orderBy(Membership::select('mid')->whereColumn('memberships.user_id', 'members.user_id'))->where('active',1);
 
         $filters = collect(
             [

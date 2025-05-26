@@ -31,6 +31,12 @@ class MembersListExport implements FromCollection, WithHeadings, WithMapping, Sh
     */
     public function map($member): array
     { 
+        $related_member = '';
+        foreach($member->relations as $relation){
+            if($relation->relatedMember){
+                $related_member = ucfirst($relation->relationship->slug).' of: '.$relation->relatedMember->name;
+            }
+        }
         return [
             $member->user->id+250000,
             $member->membership->mid,
@@ -60,6 +66,7 @@ class MembersListExport implements FromCollection, WithHeadings, WithMapping, Sh
             $member->membership->introducer_phone ? '+'.$member->membership->introducer_phone_code.$member->membership->introducer_phone : '',
             $member->membership->introducer_mid,
             $member->membership->introducer_unit,
+            $related_member,
             $member->membership->status
         ];
     }
@@ -101,6 +108,7 @@ class MembersListExport implements FromCollection, WithHeadings, WithMapping, Sh
             'Introducer Phone',
             'Introducer MID',
             'Introducer Unit',
+            'Relation',
             'Status'
         ];
     }
