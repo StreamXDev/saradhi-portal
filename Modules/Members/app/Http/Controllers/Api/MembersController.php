@@ -372,6 +372,13 @@ class MembersController extends BaseController
         }
 
         if(isset($request->proofTypeSelf)){
+
+            //Check proof already updated
+            $proofExists = MemberDetail::where('user_id',$user->id)->first();
+            if($proofExists->photo_civil_id_front && $proofExists->photo_civil_id_back && $proofExists->photo_passport_front && $proofExists->photo_passport_back){
+                return $this->sendError('Request not sent', 'You already submitted the documents.', 405);
+            }
+
             $rules['photo_civil_id_front']    = ['required'];
             $rules['photo_civil_id_back']     = ['required'];
             $rules['photo_passport_front']    = ['required'];
@@ -384,6 +391,13 @@ class MembersController extends BaseController
             
         }
         if(isset($request->proofTypeSpouse)){
+
+            //Check proof already updated
+            $proofExists = MemberDetail::where('user_id',$spouseUser->id)->first();
+            if($proofExists->photo_civil_id_front && $proofExists->photo_civil_id_back && $proofExists->photo_passport_front && $proofExists->photo_passport_back){
+                return $this->sendError('Request not sent', 'You already submitted your spouse documents.', 405);
+            }
+
             $rules['spouse_photo_civil_id_front']    = ['required'];
             $rules['spouse_photo_civil_id_back']     = ['required'];
             $rules['spouse_photo_passport_front']    = ['required'];
@@ -428,7 +442,7 @@ class MembersController extends BaseController
                 // Adding entry to membership_request table, with 'saved' status;
                 // 1. Adding SAVED status in Membership request table
                 $status = MemberEnum::where('type', 'request_status')->where('slug', 'saved')->first();
-                MembershipRequest::create([
+                MembershipRequest::updateOrCreate([
                     'user_id' => $user->id,
                     'request_status_id' => $status->id,
                     'checked' => 1, 
