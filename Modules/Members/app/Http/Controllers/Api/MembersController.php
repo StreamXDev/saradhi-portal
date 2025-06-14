@@ -442,7 +442,7 @@ class MembersController extends BaseController
                 // Adding entry to membership_request table, with 'saved' status;
                 // 1. Adding SAVED status in Membership request table
                 $status = MemberEnum::where('type', 'request_status')->where('slug', 'saved')->first();
-                MembershipRequest::updateOrCreate([
+                MembershipRequest::create([
                     'user_id' => $user->id,
                     'request_status_id' => $status->id,
                     'checked' => 1, 
