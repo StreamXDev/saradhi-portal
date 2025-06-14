@@ -595,6 +595,8 @@ class MembersController extends Controller
             'local_address_flat.required' => 'Kuwait Address Flat is required',
             'local_address_floor.required' => 'Kuwait Address Floor Number is required',
 
+            'permanent_address_line_1.required' => 'India address is required',
+
             'avatar.required' => 'Profile photo is required',
             'avatar.image' => 'Profile photo should be an image',
             'avatar.mimes' => 'Profile photo must be a file of type: jpeg, png, jpg, gif, svg.',
