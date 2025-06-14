@@ -562,6 +562,8 @@ class MembersController extends Controller
             'local_address_flat'         => ['required', 'string'],
             'local_address_floor'         => ['required', 'string'],
 
+            'permanent_address_line_1' => ['required', 'string'],
+
             'avatar'            => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg','max:2048'],
             'photo_civil_id_front'    => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg','max:2048'],
             'photo_civil_id_back'     => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg','max:2048'],
