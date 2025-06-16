@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('members', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('user_id')->constrained(); //done
             $table->unsignedBigInteger('parent_id')->nullable();
-            $table->enum('type', array('primary','spouse'))->default('primary')->index();
-            $table->string('name')->index();
-            $table->enum('gender', array('male','female', 'other'))->nullable();
-            $table->string('blood_group')->index()->nullable();
+            $table->enum('type', array('primary','spouse'))->default('primary')->index(); //done
+            $table->string('name')->index(); //done
+            $table->enum('gender', array('male','female', 'other'))->nullable(); //done
+            $table->string('blood_group')->index()->nullable(); //done
             $table->string('photo')->nullable();
             $table->boolean('active')->index()->default(0);
             $table->timestamps();

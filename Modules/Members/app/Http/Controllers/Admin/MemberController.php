@@ -31,6 +31,9 @@ use Modules\Members\Models\Membership;
 use Modules\Members\Models\MembershipRequest;
 use Modules\Members\Models\MemberTrustee;
 use Modules\Members\Models\MemberUnit;
+use Modules\PushNotification\Models\PnDelivery;
+use Modules\PushNotification\Models\PnDevice;
+use Nwidart\Modules\Facades\Module;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class MemberController extends Controller
@@ -947,6 +950,25 @@ class MemberController extends Controller
 
         foreach($nm_requests as $rq){
             $rq->forceDelete();
+        }
+
+        if(Module::has('PushNotification')){
+            $nm_devices = PnDevice::where('user_id', $new_user)->get();
+            $om_devices = PnDevice::where('user_id', $old_user)->get();
+            $nm_deliveries = PnDelivery::where('user_id', $new_user)->get();
+            $om_deliveries = PnDelivery::where('user_id', $old_user)->get();
+            foreach($nm_deliveries as $rq){
+                $rq->forceDelete();
+            }
+            foreach($om_deliveries as $rq){
+                $rq->forceDelete();
+            }
+            foreach($nm_devices as $rq){
+                $rq->forceDelete();
+            }
+            foreach($om_devices as $rq){
+                $rq->forceDelete();
+            }
         }
 
         $nm_user->delete();
