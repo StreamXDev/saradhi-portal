@@ -41,7 +41,7 @@
                             <select name="introducer_unit" id="introducer_unit" class="form-select @error('introducer_unit') is-invalid @enderror">
                                 <option value="">Select</option>
                                 @foreach ($units as $unit)
-                                    <option value="{{ $unit->name }}" @selected( $unit->id == $member->details->member_unit_id )>{{ $unit->name }}</option>
+                                    <option value="{{ $unit->name }}" @selected( $unit->name == $member->membership->introducer_unit )>{{ $unit->name }}</option>
                                 @endforeach
                             </select>
                         </div>
