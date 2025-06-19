@@ -4,7 +4,7 @@
         <form action="{{ route('admin.member.update') }}" method="post" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="user_id" value="{{ $member->user->id }}">
-            <input type="hidden" name="edit_introudcer" value="true">
+            <input type="hidden" name="edit_introducer" value="true">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="editIntroducerLabel">Edit Introducer Details</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -41,7 +41,7 @@
                             <select name="introducer_unit" id="introducer_unit" class="form-select @error('introducer_unit') is-invalid @enderror">
                                 <option value="">Select</option>
                                 @foreach ($units as $unit)
-                                    <option value="{{ $unit->id }}" @selected( $unit->id == $member->details->member_unit_id )>{{ $unit->name }}</option>
+                                    <option value="{{ $unit->name }}" @selected( $unit->id == $member->details->member_unit_id )>{{ $unit->name }}</option>
                                 @endforeach
                             </select>
                         </div>

@@ -703,6 +703,15 @@ class MemberController extends Controller
                 'status' => 'required'
             ]);
         }
+        if(isset($input['edit_introducer'])){
+            $validator = Validator::make($request->all(), [
+                'user_id' => 'bail|required',
+                'introducer_name' => 'required|string',
+                'introducer_phone' => 'required|numeric',
+                'introducer_mid' => 'required|numeric',
+                'introducer_unit' => 'required|string',
+            ]);
+        }
         if(isset($input['edit_email'])){
             $validator = Validator::make($request->all(), [
                 'user_id' => 'bail|required',
@@ -827,6 +836,15 @@ class MemberController extends Controller
                 'status' => $input['status'],
                 'active' => $input['status'] === 'active' ? 1 : 0
             ]);
+        }
+        if(isset($input['edit_introducer'])){
+            $introducerUpdateData = [
+                'introducer_name' => $input['introducer_name'],
+                'introducer_phone' => $input['introducer_phone'],
+                'introducer_mid' => $input['introducer_mid'],
+                'introducer_unit' => $input['introducer_unit'],
+            ];
+            Membership::where('user_id', $user_id)->update($introducerUpdateData);
         }
         if(isset($input['edit_email'])){
             User::where('id', $user_id)->update([
