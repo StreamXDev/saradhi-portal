@@ -83,7 +83,7 @@
                 <td>@if($member->membership) {{ $member->membership->mid }} @endif</td>
                 <td><span class="@if($member->duplicate_civil_id)text-danger @endif">@if($member->details) {{ $member->details->civil_id }} @endif</span></td>
                 <td>@if($member->details) {{ $member->details->member_unit->name }} @endif</td>
-                <td>@if($member->membership) {{ ucfirst($member->membership->type) }} @endif</td>
+                <td>@if($member->membership) {{ $member->membership->family_in == 'kuwait' ? 'Family' : 'Single' }} @endif</td>
                 <td>@if($member->membership) {{ ucfirst($member->membership->status) }} @endif</td>
                 <td>
                     <div class="actions">
