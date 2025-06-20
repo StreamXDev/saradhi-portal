@@ -258,12 +258,12 @@
             </div>
         </div>
         <div class="form-title-divider"></div>
-        <div class="form-section-subtitle">India Address</div>
+        <div class="form-section-subtitle">India Address <span class="asterisk">*</span></div>
         <div class="form-group row">
             <div class="col-md-6">
                 <label for="permanent_address_line_1" class="form-label">Address</label>
                 <div class="control-col">
-                    <textarea name="permanent_address_line_1" id="permanent_address_line_1" cols="20" rows="4" class="form-control">{{ old('permanent_address_line_1') }}</textarea>
+                    <textarea name="permanent_address_line_1" id="permanent_address_line_1" cols="20" rows="4" class="form-control  @error('permanent_address_line_1') is-invalid @enderror">{{ old('permanent_address_line_1') }}</textarea>
                 </div>
             </div>
             <div class="col-md-6">
