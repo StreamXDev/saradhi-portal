@@ -33,6 +33,15 @@
                 <div class="logo">
                     <img src="{{ asset('images/logo.png') }}" alt="{{ env('APP_NAME') }}" class="img-fluid logo-img">
                 </div>
+                <div class="menu">
+                    <ul class="nav">
+                        @guest
+                        <li class="nav-item">
+                            <a href="/login" class="nav-link">Login</a>
+                        </li>
+                        @endguest
+                    </ul>
+                </div>
             </div>
         </header>
         <div class="content-container">
