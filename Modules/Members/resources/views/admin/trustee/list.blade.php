@@ -82,3 +82,9 @@
 
 @endsection
 @section('page_scripts')
+<script>
+    function clearForm(){
+        window.location = window.location.href.split("?")[0];
+    }
+</script>
+@endsection

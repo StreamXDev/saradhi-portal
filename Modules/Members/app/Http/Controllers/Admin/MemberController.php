@@ -98,7 +98,7 @@ class MemberController extends Controller
             });
             $filters->put('unit', request()->get('unit'));
         }
-
+        /*
         if (request()->get('search_by') != null){
             $input = request()->get('search_by');
             $members->whereHas('user', function($q) use ($input) {
@@ -115,7 +115,26 @@ class MemberController extends Controller
                 });
 
             $filters->put('search_by', request()->get('search_by'));
-            
+        }*/
+        if (request()->get('search_by') != null){
+            $search = request()->get('search_by');
+            $members->when($search, function ($query, $search) {
+                $query->where(function ($_query) use ($search) {
+                    $_query->orWhereHas('user', function ($query) use ($search) {
+                            return $query->where('name', 'like', '%'.$search.'%')->where('active',1);
+                        })
+                        ->orWhereHas('user', function($query) use ($search) {
+                            return $query->where('email', $search)->where('active',1);
+                        })
+                        ->orWhereHas('user', function($query) use ($search) {
+                            return $query->where('phone', $search)->where('active',1);
+                        })
+                        ->orWhereHas('membership', function($query) use ($search) {
+                            return $query->where('mid', $search);
+                        });
+                });
+            });
+            $filters->put('search_by', request()->get('search_by'));
         }
 
         return [
