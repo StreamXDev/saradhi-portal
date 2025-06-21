@@ -186,19 +186,17 @@
             </div>
         </div>
         <div class="form-section-title">Membership Details</div>
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="type" id="type_single" value="single"  @checked(old('type') == 'single')>
-            <label class="form-check-label" for="type_single">
-              Single
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="type" id="type_family" value="family" @checked(old('type') == 'family')>
-            <label class="form-check-label" for="type_family">
-              With Family
-            </label>
+        <div class="col-md-6 col-lg-4 mb-4">
+            <label for="type" class="form-label">Family In <span class="asterisk">*</span></label>
+            <div class="control-col">
+                <select name="type" id="type" class="form-select">
+                    <option value="">Select</option>
+                    <option value="family" @selected(old('type') == 'family')>Kuwait</option>
+                    <option value="single" @selected(old('type') == 'single')>India</option>
+                </select>
+            </div>
+            
         </div>
-        <br />
 
         @include('members::includes.membership.create.spouse')
 
@@ -370,17 +368,11 @@
 
      $(document).ready(function(){
         
-        var input  = $("input[name$='type']");
-        var type;
-        if(input.is(':checked')){
-            if(input.filter(':checked').val() == 'family'){
-                $('#family_details').show();
-            }
-        }
 
-        input.on('click', function(){
-            type = $(this).val();
-            if(type == 'family'){
+        var family_in = $("select[name$='type']");
+        $('#family_details').hide();
+        family_in.on('click', function(){
+            if(family_in.val() === 'family'){
                 $('#family_details').show();
             }else{
                 $('#family_details').hide();

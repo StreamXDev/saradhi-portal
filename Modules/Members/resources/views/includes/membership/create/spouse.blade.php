@@ -1,14 +1,6 @@
 <div id="family_details" class="form-family-details">
+    <h5 id="mem_type_info" class="mb-3">Enter spouse details</h5>
     <div class="form-group row">
-        <div class="col-md-6 col-lg-4">
-            <label for="family_in" class="form-label">Family In <span class="asterisk">*</span></label>
-            <div class="control-col">
-                <select name="family_in" id="family_in" class="form-select">
-                    <option value="kuwait" @selected(old('family_in') == 'kuwait')>Kuwait</option>
-                    <option value="india" @selected(old('family_in') == 'india')>India</option>
-                </select>
-            </div>
-        </div>
         <div class="col-md-6 col-lg-4">
             <label for="spouse_name" class="form-label">Spouse Name <span class="asterisk">*</span></label>
             <div class="control-col">
