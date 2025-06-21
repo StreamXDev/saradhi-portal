@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 use Maatwebsite\Excel\Facades\Excel;
 use Modules\Members\Exports\TrusteesListExport;
 use Modules\Members\Models\MemberTrustee;
+use Modules\Members\Models\MemberUnit;
 
 class TrusteeController extends Controller
 {
@@ -17,18 +18,75 @@ class TrusteeController extends Controller
      */
     public function index(Request $request)
     {
-        $trustees = MemberTrustee::with('user', 'member', 'member.membership')->orderBy('tid', 'asc')->paginate(25); 
-        
+        list($trustees, $filters) = $this->trusteeSearch();
+        $trustees = $trustees->paginate();
+        //$trustees = MemberTrustee::with('user', 'member', 'member.membership')->orderBy('tid', 'asc')->paginate(25); 
+        $units = MemberUnit::select('id', 'slug', 'name')->where('active', 1)->get();
         if($request->get('export')){
             return $this->exportListToExcel($trustees);
         }
+        //dd($trustees);
+        return view('members::admin.trustee.list', compact('trustees','filters','units'));
+    }
 
-        return view('members::admin.trustee.list', compact('trustees'));
+    public function trusteeSearch()
+    {
+
+        $trustees = MemberTrustee::with('user', 'member', 'member.membership', 'member.details')->orderBy('tid', 'asc');
+
+        $filters = collect(
+            [
+                'search_by' => '',
+                'unit' => '',
+                'status' => '',
+            ]
+        );
+
+        if (request()->get('status') != null){
+            $input = request()->get('status');
+            $trustees->where('status', $input);
+            $filters->put('status', request()->get('status'));
+        }
+
+        if (request()->get('unit') != null){
+            $input = request()->get('unit');
+            $trustees->whereHas('member.details', function($q) use ($input) {
+                return $q->where('member_unit_id', request()->get('unit'));
+            });
+            $filters->put('unit', request()->get('unit'));
+        }
+
+        if (request()->get('search_by') != null){
+            $input = request()->get('search_by');
+            $trustees->where('tid',$input)
+                ->orWhereHas('user', function($q) use ($input) {
+                    return $q->where('name', 'LIKE', '%' . $input . '%');
+                })
+                ->orWhereHas('user', function($q) use ($input) {
+                    return $q->where('email', $input);
+                })
+                ->orWhereHas('user', function($q) use ($input) {
+                    return $q->where('phone', $input);
+                })
+                ->orWhereHas('member.membership', function($q) use ($input) {
+                    return $q->where('mid', $input);
+                });
+
+            $filters->put('search_by', request()->get('search_by'));
+            
+        }
+
+        return [
+            $trustees,
+            $filters
+        ];
     }
 
     private function exportListToExcel($trustees)
     {
-        $trustees = MemberTrustee::with('user', 'member')->orderBy('tid', 'asc')->get();
+        list($trustees) = $this->trusteeSearch();
+        $trustees = $trustees->get();
+        //$trustees = MemberTrustee::with('user', 'member')->orderBy('tid', 'asc')->get();
         return Excel::download(new TrusteesListExport($trustees), 'trustees.xlsx');
     }
 

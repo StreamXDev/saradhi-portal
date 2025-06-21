@@ -6,11 +6,34 @@
         <h1 class="title">Trustees</h1>
         <div><small class="text-muted">Showing <strong>{{$trustees->currentPage()}}</strong> to <strong>{{$trustees->count()}}</strong> of <strong>{{$trustees->total()}}</strong> results</small></div>
     </div>
-    <div class="actions">
-        <form action="" method="GET">
-            <button name="export" value="true" class="btn btn-outline-default">Export</button>
-        </form>
+    <div class="actions"></div>
+</div>
+<div class="page-search">
+    <div class="page-title box-title">
+        <h2 class="title">Search &amp; Filter</h2>
     </div>
+    <form action="" method="">
+        <div class="form-group no-margin">
+            <div class="row">
+                <div class="col-md-3">
+                    <input type="text" name="search_by" id="search_by" placeholder="Name/Email/Phone/TID/MID" class="form-control" value="{{ $filters['search_by'] }}">
+                </div>
+                <div class="col-md-2">
+                    <select name="status" id="search_status" class="form-select">
+                        <option value="">Status</option>
+                        <option value="active" @if($filters['status'] == 'active') selected @endif>Active</option>
+                        <option value="inactive" @if($filters['status'] == 'inactive') selected @endif>Inactive</option>
+                        <option value="terminated" @if($filters['status'] == 'terminated') selected @endif>Terminated</option>
+                    </select>
+                </div>
+                <div class="col-md-7" style="display: flex; align-items:center; column-gap:0.5rem">
+                    <input type="submit" name="search" value="Search" class="btn btn-primary">
+                    <input type="button" value="CLEAR" class="btn btn-outline-default" onClick="clearForm();">
+                    <button type="submit" name="export" value="export" class="btn btn-outline-default btn-right" style="margin-left: auto"><i class="fa-regular fa-file-excel"></i> Export</button>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
 <div class="page-content">
     <div class="list-container">
@@ -20,6 +43,7 @@
                     <th></th>
                     <th>Name</th>
                     <th>Trustee ID</th>
+                    <th>MID</th>
                     <th>Status</th>
                     <th></th>
                 </tr>
@@ -38,6 +62,7 @@
                         </td>
                         <td>{{ ucwords(strtolower($trustee->user->name)) }}</td>
                         <td>{{ $trustee->tid }}</td>
+                        <td>{{ $trustee->member->membership->mid }}</td>
                         <td>{{ ucwords(strtolower($trustee->status)) }}</td>
                         <td>
                             <div class="actions">
