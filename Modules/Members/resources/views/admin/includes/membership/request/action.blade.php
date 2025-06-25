@@ -35,38 +35,9 @@
             </div>
         </div>
     @endif
-
-    @if($current_status->rejected == null)
-        <button class="btn btn-xs btn-danger" data-bs-toggle="modal" data-bs-target="#requestActionReject">Reject</button>
-        <div class="modal fade" id="requestActionReject" tabindex="-1" aria-labelledby="requestActionRejectLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form action="{{ route('admin.member.change_status') }}" method="post">
-                        @csrf
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="requestActionRejectLabel">Reject Request</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group"><strong>Are you sure want to Reject the request?</strong></div>
-                            <input type="hidden" name="user_id" value="{{ $member->user_id }}">
-                            <input type="hidden" name="current_status_id" value="{{ $request_action->request_status_id }}">
-                            <input type="hidden" name="action" value="reject">
-                            <div class="form-group">
-                                <textarea name="remark" id="remark" cols="30" rows="5" placeholder="Enter comment" class="form-control"></textarea>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-danger" name="reject">Reject</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    @endif
 @else
     <button class="btn btn-xs @if($current_status->rejected == null) btn-success @else btn-warning @endif" data-bs-toggle="modal" data-bs-target="#requestActionModal">{{ $request_action->action['name'] }}</button>
+    @if($current_status->rejected) <!-- <button class="btn btn-xs btn-danger" data-bs-toggle="modal" data-bs-target="#memberDeleteModal">Delete Request</button> -->@endif
     <div class="modal fade" id="requestActionModal" tabindex="-1" aria-labelledby="requestActionModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -99,3 +70,34 @@
     </div>
     
 @endif
+@if($current_status->rejected == null)
+    <button class="btn btn-xs btn-danger" data-bs-toggle="modal" data-bs-target="#requestActionReject">Reject</button>
+    <div class="modal fade" id="requestActionReject" tabindex="-1" aria-labelledby="requestActionRejectLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ route('admin.member.change_status') }}" method="post">
+                    @csrf
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="requestActionRejectLabel">Reject Request</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group"><strong>Are you sure want to Reject the request?</strong></div>
+                        <input type="hidden" name="user_id" value="{{ $member->user_id }}">
+                        <input type="hidden" name="current_status_id" value="{{ $request_action->request_status_id }}">
+                        <input type="hidden" name="action" value="reject">
+                        <div class="form-group">
+                            <textarea name="remark" id="remark" cols="30" rows="5" placeholder="Enter comment" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger" name="reject">Reject</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endif
+
+

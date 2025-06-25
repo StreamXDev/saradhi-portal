@@ -98,24 +98,6 @@ class MemberController extends Controller
             });
             $filters->put('unit', request()->get('unit'));
         }
-        /*
-        if (request()->get('search_by') != null){
-            $input = request()->get('search_by');
-            $members->whereHas('user', function($q) use ($input) {
-                    return $q->where('name', 'LIKE', '%' . $input . '%')->where('active',1);
-                })
-                ->orWhereHas('user', function($q) use ($input) {
-                    return $q->where('email', $input)->where('active',1);
-                })
-                ->orWhereHas('user', function($q) use ($input) {
-                    return $q->where('phone', $input)->where('active',1);
-                })
-                ->orWhereHas('membership', function($q) use ($input) {
-                    return $q->where('mid', $input);
-                });
-
-            $filters->put('search_by', request()->get('search_by'));
-        }*/
         if (request()->get('search_by') != null){
             $search = request()->get('search_by');
             $members->when($search, function ($query, $search) {
@@ -1500,5 +1482,70 @@ class MemberController extends Controller
         Membership::where('expiry_date', '<', $lastDate )->where('status','active')->update([
             'status' => 'dormant'
         ]);
+    }
+
+    /**
+     * Delete Member
+     */
+    public function deleteMember(Request $request)
+    {
+        $input = $request->all();
+
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'bail|required',
+            'user_name' => 'required',
+            'confirm_text' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return Redirect::back()->withErrors($validator)->with('error', 'Some fields are not valid');
+        }
+        if($input['confirm_text'] !== 'Delete '.$input['user_name']){
+            return Redirect::back()->with('error', 'The confirmation text you entered is invalid');
+        }
+
+        $user = User::where('id',$input['user_id'])->first();
+        $member = Member::where('user_id',$input['user_id'])->first();
+        $membership = Membership::where('user_id',$input['user_id'])->first();
+        $memberDetail = MemberDetail::where('user_id',$input['user_id'])->first();
+        $memberAddressLocal = MemberLocalAddress::where('user_id',$input['user_id'])->first();
+        $memberAddressPermenant = MemberPermanentAddress::where('user_id',$input['user_id'])->first();
+        $memberNotes = MemberNote::where('user_id',$input['user_id'])->get();
+        $memberTrustee = MemberTrustee::where('user_id',$input['user_id'])->first();
+        $membershipRequests = MembershipRequest::where('user_id',$input['user_id'])->get();
+        // Member relations
+        $spouseEnum = MemberEnum::where('type', 'relationship')->where('slug','spouse')->first();
+        $memberHasSpouse = MemberRelation::where('member_id', $member->id)->where('relationship_id',$spouseEnum->id)->first(); 
+        $memberRelations = MemberRelation::where('member_id', $member->id)->orWhere('related_member_id', $member->id)->get();
+
+        DB::beginTransaction();
+
+        MembershipRequest::where('user_id',$input['user_id'])->delete();
+        if($memberRelations){
+            if(!$memberHasSpouse){
+                foreach($memberRelations as $relation){
+                    if($relation->delpentent_id !== null){
+                        $dependent_id = $relation->dependent_id;
+                        MemberDependent::where('id', $dependent_id)->delete();
+                        MemberDependent::where('dependent_id',$dependent_id)->delete(); //deleting if the dependent have siblings row
+                        $relation->delete();
+                    }
+                }
+            }
+            foreach($memberRelations as $relation){
+                $relation->delete();
+            }
+        }
+        MemberTrustee::where('user_id',$input['user_id'])->delete();
+        MemberNote::where('user_id',$input['user_id'])->delete();
+        $memberAddressPermenant->delete();
+        $memberAddressLocal->delete();
+        $memberDetail->delete();
+        $membership->delete();
+        $member->delete();
+        $user->delete();
+
+        DB::commit();
+
+        return redirect('admin/members')->with('success', 'The user deleted successfully');        
     }
 }

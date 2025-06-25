@@ -607,6 +607,38 @@
     </div>
 </div>
 
+
+<!-- Member Request Delete -->
+<div class="modal fade" id="memberDeleteModal" tabindex="-1" aria-labelledby="memberDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('admin.member.delete') }}" method="post" id="deleteMemberForm">
+                @csrf
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="memberDeleteModalLabel">Delete Member</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group text-danger"><strong>Do you want to delete the request?<br /> This action can't be undone.</strong></div>
+                    <div class="mt-2">Please type <strong>Delete {{$member->name}}</strong></strong></div>
+                    <input type="hidden" name="user_id" value="{{ $member->user_id }}">
+                    <input type="hidden" name="user_name" id="del_user_name" value="{{ $member->name }}">
+                    <div class="form-group">
+                        <input type="text" name="confirm_text" id="delete_confirm_text" class="form-control">
+                        <div class="invalid-feedback">
+                            Invalid text.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" id="delete_member" class="btn btn-success">Delete User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- End: Member Request delete -->
 @endsection
 @section('page_scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.6.1/jquery.zoom.min.js"></script>
@@ -624,6 +656,17 @@
 
     $(document).ready(function(){
         //$('.zoom-photo').wrap('<span style="display:inline-block"></span>').css('display', 'block').parent().zoom();
+        $('#delete_member').on('click', function(e){
+            e.preventDefault();
+            $('#delete_confirm_text').removeClass('is-invalid');
+            var memberName = $('#del_user_name').val();
+            var confirmText = $('#delete_confirm_text').val();
+            if(confirmText !== 'Delete '+memberName || confirmText === '' || confirmText === undefined){
+                $('#delete_confirm_text').addClass('is-invalid');
+            }else{
+                $('#deleteMemberForm').submit();
+            }
+        });
     });
 </script>
 @endsection
