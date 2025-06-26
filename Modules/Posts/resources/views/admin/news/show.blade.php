@@ -3,7 +3,7 @@
 <div class="page-title">
     <h1 class="title">News</h1>
     <div>
-        <a href="/admin/posts/{{$post->id}}/edit" class="btn btn-outline-primary">Edit</a>
+        @can('post.edit')<a href="/admin/posts/{{$post->id}}/edit" class="btn btn-outline-primary">Edit</a>@endcan
     </div>
 </div>
 <div class="page-content">

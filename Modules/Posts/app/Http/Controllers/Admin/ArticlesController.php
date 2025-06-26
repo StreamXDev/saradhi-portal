@@ -16,6 +16,18 @@ class ArticlesController extends Controller
 {
     /**
      * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    function __construct()
+    {
+        $this->middleware('permission:post.create', ['only' => ['create','store']]);
+        $this->middleware('permission:post.edit', ['only' => ['edit','update']]);
+        $this->middleware('permission:post.delete', ['only' => ['destroy']]);
+    }
+    
+    /**
+     * Display a listing of the resource.
      */
     public function index()
     {

@@ -3,7 +3,7 @@
 <div class="page-title">
     <h1 class="title">Krithikal</h1>
     <div>
-        <a href="/admin/articles/create" class="btn btn-primary">Add New</a>
+        @can('post.create')<a href="/admin/articles/create" class="btn btn-primary">Add New</a>@endcan
     </div>
 </div>
 <div class="page-content">
@@ -32,12 +32,14 @@
                 <td>
                     <div class="actions">
                         <a href="/admin/articles/{{ $article->id }}" class="btn"><i class="fa-solid fa-eye"></i></a>
-                        <a href="/admin/articles/{{$article->id}}/edit" class="btn"><i class="fa-solid fa-pencil"></i></a>
+                        @can('post.edit')<a href="/admin/articles/{{$article->id}}/edit" class="btn"><i class="fa-solid fa-pencil"></i></a>@endcan
+                        @can('post.delete')
                         <form method="POST" action="{{ route('admin.articles.destroy', $article->id) }}" onSubmit="if(!confirm('Are you sure want to delete this article?')){return false;}">
                             @csrf
                             @method('delete')
                             <button type="submit" class="btn"><i class="fa-solid fa-trash"></i></button>
                         </form>
+                        @endcan
                     </div>
                 </td>
             </tr>
