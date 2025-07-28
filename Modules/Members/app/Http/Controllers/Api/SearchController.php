@@ -42,6 +42,21 @@ class SearchController extends BaseController
             ]
         );
         
+        if (request()->get('status') != null){
+            $input = request()->get('status');
+            $members->whereHas('membership', function($q) use ($input) {
+                return $q->where('status', $input);
+            });
+            $filters->put('status', request()->get('status'));
+        }
+
+        if (request()->get('unit') != null){
+            $input = request()->get('unit');
+            $members->whereHas('details', function($q) use ($input) {
+                return $q->where('member_unit_id', request()->get('unit'));
+            });
+            $filters->put('unit', request()->get('unit'));
+        }
 
         if (request()->get('blood_group') != null){
             $input = request()->get('blood_group');
@@ -49,6 +64,27 @@ class SearchController extends BaseController
             $filters->put('blood_group', request()->get('blood_group'));
         }
 
+        if (request()->get('search_by') != null){
+            $search = request()->get('search_by');
+            $members->when($search, function ($query, $search) {
+                $query->where(function ($_query) use ($search) {
+                    $_query->orWhereHas('user', function ($query) use ($search) {
+                            return $query->where('name', 'like', '%'.$search.'%')->where('active',1);
+                        })
+                        ->orWhereHas('user', function($query) use ($search) {
+                            return $query->where('email', $search)->where('active',1);
+                        })
+                        ->orWhereHas('user', function($query) use ($search) {
+                            return $query->where('phone', $search)->where('active',1);
+                        })
+                        ->orWhereHas('membership', function($query) use ($search) {
+                            return $query->where('mid', $search);
+                        });
+                });
+            });
+            $filters->put('search_by', request()->get('search_by'));
+        }
+        /*
         if (request()->get('search_by') != null){
             $input = request()->get('search_by');
             $members->whereHas('user', function($q) use ($input) {
@@ -66,6 +102,7 @@ class SearchController extends BaseController
 
             $filters->put('search_by', request()->get('search_by'));
         }
+            */
 
         $results  = $members->paginate(20);
         foreach($results as $key => $result){

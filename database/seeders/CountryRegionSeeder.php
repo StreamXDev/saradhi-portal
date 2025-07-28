@@ -21,11 +21,9 @@ class CountryRegionSeeder extends Seeder
             ], [
                 'name' => $country['name'],
                 'calling_code' => (int) $country['calling_code'],
-                'active' => 1
             ]);
 
             foreach (SquireRegion::where('country_id', $country['code_2'])->get() as $region) {
-//                echo "Seeding: ".$region['name']."\n";
                 $countryInstance->regions()->updateOrCreate([
                     'code' => $region['code']
                 ], [
