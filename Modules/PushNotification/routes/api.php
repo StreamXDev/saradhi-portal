@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\PushNotification\Http\Controllers\Api\DeviceApiController;
+use Modules\PushNotification\Http\Controllers\Api\NotificationController;
 use Modules\PushNotification\Http\Controllers\PushNotificationController;
 
 /*
@@ -19,4 +20,9 @@ Route::middleware(['auth:sanctum','verified_email'])->prefix('notification')->gr
     Route::controller(DeviceApiController::class)->group(function(){
         Route::put('device', 'storeDevice');
     });
+});
+
+Route::controller(NotificationController::class)->prefix('notification')->group(function(){
+    Route::get('/', 'index');
+    Route::get('/{id}', 'show');
 });
