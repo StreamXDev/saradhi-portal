@@ -258,7 +258,7 @@ class ProfileController extends BaseController
     }
 
     /* ------------------------------- DEPENDENT ----------------------------------------------------- */
-
+    
     public function createDependent()
     {
         $countries = Country::with('regions')->where('active', 1)->get();
@@ -481,6 +481,24 @@ class ProfileController extends BaseController
         
         $data = $this->getProfileData();
         return $this->sendResponse($data, 'Profile Details');
+    }
+
+    public function editDependent($id)
+    {
+        $countries = Country::with('regions')->where('active', 1)->get();
+        $blood_groups = MemberEnum::select('id', 'slug', 'name')->where('type', 'blood_group')->get();
+        $dependent = MemberDependent::where('id', $id)->first();
+        $gender = array(
+            ['id' => 1, 'name'=>'Male', 'slug' => 'male'], 
+            ['id' => 2, 'name' => 'Female', 'slug' => 'female']
+        );
+        $data = [
+            'dependent' => $dependent,
+            'countries' => $countries,
+            'blood_groups' => $blood_groups,
+            'gender' => $gender
+        ];
+        return $this->sendResponse($data);
     }
 
     public function updateDependent(Request $request)

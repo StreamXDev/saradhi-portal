@@ -38,6 +38,7 @@ Route::middleware(['auth:sanctum','verified_email'])->prefix('member')->group(fu
         Route::post('update', 'updateProfile');
         Route::get('create_dependent', 'createDependent');
         Route::post('create_dependent', 'storeDependent');
+        Route::get('update_dependent/{id?}', 'editDependent');
         Route::post('update_dependent', 'updateDependent');
         Route::post('delete_dependent', 'deleteDependent');
     });
