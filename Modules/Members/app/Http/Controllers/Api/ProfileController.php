@@ -488,6 +488,7 @@ class ProfileController extends BaseController
         $countries = Country::with('regions')->where('active', 1)->get();
         $blood_groups = MemberEnum::select('id', 'slug', 'name')->where('type', 'blood_group')->get();
         $dependent = MemberDependent::where('id', $id)->first();
+        $dependent->avatar = url('storage/images/'. $dependent->avatar);
         $gender = array(
             ['id' => 1, 'name'=>'Male', 'slug' => 'male'], 
             ['id' => 2, 'name' => 'Female', 'slug' => 'female']
