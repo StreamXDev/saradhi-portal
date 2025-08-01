@@ -85,10 +85,11 @@ class NotificationController extends Controller
     /**
      * Send User notification 
      */
-    public function sendUserPushNotification($user,$title,$body=null,$link=null,$image=null)
+    public function sendTestNotification()
     {
-        
-        //return redirect()->back()->with('success', 'Message Sent');   
+        $message = PnMessage::latest()->first();
+        $user = 1;
+        $devicesSent = $this->notify($user, $message->title, $message->description, $message->id);
     }
 
     /**
