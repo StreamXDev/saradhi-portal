@@ -82,15 +82,7 @@ class NotificationController extends Controller
     }
 
 
-    /**
-     * Send User notification 
-     */
-    public function sendTestNotification()
-    {
-        $message = PnMessage::latest()->first();
-        $user = 1;
-        $devicesSent = $this->notify($user, $message->title, $message->description, $message->id);
-    }
+    
 
     /**
      * Send Notification function (private)

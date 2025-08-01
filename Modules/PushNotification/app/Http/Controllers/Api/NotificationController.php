@@ -28,4 +28,15 @@ class NotificationController extends BaseController
         $notification = PnMessage::where('id',$id)->first();
         return $this->sendResponse($notification);
     }
+
+    /**
+     * Send User notification 
+     */
+    public function sendTestNotification()
+    {
+        $message = PnMessage::latest()->first();
+        $user = 1;
+        $notification = $this->notify($user, $message->title, $message->description, $message->id);
+        return $this->sendResponse($notification);
+    }
 }
