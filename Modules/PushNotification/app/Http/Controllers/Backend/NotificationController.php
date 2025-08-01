@@ -90,6 +90,7 @@ class NotificationController extends Controller
         $message = PnMessage::latest()->first();
         $user = 1;
         $this->notify($user, $message->title, $message->description, $message->id);
+        return redirect('/admin/push-notification')->with('success', 'Notification sent successfully');
     }
 
     /**
