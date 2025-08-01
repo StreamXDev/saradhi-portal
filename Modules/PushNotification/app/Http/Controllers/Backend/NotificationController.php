@@ -60,7 +60,7 @@ class NotificationController extends Controller
         ]);
 
         foreach($users as $key => $user){
-            $devicesSent = $this->notify($user->id, $message->title, $message->description);
+            $devicesSent = $this->notify($user->id, $message->title, $message->description, $message->id);
             if(count($devicesSent) > 0){
                 PnMessage::where([
                     'id' => $message->id
@@ -94,7 +94,7 @@ class NotificationController extends Controller
     /**
      * Send Notification function (private)
     */
-    private function notify($user=null,$title,$description=null,$link=null,$image=null){
+    private function notify($user=null, $title, $description=null, $notificationId=null, $link=null, $image=null){
         $devices = PnDevice::where('user_id', $user)->get();
         $devicesSent = [];
         foreach($devices as $device){
@@ -122,6 +122,10 @@ class NotificationController extends Controller
                         "title" => $title,
                         "body" => $description,
                     ],
+                    "data" => [
+                        "screen" => 'notification',
+                        "id" => $notificationId
+                    ]
                 ]
             ];
             $payload = json_encode($data);
