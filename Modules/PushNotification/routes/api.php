@@ -25,5 +25,4 @@ Route::middleware(['auth:sanctum','verified_email'])->prefix('notification')->gr
 Route::controller(NotificationController::class)->prefix('notification')->group(function(){
     Route::get('/', 'index');
     Route::get('/{id}', 'show');
-    Route::get('/test', 'sendTestNotification');
 });

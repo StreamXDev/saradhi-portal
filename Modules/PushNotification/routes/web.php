@@ -22,5 +22,6 @@ Route::prefix('admin/push-notification')->middleware(['auth:sanctum', 'verified_
     Route::controller(NotificationController::class)->group(function(){
         Route::get('/', 'index');
         Route::post('/send', 'storeAndSend')->name('admin.pushnotification.send');
+        Route::get('/test', 'sendTestNotification');
     });
 });
