@@ -120,6 +120,10 @@ class NotificationController extends Controller
             $data = [
                 "message" => [
                     "token" => $device->token,
+                    "data" => [
+                        "screen" => 'notification',
+                        "id" => 22
+                    ],
                     "notification" => [
                         "title" => $title,
                         "body" => $description,
