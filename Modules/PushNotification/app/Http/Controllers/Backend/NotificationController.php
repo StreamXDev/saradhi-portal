@@ -120,13 +120,20 @@ class NotificationController extends Controller
             $data = [
                 "message" => [
                     "token" => $device->token,
+                    "topic" => 'notification',
                     "notification" => [
                         "title" => $title,
                         "body" => $description,
-                    ]
+                    ],
+                    "data" => [
+                        "id" => 22
+                    ],
                 ]
             ];
+            
+            
             $payload = json_encode($data);
+            dd($payload);
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send");
