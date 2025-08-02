@@ -118,6 +118,7 @@ class NotificationController extends Controller
         foreach($devices as $device){
             //send notification to device
 
+            /*
             $notification = array(
                 'tittle' => $title,
                 'text' => $description,
@@ -136,7 +137,8 @@ class NotificationController extends Controller
                 'data' => $data,
                 'content_available' => true
             );
-            /*
+            */
+            
             $data = [
                 "message" => [
                     "token" => $device->token,
@@ -146,7 +148,7 @@ class NotificationController extends Controller
                     ],
                 ]
             ];
-            */
+            
             
             $payload = json_encode($arrayToSend);
 
