@@ -99,23 +99,24 @@ class NotificationController extends Controller
     private function notify($user=null, $title, $description=null, $notificationId=null, $link=null, $image=null){
         $devices = PnDevice::where('user_id', $user)->get();
         $devicesSent = [];
+        $projectId = env('FIREBASE_PROJECT_NUMBER'); 
+
+        $credentialsFilePath = Storage::path('json/service-account.json');
+        $client = new GoogleClient();
+        $client->setAuthConfig($credentialsFilePath);
+        $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+        $client->refreshTokenWithAssertion();
+        $token = $client->getAccessToken();
+
+        $access_token = $token['access_token'];
+
+        $headers = [
+            "Authorization: Bearer $access_token",
+            'Content-Type: application/json'
+        ];
+        
         foreach($devices as $device){
             //send notification to device
-            $projectId = env('FIREBASE_PROJECT_NUMBER'); 
-
-            $credentialsFilePath = Storage::path('json/service-account.json');
-            $client = new GoogleClient();
-            $client->setAuthConfig($credentialsFilePath);
-            $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
-            $client->refreshTokenWithAssertion();
-            $token = $client->getAccessToken();
-
-            $access_token = $token['access_token'];
-
-            $headers = [
-                "Authorization: Bearer $access_token",
-                'Content-Type: application/json'
-            ];
 
             $notification = array(
                 'tittle' => $title,
