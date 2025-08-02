@@ -123,8 +123,6 @@ class NotificationController extends Controller
                     "notification" => [
                         "title" => $title,
                         "body" => $description,
-                        "screen" => 'notification',
-                        "id" => 22
                     ]
                 ]
             ];
