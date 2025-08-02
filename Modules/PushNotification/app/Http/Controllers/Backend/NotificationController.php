@@ -117,6 +117,25 @@ class NotificationController extends Controller
                 'Content-Type: application/json'
             ];
 
+            $notification = array(
+                'tittle' => $title,
+                'text' => $description,
+                'body' => $description,
+                'sound' => 'default',
+                'badge' => 1
+            );
+            $data = array(
+                'screen' => 'notification',
+                'id' => $notificationId
+            );
+            $arrayToSend = array(
+                'to' => $device->token,
+                'notification' => $notification,
+                'priority' => 'high',
+                'data' => $data,
+                'content_available' => true
+            );
+            /*
             $data = [
                 "message" => [
                     "token" => $device->token,
@@ -130,9 +149,9 @@ class NotificationController extends Controller
                     ],
                 ]
             ];
+            */
             
-            
-            $payload = json_encode($data);
+            $payload = json_encode($arrayToSend);
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send");
