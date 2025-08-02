@@ -114,7 +114,7 @@ class NotificationController extends Controller
             "Authorization: Bearer $access_token",
             'Content-Type: application/json'
         ];
-        
+
         foreach($devices as $device){
             //send notification to device
 
@@ -130,7 +130,7 @@ class NotificationController extends Controller
                 'id' => $notificationId
             );
             $arrayToSend = array(
-                'to' => $device->token,
+                'token' => $device->token,
                 'notification' => $notification,
                 'priority' => 'high',
                 'data' => $data,
@@ -140,13 +140,9 @@ class NotificationController extends Controller
             $data = [
                 "message" => [
                     "token" => $device->token,
-                    "topic" => 'notification',
                     "notification" => [
                         "title" => $title,
                         "body" => $description,
-                    ],
-                    "data" => [
-                        "id" => 22
                     ],
                 ]
             ];
