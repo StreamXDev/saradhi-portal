@@ -89,8 +89,9 @@ class NotificationController extends Controller
     {
         $message = PnMessage::latest()->first();
         $user = 1;
-        $devicesSent = $this->notify($user, $message->title, $message->description, $message->id);
-        return redirect('/admin/push-notification')->with('success', 'Notification sent successfully to '.count($devicesSent). 'devices');
+        $response = $this->notify($user, $message->title, $message->description, $message->id);
+        dd($response);
+        //return redirect('/admin/push-notification')->with('success', 'Notification sent successfully to '.count($devicesSent). 'devices');
     }
 
     /**
@@ -118,7 +119,7 @@ class NotificationController extends Controller
         foreach($devices as $device){
             //send notification to device
 
-            /*
+            
             $notification = array(
                 'tittle' => $title,
                 'text' => $description,
@@ -137,7 +138,8 @@ class NotificationController extends Controller
                 'data' => $data,
                 'content_available' => true
             );
-            */
+            
+            /*
             
             $data = [
                 "message" => [
@@ -149,17 +151,18 @@ class NotificationController extends Controller
                 ]
             ];
             
-            
-            $payload = json_encode($data);
+            */
+            $payload = json_encode($arrayToSend);
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
             curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
             curl_setopt($ch, CURLOPT_VERBOSE, true); // Enable verbose output for debugging
+            curl_setopt($ch, CURLOPT_HEADER, true); 
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
             $response = curl_exec($ch);
             $err = curl_error($ch);
             curl_close($ch);
@@ -171,6 +174,7 @@ class NotificationController extends Controller
             }
         }
         
-        return $devicesSent;
+        //return $devicesSent;
+        return $response;
     }
 }
