@@ -150,7 +150,7 @@ class NotificationController extends Controller
                     ],
                     "data" => [
                         "screen" => "notification",
-                        "id" => "22",
+                        "id" => "".$notificationId, // converting to string
                     ],
                 ]
             ];
