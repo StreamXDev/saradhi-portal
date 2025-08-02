@@ -119,7 +119,7 @@ class NotificationController extends Controller
         foreach($devices as $device){
             //send notification to device
 
-            
+            /*
             $notification = array(
                 'tittle' => $title,
                 'text' => $description,
@@ -139,7 +139,7 @@ class NotificationController extends Controller
                 'content_available' => true
             );
             
-            /*
+            */
             
             $data = [
                 "message" => [
@@ -148,11 +148,15 @@ class NotificationController extends Controller
                         "title" => $title,
                         "body" => $description,
                     ],
+                    "data" => [
+                        "screen" => "notification",
+                        "id" => $notificationId,
+                    ],
                 ]
             ];
             
-            */
-            $payload = json_encode($arrayToSend);
+            
+            $payload = json_encode($data);
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send");
