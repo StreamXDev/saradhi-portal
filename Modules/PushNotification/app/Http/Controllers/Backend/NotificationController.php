@@ -133,7 +133,6 @@ class NotificationController extends Controller
             
             
             $payload = json_encode($data);
-            dd($payload);
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send");
