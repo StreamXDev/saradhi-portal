@@ -89,8 +89,62 @@ class NotificationController extends Controller
     {
         $message = PnMessage::latest()->first();
         $user = 1;
-        $response = $this->notify($user, $message->title, $message->description, $message->id);
-        dd($response);
+        $devices = [
+            [
+                'token' => 'dlLsUeF0TCqFK0kthmDh7n:APA91bGtiTJs5fcZQdRcuvOHc7-CLZvgguDrAgWpt0B4owJGu1kcduyecAk81Bq7bYZh9KVWngiipCiXPL74_YoAQhVjBkxA4Yc0TClM_opvLZjQj06fjkQ'
+            ],
+            [
+                'token' => 'dwFCti-VVUDRlx_v7Fe5FD:APA91bHRIUFBJ6J7qrZFKG9sCRIKmbg660w5LXRnK84Gw_BC6pxHGYqHlQBmrLRd2rWnSNZY4XvG5JR69jYmSEMa4ca6COg0q4qXTdHRMoug9WXyBES-3mM'
+            ],
+        ];
+
+        $projectId = env('FIREBASE_PROJECT_NUMBER'); 
+        $credentialsFilePath = Storage::path('json/service-account.json');
+        $client = new GoogleClient();
+        $client->setAuthConfig($credentialsFilePath);
+        $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+        $client->refreshTokenWithAssertion();
+        $token = $client->getAccessToken();
+
+        $access_token = $token['access_token'];
+
+        $headers = [
+            "Authorization: Bearer $access_token",
+            'Content-Type: application/json'
+        ];
+
+        foreach($devices as $device){
+            //send notification to device
+            
+            $data = [
+                "message" => [
+                    "token" => $device['token'],
+                    "notification" => [
+                        "title" => $message->title,
+                        "body" => $message->description,
+                    ],
+                    "data" => [
+                        "screen" => "notification",
+                        "id" => "".$message->id,
+                    ],
+                ]
+            ];
+            $payload = json_encode($data);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_VERBOSE, true); // Enable verbose output for debugging
+            curl_setopt($ch, CURLOPT_HEADER, true); 
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $response = curl_exec($ch);
+            $err = curl_error($ch);
+            curl_close($ch);
+            dd($response);
+        }
+        
         //return redirect('/admin/push-notification')->with('success', 'Notification sent successfully to '.count($devicesSent). 'devices');
     }
 
@@ -118,28 +172,6 @@ class NotificationController extends Controller
 
         foreach($devices as $device){
             //send notification to device
-
-            /*
-            $notification = array(
-                'tittle' => $title,
-                'text' => $description,
-                'body' => $description,
-                'sound' => 'default',
-                'badge' => 1
-            );
-            $data = array(
-                'screen' => 'notification',
-                'id' => $notificationId
-            );
-            $arrayToSend = array(
-                'token' => $device->token,
-                'notification' => $notification,
-                'priority' => 'high',
-                'data' => $data,
-                'content_available' => true
-            );
-            
-            */
             
             $data = [
                 "message" => [
