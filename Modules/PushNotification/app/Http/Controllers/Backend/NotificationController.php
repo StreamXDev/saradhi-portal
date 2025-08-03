@@ -89,10 +89,11 @@ class NotificationController extends Controller
     {
         $message = PnMessage::latest()->first();
         $user = 1;
+        /*
+        $response = $this->notify($user, $message->title, $message->description, $message->id);
+        dd($response);
+        */
         $devices = [
-            [
-                'token' => 'dkuwzrUUhUgeiB10TqoBGB:APA91bGZSKtOYvaPtttVSjyQVskvcE7xB1vnKFGYEhL01bDDwnfFCzPyu1xbCGcPDSIU5B6j-z_aalEk9sod8JIFL1kyQNY2ZosBWJRa2C5s518Xw5XyLo0'
-            ],
             [
                 'token' => 'dlLsUeF0TCqFK0kthmDh7n:APA91bGtiTJs5fcZQdRcuvOHc7-CLZvgguDrAgWpt0B4owJGu1kcduyecAk81Bq7bYZh9KVWngiipCiXPL74_YoAQhVjBkxA4Yc0TClM_opvLZjQj06fjkQ'
             ],
