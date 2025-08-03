@@ -91,10 +91,10 @@ class NotificationController extends Controller
         $user = 1;
         $devices = [
             [
-                'token' => 'dlLsUeF0TCqFK0kthmDh7n:APA91bGtiTJs5fcZQdRcuvOHc7-CLZvgguDrAgWpt0B4owJGu1kcduyecAk81Bq7bYZh9KVWngiipCiXPL74_YoAQhVjBkxA4Yc0TClM_opvLZjQj06fjkQ'
+                'token' => 'dkuwzrUUhUgeiB10TqoBGB:APA91bGZSKtOYvaPtttVSjyQVskvcE7xB1vnKFGYEhL01bDDwnfFCzPyu1xbCGcPDSIU5B6j-z_aalEk9sod8JIFL1kyQNY2ZosBWJRa2C5s518Xw5XyLo0'
             ],
             [
-                'token' => 'dwFCti-VVUDRlx_v7Fe5FD:APA91bHRIUFBJ6J7qrZFKG9sCRIKmbg660w5LXRnK84Gw_BC6pxHGYqHlQBmrLRd2rWnSNZY4XvG5JR69jYmSEMa4ca6COg0q4qXTdHRMoug9WXyBES-3mM'
+                'token' => 'dlLsUeF0TCqFK0kthmDh7n:APA91bGtiTJs5fcZQdRcuvOHc7-CLZvgguDrAgWpt0B4owJGu1kcduyecAk81Bq7bYZh9KVWngiipCiXPL74_YoAQhVjBkxA4Yc0TClM_opvLZjQj06fjkQ'
             ],
         ];
 
