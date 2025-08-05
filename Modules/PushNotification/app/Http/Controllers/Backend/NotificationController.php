@@ -90,13 +90,14 @@ class NotificationController extends Controller
         $message = PnMessage::latest()->first();
         $user = 1;
         
+        /*
         $response = $this->notify($user, $message->title, $message->description, $message->id);
         dd($response);
+        */
         
-       /*
         $devices = [
             [
-                'token' => 'dlLsUeF0TCqFK0kthmDh7n:APA91bGtiTJs5fcZQdRcuvOHc7-CLZvgguDrAgWpt0B4owJGu1kcduyecAk81Bq7bYZh9KVWngiipCiXPL74_YoAQhVjBkxA4Yc0TClM_opvLZjQj06fjkQ'
+                'token' => 'eINOKUM9dklGgQldRel37U:APA91bHF4RaY9tPbMrn-LQ_NHdU66FOAFsUCcaNxJ7LKwM0_V8iVo15OWagcInqMFW-5eU1CuWf0Z9VAziYA7EsFOgBcrRF6lx8cRwo3-24vK_3WBNkg_EU'
             ],
         ];
 
@@ -146,7 +147,7 @@ class NotificationController extends Controller
             curl_close($ch);
             dd($response);
         }
-        */
+        
         //return redirect('/admin/push-notification')->with('success', 'Notification sent successfully to '.count($devicesSent). 'devices');
     }
 
