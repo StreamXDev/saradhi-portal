@@ -97,7 +97,7 @@ class NotificationController extends Controller
         
         $devices = [
             [
-                'token' => 'eINOKUM9dklGgQldRel37U:APA91bHF4RaY9tPbMrn-LQ_NHdU66FOAFsUCcaNxJ7LKwM0_V8iVo15OWagcInqMFW-5eU1CuWf0Z9VAziYA7EsFOgBcrRF6lx8cRwo3-24vK_3WBNkg_EU'
+                'token' => 'dCx3b4bSwUBitkxfTxkETr:APA91bHcIXaQK1_QEUR8YtkQIw3WOrRElxviAoTFywflHSZB7xldkg7gtN1g6mNSw8eXeKUZzq_6kUXrufh8RJcQquBtPjf4YkoH9aFotjZA7tnxKN3WSHc'
             ],
         ];
 
