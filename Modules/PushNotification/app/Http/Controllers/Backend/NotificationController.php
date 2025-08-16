@@ -81,6 +81,71 @@ class NotificationController extends Controller
 
     }
 
+    /**
+     * Send Notification function (private)
+    */
+    private function notify($user=null, $title, $description=null, $notificationId=null, $link=null, $image=null){
+        $devices = PnDevice::where('user_id', $user)->get();
+        $devicesSent = [];
+        $projectId = env('FIREBASE_PROJECT_NUMBER'); 
+
+        $credentialsFilePath = Storage::path('json/service-account.json');
+        $client = new GoogleClient();
+        $client->setAuthConfig($credentialsFilePath);
+        $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+        $client->refreshTokenWithAssertion();
+        $token = $client->getAccessToken();
+
+        $access_token = $token['access_token'];
+
+        $headers = [
+            "Authorization: Bearer $access_token",
+            'Content-Type: application/json'
+        ];
+
+        foreach($devices as $device){
+            //send notification to device
+            
+            $data = [
+                "message" => [
+                    "token" => $device->token,
+                    "notification" => [
+                        "title" => $title,
+                        "body" => $description,
+                    ],
+                    "data" => [
+                        "screen" => "notification",
+                        "id" => "".$notificationId, // converting to string
+                    ],
+                ]
+            ];
+            
+            
+            $payload = json_encode($data);
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_VERBOSE, true); // Enable verbose output for debugging
+            curl_setopt($ch, CURLOPT_HEADER, true); 
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $response = curl_exec($ch);
+            $err = curl_error($ch);
+            curl_close($ch);
+
+            $devicesSent[] = $device;
+
+            if ($err) {
+                $devicesSent[]['error'] = $response;
+            }
+        }
+        
+        return $devicesSent;
+    }
+
 
     /**
      * Send User notification 
@@ -149,71 +214,5 @@ class NotificationController extends Controller
         }
         
         //return redirect('/admin/push-notification')->with('success', 'Notification sent successfully to '.count($devicesSent). 'devices');
-    }
-
-    /**
-     * Send Notification function (private)
-    */
-    private function notify($user=null, $title, $description=null, $notificationId=null, $link=null, $image=null){
-        $devices = PnDevice::where('user_id', $user)->get();
-        $devicesSent = [];
-        $projectId = env('FIREBASE_PROJECT_NUMBER'); 
-
-        $credentialsFilePath = Storage::path('json/service-account.json');
-        $client = new GoogleClient();
-        $client->setAuthConfig($credentialsFilePath);
-        $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
-        $client->refreshTokenWithAssertion();
-        $token = $client->getAccessToken();
-
-        $access_token = $token['access_token'];
-
-        $headers = [
-            "Authorization: Bearer $access_token",
-            'Content-Type: application/json'
-        ];
-
-        foreach($devices as $device){
-            //send notification to device
-            
-            $data = [
-                "message" => [
-                    "token" => $device->token,
-                    "notification" => [
-                        "title" => $title,
-                        "body" => $description,
-                    ],
-                    "data" => [
-                        "screen" => "notification",
-                        "id" => "".$notificationId, // converting to string
-                    ],
-                ]
-            ];
-            
-            
-            $payload = json_encode($data);
-
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send");
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_VERBOSE, true); // Enable verbose output for debugging
-            curl_setopt($ch, CURLOPT_HEADER, true); 
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            $response = curl_exec($ch);
-            $err = curl_error($ch);
-            curl_close($ch);
-
-            $devicesSent[] = $device;
-
-            if ($err) {
-                $devicesSent[]['error'] = $response;
-            }
-        }
-        
-        //return $devicesSent;
-        return $response;
     }
 }
