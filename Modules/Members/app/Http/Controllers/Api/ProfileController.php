@@ -550,7 +550,7 @@ class ProfileController extends BaseController
             }
 
             $child->update(Arr::only($input, [
-                'avatar', 'name', 'email', 'calling_code'. 'phone'. 'blood_group', 'dob', 'gender', 'civil_id', 'passport_no', 'passport_expiry'
+                'avatar', 'name', 'email', 'calling_code', 'phone', 'blood_group', 'dob', 'gender', 'civil_id', 'passport_no', 'passport_expiry'
             ]));
     
             $data = $this->getProfileData();
