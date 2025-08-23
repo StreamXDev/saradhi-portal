@@ -305,13 +305,57 @@ class ProfileController extends BaseController
             'committees', 
             'trustee'
         ])->where('user_id' , $user->id)->first();
+        /*
         $validator = Validator::make($request->all(), ...$this->dependentValidationRules($request));
         if($validator->fails()){
             return $this->sendError('Validation Error', $validator->errors(), 403);       
         }
+            */
         $input = $request->all();
         
         if($input['type'] === 'spouse'){
+
+            $validator = Validator::make($request->all(), [
+                'avatar'    => 'required',
+                'name'    => 'required|string',
+                'email' => ['required', Rule::unique(User::class, 'email')],
+                'calling_code'    => 'required',
+                'phone' => ['required', Rule::unique(User::class, 'phone')],
+                'whatsapp_code'    => 'required',
+                'whatsapp'    => 'required|numeric',
+                'emergency_phone_code'    => 'required',
+                'emergency_phone'    => 'required|numeric',
+                'gender' => 'required|string',
+                'dob'    => 'required|date_format:Y-m-d',
+                'blood_group'    => 'required|string',
+                'civil_id'    => 'required|string',
+                'passport_no'    => 'required|string',
+                'passport_expiry'    => 'required|date_format:Y-m-d',
+                
+            ],[
+                'profile_type.required'    => 'Profile type is required',
+                'user_id.required'    => 'Required field',
+                'avatar.required'    => 'Photo is required',
+                'name.required'    => 'Name is required field',
+                'calling_code.required'    => 'Required field',
+                'whatsapp_code.required'    => 'Required field',
+                'whatsapp.required'    => 'Whatsapp is required',
+                'emergency_phone_code.required'    => 'Required field',
+                'emergency_phone.required'    => 'Emergency No. is required',
+                'blood_group.required'    => 'Required field',
+                'dob.required'    => 'Required field',
+                'dob.date_format'    => 'Should be Y-m-d format',
+                'gender.required'    => 'Required field',
+                'civil_id.required'    => 'Required field',
+                'passport_no.required'    => 'Required field',
+                'passport_expiry.required'    => 'Required field',
+                'passport_expiry.date_format'    => 'Should be Y-m-d format',
+            ]);
+
+            if($validator->fails()){
+                return $this->sendError('Validation Error', $validator->errors(), 403);       
+            }
+
             $userInput = [
                 'name' => $input['name'],
                 'email' => $input['email'],
@@ -322,9 +366,12 @@ class ProfileController extends BaseController
             $dependent ['user_id'] = $dependent_user->id;
             $dependent ['name'] = $dependent_user->name;
             $dependent_member = Member::create($dependent);
+
             
-            $dependent_avatarName = 'av'.$dependent_user->id.'_'.time().'.'.mime2ext($input['avatar_mime']);
-            Storage::put('public/images/'.$dependent_avatarName, base64_decode($input['avatar']));
+            if(isset($input['avatar_mime']) && isset($input['avatar'])){
+                $dependent_avatarName = 'av'.$dependent_user->id.'_'.time().'.'.mime2ext($input['avatar_mime']);
+                Storage::put('public/images/'.$dependent_avatarName, base64_decode($input['avatar']));
+            }
             DB::beginTransaction();
             MemberDetail::updateOrCreate(
                 ['user_id' => $dependent_user->id],
@@ -614,6 +661,9 @@ class ProfileController extends BaseController
             $rules['civil_id'] = ['required', 'string'];
             $rules['passport_no'] = ['required', 'string'];
             $rules['passport_expiry'] = ['required', 'date_format:Y-m-d'];
+            $rules['avatar'] = ['required', 'string'];
+
+            
 
             $messages['name.required'] = 'Name is required';
             $messages['email.required'] = 'Email is required';
@@ -636,6 +686,7 @@ class ProfileController extends BaseController
             $messages['passport_no.required'] = 'Passport no. is required';
             $messages['passport_expiry.required'] = 'Expiry date is required';
             $messages['passport_expiry.date_format'] = 'Should be Y-m-d format';
+            $messages['avatar.required'] = 'Profile photo is required';
         }
 
         return [
