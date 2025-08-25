@@ -331,7 +331,8 @@ class ProfileController extends BaseController
                 $dependent_avatarName = 'av'.$dependent_user->id.'_'.time().'.'.mime2ext($input['avatar_mime']);
                 Storage::put('public/images/'.$dependent_avatarName, base64_decode($input['avatar']));
             }
-            try(
+            
+            try{
                 DB::beginTransaction();
                 MemberDetail::updateOrCreate(
                     ['user_id' => $dependent_user->id],
