@@ -305,57 +305,16 @@ class ProfileController extends BaseController
             'committees', 
             'trustee'
         ])->where('user_id' , $user->id)->first();
-        /*
+
         $validator = Validator::make($request->all(), ...$this->dependentValidationRules($request));
         if($validator->fails()){
             return $this->sendError('Validation Error', $validator->errors(), 403);       
         }
-            */
+
         $input = $request->all();
         
         if($input['type'] === 'spouse'){
-
-            $validator = Validator::make($request->all(), [
-                'avatar'    => 'required',
-                'name'    => 'required|string',
-                'email' => ['required', Rule::unique(User::class, 'email')],
-                'calling_code'    => 'required',
-                'phone' => ['required', Rule::unique(User::class, 'phone')],
-                'whatsapp_code'    => 'required',
-                'whatsapp'    => 'required|numeric',
-                'emergency_phone_code'    => 'required',
-                'emergency_phone'    => 'required|numeric',
-                'gender' => 'required|string',
-                'dob'    => 'required|date_format:Y-m-d',
-                'blood_group'    => 'required|string',
-                'civil_id'    => 'required|string',
-                'passport_no'    => 'required|string',
-                'passport_expiry'    => 'required|date_format:Y-m-d',
-                
-            ],[
-                'profile_type.required'    => 'Profile type is required',
-                'user_id.required'    => 'Required field',
-                'avatar.required'    => 'Photo is required',
-                'name.required'    => 'Name is required field',
-                'calling_code.required'    => 'Required field',
-                'whatsapp_code.required'    => 'Required field',
-                'whatsapp.required'    => 'Whatsapp is required',
-                'emergency_phone_code.required'    => 'Required field',
-                'emergency_phone.required'    => 'Emergency No. is required',
-                'blood_group.required'    => 'Required field',
-                'dob.required'    => 'Required field',
-                'dob.date_format'    => 'Should be Y-m-d format',
-                'gender.required'    => 'Required field',
-                'civil_id.required'    => 'Required field',
-                'passport_no.required'    => 'Required field',
-                'passport_expiry.required'    => 'Required field',
-                'passport_expiry.date_format'    => 'Should be Y-m-d format',
-            ]);
-
-            if($validator->fails()){
-                return $this->sendError('Validation Error', $validator->errors(), 403);       
-            }
-
+            
             $userInput = [
                 'name' => $input['name'],
                 'email' => $input['email'],
@@ -372,82 +331,95 @@ class ProfileController extends BaseController
                 $dependent_avatarName = 'av'.$dependent_user->id.'_'.time().'.'.mime2ext($input['avatar_mime']);
                 Storage::put('public/images/'.$dependent_avatarName, base64_decode($input['avatar']));
             }
-            DB::beginTransaction();
-            MemberDetail::updateOrCreate(
-                ['user_id' => $dependent_user->id],
-                [
-                    'member_unit_id' => $requesting_member->details->member_unit->id,
-                    'civil_id' => $input['civil_id'],
-                    'dob' => $input['dob'],
-                    'whatsapp' => $input['whatsapp'],
-                    'whatsapp_code' => $input['whatsapp_code'],
-                    'emergency_phone' => $input['emergency_phone'],
-                    'emergency_phone_code' => $input['emergency_phone_code'],
-                    'passport_no' => $input['passport_no'],
-                    'passport_expiry' => $input['passport_expiry'],
-                    'paci' => isset($input['paci']) ? $input['paci'] : null,
-                    'sndp_branch' => isset($input['sndp_branch']) ? $input['sndp_branch'] : null,
-                    'sndp_branch_number' => isset($input['sndp_branch_number']) ? $input['sndp_branch_number'] : null,
-                    'sndp_union' => isset($input['sndp_union']) ? $input['sndp_union'] : null,
-                    'completed' => 0
-                ]
-            );
-            Member::where('user_id', $dependent_user->id)->update([
-                'gender' => $input['gender'],
-                'blood_group' => $input['blood_group'],
-                'type' => 'spouse'
-            ]);
+            try(
+                DB::beginTransaction();
+                MemberDetail::updateOrCreate(
+                    ['user_id' => $dependent_user->id],
+                    [
+                        'member_unit_id' => $requesting_member->details->member_unit_id,
+                        'civil_id' => $input['civil_id'],
+                        'dob' => $input['dob'],
+                        'whatsapp' => $input['whatsapp'],
+                        'whatsapp_code' => $input['whatsapp_code'],
+                        'emergency_phone' => $input['emergency_phone'],
+                        'emergency_phone_code' => $input['emergency_phone_code'],
+                        'passport_no' => $input['passport_no'],
+                        'passport_expiry' => $input['passport_expiry'],
+                        'paci' => isset($input['paci']) ? $input['paci'] : null,
+                        'sndp_branch' => isset($input['sndp_branch']) ? $input['sndp_branch'] : null,
+                        'sndp_branch_number' => isset($input['sndp_branch_number']) ? $input['sndp_branch_number'] : null,
+                        'sndp_union' => isset($input['sndp_union']) ? $input['sndp_union'] : null,
+                        'completed' => 0
+                    ]
+                );
+                Member::where('user_id', $dependent_user->id)->update([
+                    'gender' => $input['gender'],
+                    'blood_group' => $input['blood_group'],
+                    'type' => 'spouse'
+                ]);
+                
+                User::where('id', $dependent_user->id)->update([
+                    'phone' => $input['phone'],
+                    'calling_code' => $input['calling_code'],
+                    'avatar' => $dependent_avatarName,
+                ]);
+                Membership::create([
+                    'user_id' => $dependent_user->id,
+                    'type' => 'family',
+                    'family_in' => isset($input['family_in']) ? $input['family_in'] : 'kuwait',
+                    'introducer_name' => $user->name,
+                    'introducer_phone' => $requesting_member->membership->introducer_phone,
+                    'introducer_mid' => $requesting_member->membership->introducer_mid,
+                    'introducer_unit' => $requesting_member->membership->introducer_unit,
+                ]);
+                // Create contacts table entry
+                MemberLocalAddress::create([
+                    'user_id' => $dependent_user->id,
+                    'governorate' => $requesting_member->localAddress->governorate,
+                    'line_1' => $requesting_member->localAddress->line_1,
+                    'building' => $requesting_member->localAddress->building,
+                    'flat' => $requesting_member->localAddress->flat,
+                    'floor' => $requesting_member->localAddress->floor,
+                    'country' => $requesting_member->localAddress->country,
+                    'region' => $requesting_member->localAddress->region,
+                    'city' => $requesting_member->localAddress->city,
+                    'zip' => $requesting_member->localAddress->zip,
+                ]);
+                MemberPermanentAddress::create([
+                    'user_id' => $dependent_user->id,
+                    'line_1' => $requesting_member->permanentAddress->line_1,
+                    'line_2' => $requesting_member->permanentAddress->line_2,
+                    'country' => $requesting_member->permanentAddress->country,
+                    'region' => $requesting_member->permanentAddress->region,
+                    'district' => $requesting_member->permanentAddress->district,
+                    'city' => $requesting_member->permanentAddress->city,
+                    'zip' => $requesting_member->permanentAddress->zip,
+                    'contact' => $requesting_member->permanentAddress->contact,
+                ]);
+                $relation = MemberEnum::where('type', 'relationship')->where('slug', 'spouse')->first();
+                MemberRelation::create([
+                    'member_id' => $requesting_member->id,
+                    'related_member_id' => $dependent_member->id,
+                    'relationship_id' => $relation->id,
+                ]);
+                MemberRelation::create([
+                    'member_id' => $dependent_member->id,
+                    'related_member_id' => $requesting_member->id,
+                    'relationship_id' => $relation->id,
+                ]);
+
+                //changing status to family
+                Membership::where('user_id', $user->id)->update([
+                    'type' => 'family',
+                ]);
+
+                DB::commit();
+            } catch(\Exception $exp) {
+                DB::rollBack();
+                throw new \Exception($exp->getMessage());
+                return $this->sendError('Not allowed', $exp->getMessage());
+            }
             
-            User::where('id', $dependent_user->id)->update([
-                'phone' => $input['phone'],
-                'calling_code' => $input['calling_code'],
-                'avatar' => $dependent_avatarName,
-            ]);
-            Membership::create([
-                'user_id' => $dependent_user->id,
-                'type' => $input['type'],
-                'family_in' => isset($input['family_in']) ? $input['family_in'] : ($input['type'] == 'family' ? 'kuwait' : 'india'),
-                'introducer_name' => $user->name,
-                'introducer_phone' => $user->calling_code.$user->phone,
-                'introducer_mid' => $requesting_member->membership->mid,
-                'introducer_unit' => $requesting_member->details->member_unit->id,
-            ]);
-            // Create contacts table entry
-            MemberLocalAddress::create([
-                'user_id' => $dependent_user->id,
-                'governorate' => $requesting_member->localAddress->governorate,
-                'line_1' => $requesting_member->localAddress->line_1,
-                'building' => $requesting_member->localAddress->building,
-                'flat' => $requesting_member->localAddress->flat,
-                'floor' => $requesting_member->localAddress->floor,
-                'country' => $requesting_member->localAddress->country,
-                'region' => $requesting_member->localAddress->region,
-                'city' => $requesting_member->localAddress->city,
-                'zip' => $requesting_member->localAddress->zip,
-            ]);
-            MemberPermanentAddress::create([
-                'user_id' => $dependent_user->id,
-                'line_1' => $requesting_member->permanentAddress->line_1,
-                'line_2' => $requesting_member->permanentAddress->line_2,
-                'country' => $requesting_member->permanentAddress->country,
-                'region' => $requesting_member->permanentAddress->region,
-                'district' => $requesting_member->permanentAddress->district,
-                'city' => $requesting_member->permanentAddress->city,
-                'zip' => $requesting_member->permanentAddress->zip,
-                'contact' => $requesting_member->permanentAddress->contact,
-            ]);
-            $relation = MemberEnum::where('type', 'relationship')->where('slug', 'spouse')->first();
-            MemberRelation::create([
-                'member_id' => $requesting_member->id,
-                'related_member_id' => $dependent_member->id,
-                'relationship_id' => $relation->id,
-            ]);
-            MemberRelation::create([
-                'member_id' => $dependent_member->id,
-                'related_member_id' => $requesting_member->id,
-                'relationship_id' => $relation->id,
-            ]);
-            DB::commit();
         }else if($input['type'] === 'child'){
             $childInput = [
                 'name' => $input['name'],
