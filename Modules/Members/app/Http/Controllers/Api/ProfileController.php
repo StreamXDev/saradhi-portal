@@ -331,7 +331,7 @@ class ProfileController extends BaseController
                 $dependent_avatarName = 'av'.$dependent_user->id.'_'.time().'.'.mime2ext($input['avatar_mime']);
                 Storage::put('public/images/'.$dependent_avatarName, base64_decode($input['avatar']));
             }
-            
+
             try{
                 DB::beginTransaction();
                 MemberDetail::updateOrCreate(
@@ -417,8 +417,7 @@ class ProfileController extends BaseController
                 DB::commit();
             } catch(\Exception $exp) {
                 DB::rollBack();
-                throw new \Exception($exp->getMessage());
-                return $this->sendError('Not allowed', $exp->getMessage());
+                return $this->sendError('Failed', $exp->getMessage());
             }
             
         }else if($input['type'] === 'child'){
