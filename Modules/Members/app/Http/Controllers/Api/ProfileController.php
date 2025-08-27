@@ -190,7 +190,7 @@ class ProfileController extends BaseController
                         }
                     }else{
                         $proofPending = true; // in no details, usually is proof also pending
-                        $proofPendingTypes[] = 'spouse';
+                        $proofPendingTypes[] = 'self';
                     }
 
                     if($relative->relatedMember->active){
