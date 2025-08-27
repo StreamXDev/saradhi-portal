@@ -183,9 +183,9 @@ class ProfileController extends BaseController
 
                     if($relative->relatedMember && $relative->relatedMember->details){
                         if($relative->relatedMember->membership->status === 'inactive'){
-                            if(!$relative->relatedMember->details->photo_civil_id_front || $relative->relatedMember->details->photo_civil_id_back || $relative->relatedMember->details->photo_passport_front || $relative->relatedMember->details->photo_passport_back){
+                            if(!$relative->relatedMember->details->photo_civil_id_front || !$relative->relatedMember->details->photo_civil_id_back || !$relative->relatedMember->details->photo_passport_front || !$relative->relatedMember->details->photo_passport_back){
                                 $proofPending = true;
-                                $proofPendingTypes[] = 'self';
+                                $proofPendingTypes[] = 'spouse';
                             }
                         }
                     }else{
