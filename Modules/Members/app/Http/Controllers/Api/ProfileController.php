@@ -155,7 +155,7 @@ class ProfileController extends BaseController
                 }
             }
         }else{
-            $proofPending = true; // in no details, usually is proof also pending
+            $proofPending = true; // if no details, usually proof also pending
             $proofPendingTypes[] = 'self';
         }
 
@@ -367,7 +367,7 @@ class ProfileController extends BaseController
                 Membership::create([
                     'user_id' => $dependent_user->id,
                     'type' => 'family',
-                    'family_in' => isset($input['family_in']) ? $input['family_in'] : 'kuwait',
+                    'family_in' => 'kuwait',
                     'introducer_name' => $user->name,
                     'introducer_phone' => $requesting_member->membership->introducer_phone,
                     'introducer_mid' => $requesting_member->membership->introducer_mid,
@@ -412,6 +412,7 @@ class ProfileController extends BaseController
                 //changing status to family
                 Membership::where('user_id', $user->id)->update([
                     'type' => 'family',
+                    'family_in' => 'kuwait'
                 ]);
 
                 DB::commit();
