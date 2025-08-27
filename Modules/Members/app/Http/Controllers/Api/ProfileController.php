@@ -185,12 +185,12 @@ class ProfileController extends BaseController
                         if($relative->relatedMember->membership->status === 'inactive'){
                             if(!$relative->relatedMember->details->photo_civil_id_front || $relative->relatedMember->details->photo_civil_id_back || $relative->relatedMember->details->photo_passport_front || $relative->relatedMember->details->photo_passport_back){
                                 $proofPending = true;
-                                $proofPendingTypes[] = 'spouse';
+                                $proofPendingTypes[] = 'self';
                             }
                         }
                     }else{
                         $proofPending = true; // in no details, usually is proof also pending
-                        $proofPendingTypes[] = 'self';
+                        $proofPendingTypes[] = 'spouse';
                     }
 
                     if($relative->relatedMember->active){
