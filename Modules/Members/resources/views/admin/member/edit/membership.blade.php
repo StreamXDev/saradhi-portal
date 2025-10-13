@@ -49,7 +49,7 @@
                     <div class="col-md-8">
                         <label for="dob" class="form-label">Join Date</label>
                         <div class="control-col">
-                            <input type="date" name="joining_date" id="joining_date" class="form-control @error('joining_date') is-invalid @enderror" value="{{ $member->membership->joining_date }}">
+                            <input type="date" name="start_date" id="start_date" class="form-control @error('start_date') is-invalid @enderror" value="{{ $member->membership->start_date }}">
                         </div>
                     </div>
                 </div>
