@@ -214,10 +214,10 @@
             </div>
         </div>
         <div class="form-title-divider spouse-view"></div>
-        <div class="form-section-subtitle spouse-view">India Address</div>
+        <div class="form-section-subtitle spouse-view">India Address </div>
         <div class="form-group row spouse-view">
             <div class="col-md-4">
-                <label for="permanent_address_line_1" class="form-label">Address</label>
+                <label for="permanent_address_line_1" class="form-label">Address <span class="asterisk">*</span></label>
                 <div class="control-col">
                     <textarea name="permanent_address_line_1" id="permanent_address_line_1" rows="1" class="form-control">{{ old('permanent_address_line_1') }}</textarea>
                 </div>
@@ -296,7 +296,7 @@
                 <div>
                     <label for="start_date" class="form-label">Start Date<span class="asterisk">*</span></strong></label>
                     <div class="control-col">
-                        <input type="date" name="start_date" id="start_date" class="form-control @error('start_date') is-invalid @enderror" value="{{ old('start_date') ? old('start_date') : date('Y-m-d') }}" >
+                        <input type="date" name="start_date" id="start_date" class="form-control @error('start_date') is-invalid @enderror" value="{{ old('start_date') ? old('start_date') : '' }}" >
                     </div>
                 </div>
             </div>

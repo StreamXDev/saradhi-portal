@@ -693,7 +693,9 @@ class MemberController extends Controller
                 'user_id' => 'bail|required',
                 'mid'     => 'required',
                 'status'  => 'required',
-                'family_in' => 'required'
+                'start_date' => 'required|date_format:Y-m-d|before_or_equal:today|after:1998-12-31',
+                'expiry_date' => 'required|date_format:Y-m-d',
+                'family_in' => 'required',
             ]);
         }
         if(isset($input['edit_trustee'])){
@@ -821,9 +823,10 @@ class MemberController extends Controller
         if(isset($input['edit_membership'])){
             $membershipUpdateData = [
                 'mid' => $input['mid'],
-                'family_in' => $input['family_in'],
-                'expiry_date' => $input['expiry_date'],
                 'status' => $input['status'],
+                'start_date' => $input['start_date'],
+                'expiry_date' => $input['expiry_date'],
+                'family_in' => $input['family_in'],
             ];
             Membership::where('user_id', $user_id)->update($membershipUpdateData);
         }

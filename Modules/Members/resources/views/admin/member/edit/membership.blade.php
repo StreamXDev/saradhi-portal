@@ -23,9 +23,12 @@
                 @endif
                 <div class="form-group row">
                     <div class="col-md-8">
-                        <label for="dob" class="form-label">Expiry Date</label>
+                        <label class="form-label">With Family</label>
                         <div class="control-col">
-                            <input type="date" name="expiry_date" id="expiry_date" class="form-control @error('expiry_date') is-invalid @enderror" value="{{ $member->membership->expiry_date }}">
+                            <select name="family_in" id="family_in" class="form-select">
+                                <option value="kuwait" @selected($member->membership->family_in == 'kuwait')>Yes</option>
+                                <option value="india" @selected($member->membership->family_in == 'india')>No</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -44,15 +47,21 @@
                 </div>
                 <div class="form-group row">
                     <div class="col-md-8">
-                        <label class="form-label">With Family</label>
+                        <label for="dob" class="form-label">Join Date</label>
                         <div class="control-col">
-                            <select name="family_in" id="family_in" class="form-select">
-                                <option value="kuwait" @selected($member->membership->family_in == 'kuwait')>Yes</option>
-                                <option value="india" @selected($member->membership->family_in == 'india')>No</option>
-                            </select>
+                            <input type="date" name="joining_date" id="joining_date" class="form-control @error('joining_date') is-invalid @enderror" value="{{ $member->membership->joining_date }}">
                         </div>
                     </div>
                 </div>
+                <div class="form-group row">
+                    <div class="col-md-8">
+                        <label for="dob" class="form-label">Expiry Date</label>
+                        <div class="control-col">
+                            <input type="date" name="expiry_date" id="expiry_date" class="form-control @error('expiry_date') is-invalid @enderror" value="{{ $member->membership->expiry_date }}">
+                        </div>
+                    </div>
+                </div>
+                
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
