@@ -1357,10 +1357,11 @@ class MemberController extends Controller
         $input = $request->all();
         $validator = Validator::make($request->all(), [
             'id' => 'bail|required',
-            'name' => 'required',
-            'dob' => 'required',
+            'name' => 'required|string',
+            'dob' => 'required|date_format:Y-m-d|before_or_equal:today',
             'gender' => 'required',
             'blood_group' => 'required',
+            'civil_id' => 'required',
             'passport_no' => 'required',
             'passport_expiry' => 'required',
         ]);
@@ -1387,6 +1388,7 @@ class MemberController extends Controller
             'dob' => $input['dob'],
             'gender' => $input['gender'],
             'blood_group' => $input['blood_group'],
+            'civil_id' => $input['civil_id'],
             'passport_no' => $input['passport_no'],
             'passport_expiry' => $input['passport_expiry'],
         ]);
