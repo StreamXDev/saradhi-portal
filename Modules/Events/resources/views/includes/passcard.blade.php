@@ -4,8 +4,9 @@
     id="idCard_{{$invitee->id}}" 
     style="
     background-image: url('{{ url('storage/images/events/'. $invitee->invitee_type->description) }}'); 
+    background-color: {{$invitee->invitee_type->category}}
     width:@if($invitee->invitee_type->pass_width_cm) {{$invitee->invitee_type->pass_width_cm}}cm @else 10cm @endif;
-    height:@if($invitee->invitee_type->pass_height_cm) {{$invitee->invitee_type->pass_height_cm}}cm @else 12cm @endif
+    height:@if($invitee->invitee_type->pass_height_cm) {{$invitee->invitee_type->pass_height_cm}}cm @else 15cm @endif
 ">
     <div class="header">
         <div class="title">{{$event->title}}</div>
