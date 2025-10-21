@@ -621,9 +621,9 @@ class ProfileController extends BaseController
             $messages['passport_expiry.date_format'] = 'Should be Y-m-d format';
         }else if($request->type === 'spouse'){
             $rules['name'] = ['required', 'string'];
-            $rules['email'] = ['required', Rule::unique(User::class, 'email')];
-            $rules['phone'] = ['required', Rule::unique(User::class, 'phone')];
-            $rules['calling_code'] = ['required'];
+            $rules['email'] = ['required', 'string', 'email:rfc,dns', Rule::unique(User::class, 'email')];
+            $rules['phone'] = ['required', 'numeric', Rule::unique(User::class, 'phone')];
+            $rules['calling_code'] = ['required',];
             $rules['whatsapp'] = ['required', 'numeric'];
             $rules['whatsapp_code'] = ['required'];
             $rules['emergency_phone'] = ['required', 'numeric'];
@@ -636,7 +636,6 @@ class ProfileController extends BaseController
             $rules['passport_expiry'] = ['required', 'date_format:Y-m-d'];
             $rules['avatar'] = ['required', 'string'];
 
-            
 
             $messages['name.required'] = 'Name is required';
             $messages['email.required'] = 'Email is required';

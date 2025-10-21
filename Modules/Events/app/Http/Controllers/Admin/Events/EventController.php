@@ -134,8 +134,8 @@ class EventController extends Controller
             'start_time' => $input['start_time'],
             'end_time' => $input['end_time'],
             'location' => $input['location'],
-            'thumb' => $input['thumb'],
-            'cover' => $input['cover'],
+            'thumb' => isset($input['thumb']) ? $input['thumb'] : null,
+            'cover' => isset($input['cover']) ? $input['cover'] : null,
         ]);
 
         if(isset($input['volunteers']) && $input['volunteers'] !== null){
