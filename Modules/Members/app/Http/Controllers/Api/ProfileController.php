@@ -451,58 +451,36 @@ class ProfileController extends BaseController
             $parent_primary = $requesting_member->id;
             $parent_spouse = null;
             $siblings = [];
-            foreach($relations_against_primary_member as $primary_relations){
-                if($primary_relations->related_member_id !== null){
-                    $rm = Member::where('id',$primary_relations->related_member_id)->first();
-                    if($rm->type === 'primary'){
-                        $parent_primary = $rm->id;
-                    }else{
-                        $parent_spouse = $rm->id;
-                    }
-                }else if($primary_relations->related_dependent_id !== null){
-                    $rd = MemberDependent::where('id', $primary_relations->related_dependent_id)->first();
-                    $siblings[] = $rd->id;
-                }
-            }
             $parent_relation_type = MemberEnum::where('type', 'relationship')->where('slug', 'parent')->first();
             $child_relation_type = MemberEnum::where('type', 'relationship')->where('slug', 'child')->first();
             $sibling_relation_type = MemberEnum::where('type', 'relationship')->where('slug', 'sibling')->first();
-            if($parent_primary){
-                MemberRelation::create([
-                    'member_id' => $parent_primary,
-                    'related_dependent_id' => $child->id,
-                    'relationship_id' => $parent_relation_type->id,
-                ]);
-                MemberRelation::create([
-                    'related_member_id' => $parent_primary,
-                    'dependent_id' => $child->id,
-                    'relationship_id' => $child_relation_type->id,
-                ]);
-            }
-            if($parent_spouse){
-                MemberRelation::create([
-                    'member_id' => $parent_spouse,
-                    'related_dependent_id' => $child->id,
-                    'relationship_id' => $parent_relation_type->id,
-                ]);
-                MemberRelation::create([
-                    'related_member_id' => $parent_spouse,
-                    'dependent_id' => $child->id,
-                    'relationship_id' => $child_relation_type->id,
-                ]);
-            }
-            if($siblings){
-                foreach($siblings as $sibling){
+            MemberRelation::create([
+                'member_id' => $parent_primary,
+                'related_dependent_id' => $child->id,
+                'relationship_id' => $parent_relation_type->id,
+            ]);
+            MemberRelation::create([
+                'related_member_id' => $parent_primary,
+                'dependent_id' => $child->id,
+                'relationship_id' => $child_relation_type->id,
+            ]);
+            foreach($relations_against_primary_member as $primary_relations){
+                if($primary_relations->related_member_id !== null){
+                    $rm = Member::where('id',$primary_relations->related_member_id)->first();
+
                     MemberRelation::create([
-                        'dependent_id' => $sibling,
+                        'member_id' => $rm->id,
                         'related_dependent_id' => $child->id,
-                        'relationship_id' => $sibling_relation_type->id,
+                        'relationship_id' => $parent_relation_type->id,
                     ]);
                     MemberRelation::create([
-                        'related_dependent_id' => $sibling,
+                        'related_member_id' => $rm->id,
                         'dependent_id' => $child->id,
-                        'relationship_id' => $sibling_relation_type->id,
+                        'relationship_id' => $child_relation_type->id,
                     ]);
+                }else if($primary_relations->related_dependent_id !== null){
+                    $rd = MemberDependent::where('id', $primary_relations->related_dependent_id)->first();
+                    $siblings[] = $rd->id;
                 }
             }
 
