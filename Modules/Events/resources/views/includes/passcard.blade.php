@@ -13,7 +13,6 @@
         @if($event->location)<div class="info">{{$event->location}}</div> @endif
     </div>
     <div class="sl-no">{{2471+$invitee->id}}</div>
-    <div class="sl-id">{{$invitee->id}}</div>
     <div class="card-title">{{$invitee->invitee_type->name}}</div>
     <div class="qr-container">
         <div class="qr">{{ $invitee->idQr }}</div>
