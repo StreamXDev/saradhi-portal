@@ -1363,7 +1363,7 @@ table.list{
     .id-card-wrapper{
         padding: 0;
     }
-    &.entry_pass, &.exit_pass, &.guest{
+    &.entry_pass, &.exit_pass, &.unit_guest{
         .eventPassCard{
             z-index: 1;
             background-color: transparent !important;
