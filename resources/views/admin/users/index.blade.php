@@ -36,11 +36,13 @@
              <td>{{ $user->name }}</td>
              <td>{{ $user->email }}</td>
              <td>
+                @hasrole('superadmin')
                @if(!empty($user->getRoleNames()))
                  @foreach($user->getRoleNames() as $v)
                     <label class="badge bg-success">{{ $v }}</label>
                  @endforeach
                @endif
+               @endhasrole
              </td>
              <td>
                  @can('user.view')
