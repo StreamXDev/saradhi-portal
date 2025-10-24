@@ -732,25 +732,18 @@ class MemberController extends Controller
         $user = User::where('id', $user_id)->first();
 
         if(isset($input['edit_address'])){
-            dd($user_id);
-            try{
-                MemberLocalAddress::where('user_id', $user_id)->update([
-                    'governorate' => $input['governorate'],
-                    'line_1' => $input['local_address_area'],
-                    'building' => $input['local_address_building'],
-                    'flat' => $input['local_address_flat'],
-                    'floor' => $input['local_address_floor'],
-                ]);
-                MemberPermanentAddress::where('user_id', $user_id)->update([
-                    'line_1' => $input['permanent_address_line_1'],
-                    'district' => $input['permanent_address_district'],
-                    'contact' => $input['permanent_address_country_code'].$input['permanent_address_contact']
-                ]);
-            }catch (Exception $exp){
-                dd($exp->getMessage());
-            }
-            
-            
+            MemberLocalAddress::updateOrCreate(['user_id' => $user_id],[
+                'governorate' => $input['governorate'],
+                'line_1' => $input['local_address_area'],
+                'building' => $input['local_address_building'],
+                'flat' => $input['local_address_flat'],
+                'floor' => $input['local_address_floor'],
+            ]);
+            MemberPermanentAddress::updateOrCreate(['user_id' => $user_id],[
+                'line_1' => $input['permanent_address_line_1'],
+                'district' => $input['permanent_address_district'],
+                'contact' => $input['permanent_address_country_code'].$input['permanent_address_contact']
+            ]);
         }
         if(isset($input['edit_basic'])){
             
