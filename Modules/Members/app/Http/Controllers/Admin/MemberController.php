@@ -731,6 +731,7 @@ class MemberController extends Controller
         $user = User::where('id', $user_id)->first();
 
         if(isset($input['edit_address'])){
+            dd($input);
             MemberLocalAddress::where('user_id', $user_id)->update([
                 'governorate' => $input['governorate'],
                 'line_1' => $input['local_address_area'],
