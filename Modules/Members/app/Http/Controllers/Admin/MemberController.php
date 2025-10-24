@@ -662,6 +662,7 @@ class MemberController extends Controller
                 'governorate' => 'required',
                 'local_address_area' => 'required',
                 'local_address_building' => 'required',
+                'permanent_address_line_1' => 'required',
             ]);
         }
         if(isset($input['edit_basic'])){
