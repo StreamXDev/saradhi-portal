@@ -45,7 +45,7 @@ class MembersListExport implements FromCollection, WithHeadings, WithMapping, Sh
             '+'.$member->user->calling_code.$member->user->phone,
             $member->details->whatsapp ? '+'.$member->details->whatsapp_code.$member->details->whatsapp : '',
             $member->details->emergency_phone ? '+'.$member->details->emergency_phone_code.$member->details->emergency_phone : '',
-            $member->membership->type,
+            $member->membership->family_in == 'kuwait' ? 'Family' : 'Single',
             date('d-m-Y', strtotime($member->membership->start_date)),
             date('d-m-Y', strtotime($member->membership->expiry_date)),
             $member->details->civil_id.' ',
