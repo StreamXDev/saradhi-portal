@@ -731,15 +731,15 @@ class MemberController extends Controller
         $user = User::where('id', $user_id)->first();
 
         if(isset($input['edit_address'])){
-            dd($input);
-            MemberLocalAddress::where('user_id', $user_id)->update([
+            
+            $mla = MemberLocalAddress::where('user_id', $user_id)->update([
                 'governorate' => $input['governorate'],
                 'line_1' => $input['local_address_area'],
                 'building' => $input['local_address_building'],
                 'flat' => $input['local_address_flat'],
                 'floor' => $input['local_address_floor'],
             ]);
-
+                dd($mla);
             MemberPermanentAddress::where('user_id', $user_id)->update([
                 'line_1' => $input['permanent_address_line_1'],
                 'district' => $input['permanent_address_district'],
