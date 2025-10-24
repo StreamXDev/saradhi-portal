@@ -740,15 +740,16 @@ class MemberController extends Controller
                     'flat' => $input['local_address_flat'],
                     'floor' => $input['local_address_floor'],
                 ]);
+                MemberPermanentAddress::where('user_id', $user_id)->update([
+                    'line_1' => $input['permanent_address_line_1'],
+                    'district' => $input['permanent_address_district'],
+                    'contact' => $input['permanent_address_country_code'].$input['permanent_address_contact']
+                ]);
             }catch (Exception $exp){
                 dd($exp->getMessage());
             }
             
-            MemberPermanentAddress::where('user_id', $user_id)->update([
-                'line_1' => $input['permanent_address_line_1'],
-                'district' => $input['permanent_address_district'],
-                'contact' => $input['permanent_address_country_code'].$input['permanent_address_contact']
-            ]);
+            
         }
         if(isset($input['edit_basic'])){
             
