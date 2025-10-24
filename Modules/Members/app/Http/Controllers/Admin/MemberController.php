@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Country;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Exception;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -731,15 +732,18 @@ class MemberController extends Controller
         $user = User::where('id', $user_id)->first();
 
         if(isset($input['edit_address'])){
+            try{
+                MemberLocalAddress::where('user_id', $user_id)->update([
+                    'governorate' => $input['governorate'],
+                    'line_1' => $input['local_address_area'],
+                    'building' => $input['local_address_building'],
+                    'flat' => $input['local_address_flat'],
+                    'floor' => $input['local_address_floor'],
+                ]);
+            }catch (Exception $exp){
+                dd($exp->getMessage());
+            }
             
-            $mla = MemberLocalAddress::where('user_id', $user_id)->update([
-                'governorate' => $input['governorate'],
-                'line_1' => $input['local_address_area'],
-                'building' => $input['local_address_building'],
-                'flat' => $input['local_address_flat'],
-                'floor' => $input['local_address_floor'],
-            ]);
-                dd($mla);
             MemberPermanentAddress::where('user_id', $user_id)->update([
                 'line_1' => $input['permanent_address_line_1'],
                 'district' => $input['permanent_address_district'],
