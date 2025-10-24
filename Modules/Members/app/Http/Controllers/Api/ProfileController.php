@@ -364,6 +364,7 @@ class ProfileController extends BaseController
                     'calling_code' => $input['calling_code'],
                     'avatar' => $dependent_avatarName,
                 ]);
+                // TODO: Membership id should be added if it is added by old member
                 Membership::create([
                     'user_id' => $dependent_user->id,
                     'type' => 'family',
@@ -449,7 +450,6 @@ class ProfileController extends BaseController
 
             $relations_against_primary_member = MemberRelation::where('member_id', $requesting_member->id)->get();
             $parent_primary = $requesting_member->id;
-            $parent_spouse = null;
             $siblings = [];
             $parent_relation_type = MemberEnum::where('type', 'relationship')->where('slug', 'parent')->first();
             $child_relation_type = MemberEnum::where('type', 'relationship')->where('slug', 'child')->first();

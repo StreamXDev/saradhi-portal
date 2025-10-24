@@ -76,7 +76,7 @@
                         <div class="form-group">
                             <label for="permanent_address_contact" class="form-label">Contact No. in India</label>
                             <div class="control-col">
-                                <select name="permanent_address_country_code" id="permanent_address_contry_code" class="form-select country-code">
+                                <select name="permanent_address_country_code" id="permanent_address_country_code" class="form-select country-code">
                                     @foreach ($countries as $country)
                                         @if($country->code == 'in')
                                             <option value="{{ $country->calling_code }}" @isset($member->permanentAddress->country) @selected($member->permanentAddress->country == $country->name ) @endisset>{{ $country->name }} (+{{ $country->calling_code}})</option>
