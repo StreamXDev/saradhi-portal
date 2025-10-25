@@ -69,17 +69,17 @@ class SearchController extends BaseController
             $members->when($search, function ($query, $search) {
                 $query->where(function ($_query) use ($search) {
                     $_query->orWhereHas('user', function ($query) use ($search) {
-                            return $query->where('name', 'like', '%'.$search.'%')->where('active',1);
-                        })
-                        ->orWhereHas('user', function($query) use ($search) {
-                            return $query->where('email', $search)->where('active',1);
-                        })
-                        ->orWhereHas('user', function($query) use ($search) {
-                            return $query->where('phone', $search)->where('active',1);
-                        })
-                        ->orWhereHas('membership', function($query) use ($search) {
-                            return $query->where('mid', $search);
-                        });
+                        return $query->where('name', 'like', '%'.$search.'%');
+                    })
+                    ->orWhereHas('user', function($query) use ($search) {
+                        return $query->where('email', $search);
+                    })
+                    ->orWhereHas('user', function($query) use ($search) {
+                        return $query->where('phone', $search);
+                    })
+                    ->orWhereHas('membership', function($query) use ($search) {
+                        return $query->where('mid', $search);
+                    });
                 });
             });
             $filters->put('search_by', request()->get('search_by'));
