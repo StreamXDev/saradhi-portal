@@ -47,16 +47,16 @@ class SearchController extends BaseController
             $members->when($search, function ($query, $search) {
                 $query->where(function ($_query) use ($search) {
                     $_query->orWhereHas('user', function ($query) use ($search) {
-                        $query->where('name', 'like', '%'.$search.'%');
+                        return $query->where('name', 'like', '%'.$search.'%');
                     })
                     ->orWhereHas('user', function($query) use ($search) {
-                        $query->where('email', $search);
+                        return $query->where('email', $search);
                     })
                     ->orWhereHas('user', function($query) use ($search) {
-                        $query->where('phone', $search);
+                        return $query->where('phone', $search);
                     })
                     ->orWhereHas('membership', function($query) use ($search) {
-                        $query->where('mid', $search);
+                        return $query->where('mid', $search);
                     });
                 });
             });
@@ -66,7 +66,7 @@ class SearchController extends BaseController
         if (request()->get('status') != null){
             $input = request()->get('status');
             $members->whereHas('membership', function($q) use ($input) {
-                $q->where('status', $input);
+                return $q->where('status', $input);
             });
             $filters->put('status', request()->get('status'));
         }
@@ -74,7 +74,7 @@ class SearchController extends BaseController
         if (request()->get('unit') != null || request()->get('unit') != ''){
             $input = request()->get('unit');
             $members->whereHas('details', function($q) use ($input) {
-                $q->where('member_unit_id', request()->get('unit'));
+                return $q->where('member_unit_id', request()->get('unit'));
             });
             $filters->put('unit', request()->get('unit'));
         }
