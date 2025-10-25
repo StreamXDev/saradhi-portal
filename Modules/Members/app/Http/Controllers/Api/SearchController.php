@@ -42,6 +42,27 @@ class SearchController extends BaseController
             ]
         );
         
+        if (request()->get('search_by') != null){
+            $search = request()->get('search_by');
+            $members->when($search, function ($query, $search) {
+                $query->where(function ($_query) use ($search) {
+                    $_query->orWhereHas('user', function ($query) use ($search) {
+                        return $query->where('name', 'like', '%'.$search.'%');
+                    })
+                    ->orWhereHas('user', function($query) use ($search) {
+                        return $query->where('email', $search);
+                    })
+                    ->orWhereHas('user', function($query) use ($search) {
+                        return $query->where('phone', $search);
+                    })
+                    ->orWhereHas('membership', function($query) use ($search) {
+                        return $query->where('mid', $search);
+                    });
+                });
+            });
+            $filters->put('search_by', request()->get('search_by'));
+        }
+        
         if (request()->get('status') != null){
             $input = request()->get('status');
             $members->whereHas('membership', function($q) use ($input) {
@@ -64,26 +85,7 @@ class SearchController extends BaseController
             $filters->put('blood_group', request()->get('blood_group'));
         }
 
-        if (request()->get('search_by') != null){
-            $search = request()->get('search_by');
-            $members->when($search, function ($query, $search) {
-                $query->where(function ($_query) use ($search) {
-                    $_query->orWhereHas('user', function ($query) use ($search) {
-                        return $query->where('name', 'like', '%'.$search.'%');
-                    })
-                    ->orWhereHas('user', function($query) use ($search) {
-                        return $query->where('email', $search);
-                    })
-                    ->orWhereHas('user', function($query) use ($search) {
-                        return $query->where('phone', $search);
-                    })
-                    ->orWhereHas('membership', function($query) use ($search) {
-                        return $query->where('mid', $search);
-                    });
-                });
-            });
-            $filters->put('search_by', request()->get('search_by'));
-        }
+        
         /*
         if (request()->get('search_by') != null){
             $input = request()->get('search_by');
