@@ -314,7 +314,17 @@ class ProfileController extends BaseController
         $input = $request->all();
         
         if($input['type'] === 'spouse'){
-            
+
+            $old_member = false;
+            if($requesting_member->membership->joined_as == 'old'){
+                $old_member = true;
+            }
+
+            /**
+             * if current user membership->join_as == 'new'
+             * send to new request.
+             * else add mid same as current mid, member->active = 1, membership: start_date, updated_date, expiry_date, status, joined_as, introducer
+             */
             $userInput = [
                 'name' => $input['name'],
                 'email' => $input['email'],
@@ -326,7 +336,6 @@ class ProfileController extends BaseController
             $dependent ['name'] = $dependent_user->name;
             $dependent_member = Member::create($dependent);
 
-            
             if(isset($input['avatar_mime']) && isset($input['avatar'])){
                 $dependent_avatarName = 'av'.$dependent_user->id.'_'.time().'.'.mime2ext($input['avatar_mime']);
                 Storage::put('public/images/'.$dependent_avatarName, base64_decode($input['avatar']));
@@ -344,13 +353,16 @@ class ProfileController extends BaseController
                         'whatsapp_code' => $input['whatsapp_code'],
                         'emergency_phone' => $input['emergency_phone'],
                         'emergency_phone_code' => $input['emergency_phone_code'],
+                        'company' => isset($input['company']) ? $input['company'] : null,
+                        'profession' => isset($input['profession']) ? $input['profession'] : null,
+                        'company_address' => isset($input['company_address']) ? $input['company_address'] : null,
                         'passport_no' => $input['passport_no'],
                         'passport_expiry' => $input['passport_expiry'],
                         'paci' => isset($input['paci']) ? $input['paci'] : null,
                         'sndp_branch' => isset($input['sndp_branch']) ? $input['sndp_branch'] : null,
                         'sndp_branch_number' => isset($input['sndp_branch_number']) ? $input['sndp_branch_number'] : null,
                         'sndp_union' => isset($input['sndp_union']) ? $input['sndp_union'] : null,
-                        'completed' => 0
+                        'completed' => $old_member ? 1 : 0
                     ]
                 );
                 Member::where('user_id', $dependent_user->id)->update([
@@ -359,17 +371,22 @@ class ProfileController extends BaseController
                     'type' => 'spouse'
                 ]);
                 
-                User::where('id', $dependent_user->id)->update([
+                $newUser = User::where('id', $dependent_user->id)->update([
                     'phone' => $input['phone'],
                     'calling_code' => $input['calling_code'],
                     'avatar' => $dependent_avatarName,
                 ]);
-                // TODO: Membership id should be added if it is added by old member
                 Membership::create([
                     'user_id' => $dependent_user->id,
+                    'mid' => $old_member ? $requesting_member->membership->mid : null,
+                    'start_date' => $old_member ? $requesting_member->membership->start_date : null,
+                    'updated_date' => $old_member ? $requesting_member->membership->updated_date : null,
+                    'expiry_date' => $old_member ? $requesting_member->membership->expiry_date : null,
                     'type' => 'family',
                     'family_in' => 'kuwait',
-                    'introducer_name' => $user->name,
+                    'status' => $old_member ? $requesting_member->membership->status : 'inactive',
+                    'joined_as' => $old_member ? 'old' : 'new',
+                    'introducer_name' => $requesting_member->membership->introducer_name,
                     'introducer_phone' => $requesting_member->membership->introducer_phone,
                     'introducer_mid' => $requesting_member->membership->introducer_mid,
                     'introducer_unit' => $requesting_member->membership->introducer_unit,
@@ -415,6 +432,28 @@ class ProfileController extends BaseController
                     'type' => 'family',
                     'family_in' => 'kuwait'
                 ]);
+
+
+                if(!$old_member){
+                    // Sending Request to admin
+                    // 1. Adding SAVED status in Membership request table
+                    $status = MemberEnum::where('type', 'request_status')->where('slug', 'saved')->first();
+                    MembershipRequest::create([
+                        'user_id' => $newUser->id,
+                        'request_status_id' => $status->id,
+                        'checked' => 1, 
+                        'updated_by' => $newUser->id,
+                    ]);
+                    
+                    // 2. Adding SUBMITTED status in Membership request table
+                    $status = MemberEnum::where('type', 'request_status')->where('slug', 'submitted')->first();
+                    MembershipRequest::create([
+                        'user_id' => $newUser->id,
+                        'request_status_id' => $status->id,
+                        'updated_by' => $newUser->id,
+                    ]);
+
+                }
 
                 DB::commit();
             } catch(\Exception $exp) {

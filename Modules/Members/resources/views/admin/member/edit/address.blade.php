@@ -59,7 +59,7 @@
                     <div class="col-md-6">
                         <label for="permanent_address_line_1" class="form-label">Address <span class="asterisk">*</span></label>
                         <div class="control-col">
-                            <textarea name="permanent_address_line_1" id="permanent_address_line_1" cols="20" rows="4" class="form-control"> @isset($member->permanentAddress->line_1) {{ $member->permanentAddress->line_1 }} @endisset</textarea>
+                            <textarea name="permanent_address_line_1" id="permanent_address_line_1" cols="20" rows="4" class="form-control">@isset($member->permanentAddress->line_1) {{ $member->permanentAddress->line_1 }} @endisset</textarea>
                         </div>
                     </div>
                     <div class="col-md-6">
