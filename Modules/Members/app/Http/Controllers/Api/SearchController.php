@@ -71,7 +71,7 @@ class SearchController extends BaseController
             $filters->put('status', request()->get('status'));
         }
 
-        if (request()->get('unit') != null){
+        if (request()->get('unit') != null || request()->get('unit') != ''){
             $input = request()->get('unit');
             $members->whereHas('details', function($q) use ($input) {
                 $q->where('member_unit_id', request()->get('unit'));
@@ -79,7 +79,7 @@ class SearchController extends BaseController
             $filters->put('unit', request()->get('unit'));
         }
 
-        if (request()->get('blood_group') != null){
+        if (request()->get('blood_group') != null || request()->get('blood_group') != ''){
             $input = request()->get('blood_group');
             $members->where('blood_group',  $input);
             $filters->put('blood_group', request()->get('blood_group'));
