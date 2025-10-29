@@ -371,7 +371,8 @@ class ProfileController extends BaseController
                 Member::where('user_id', $dependent_user->id)->update([
                     'gender' => $input['gender'],
                     'blood_group' => $input['blood_group'],
-                    'type' => 'spouse'
+                    'type' => 'spouse',
+                    'active' => $old_member ? 1 : 0
                 ]);
                 
                 $newUser = User::where('id', $dependent_user->id)->update([

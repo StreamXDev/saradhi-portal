@@ -80,6 +80,7 @@ Route::prefix('admin/members')->middleware(['auth:sanctum', 'verified_email', 'i
         Route::get('/member/notes/delete/{id?}', 'delete_note');
 
         //Route::get('/status/update', 'updateMemberStatus');
+        Route::get('/activate_old_member', 'activateOldMember');
     });
 });
 

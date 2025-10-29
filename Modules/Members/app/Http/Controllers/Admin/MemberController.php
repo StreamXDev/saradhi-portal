@@ -1490,6 +1490,20 @@ class MemberController extends Controller
         ]);
     }
 
+
+    /**
+     * Updating old members member table active to 1
+     */
+    public function activateOldMember()
+    {
+        $olds = Membership::where('joined_as','old')->get();
+        foreach($olds as $old){
+            Member::where('user_id', $old->user_id)->update([
+                'active' => 1,
+            ]);
+        }
+    }
+
     /**
      * Delete Member
      */
