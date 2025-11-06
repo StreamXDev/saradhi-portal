@@ -419,17 +419,35 @@ class ProfileController extends BaseController
                     'zip' => $requesting_member->permanentAddress->zip,
                     'contact' => $requesting_member->permanentAddress->contact,
                 ]);
-                $relation = MemberEnum::where('type', 'relationship')->where('slug', 'spouse')->first();
+
+                $relations_against_primary_member = MemberRelation::where('member_id', $requesting_member->id)->get();
+                $parent_relation_type = MemberEnum::where('type', 'relationship')->where('slug', 'parent')->first();
+                $child_relation_type = MemberEnum::where('type', 'relationship')->where('slug', 'child')->first();
+                $spouse_relation_type = MemberEnum::where('type', 'relationship')->where('slug', 'spouse')->first();
                 MemberRelation::create([
                     'member_id' => $requesting_member->id,
                     'related_member_id' => $dependent_member->id,
-                    'relationship_id' => $relation->id,
+                    'relationship_id' => $spouse_relation_type->id,
                 ]);
                 MemberRelation::create([
                     'member_id' => $dependent_member->id,
                     'related_member_id' => $requesting_member->id,
-                    'relationship_id' => $relation->id,
+                    'relationship_id' => $spouse_relation_type->id,
                 ]);
+                foreach($relations_against_primary_member as $primary_relations){
+                    if($primary_relations->related_member_id == null){
+                        MemberRelation::create([
+                            'member_id' => $dependent_member->id,
+                            'related_dependent_id' => $primary_relations->related_dependent_id,
+                            'relationship_id' => $parent_relation_type->id,
+                        ]);
+                        MemberRelation::create([
+                            'related_member_id' => $dependent_member->id,
+                            'dependent_id' => $primary_relations->related_dependent_id,
+                            'relationship_id' => $child_relation_type->id,
+                        ]);
+                    }
+                }
 
                 //changing status to family
                 Membership::where('user_id', $user->id)->update([
