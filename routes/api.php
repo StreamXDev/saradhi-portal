@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\EmailVerificationController;
+use App\Http\Controllers\Api\MemberTransfer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -41,3 +42,9 @@ Route::middleware(['auth:sanctum','verified_email'])->group(function () {
     });
 });
 
+Route::group(['middleware' => ['auth:sanctum', 'verified_email', 'is_admin']], function() {
+    Route::controller(MemberTransfer::class)->prefix('transfer')->group(function(){
+        Route::get('/users', 'getUsers');
+        Route::get('/users/{$id?}', 'getUsersAfterId');
+    });
+});
