@@ -19,7 +19,7 @@ class MemberTransfer extends BaseController
 
     public function getUsersAfterId($id)
     {
-        $users = User::where('id', '>', $id)->get();
+        $users = User::where('id', '>', $id)->take(5)->get();
         $data = [
             'users' => $users
         ];
