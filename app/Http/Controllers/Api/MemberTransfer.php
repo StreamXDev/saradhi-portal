@@ -51,12 +51,12 @@ class MemberTransfer extends BaseController
          */
         $relations = MemberRelation::where('member_id', $member->id)->get();
         foreach($relations as $relation){
-            $relationship_type = MemberEnum::where('type', 'relationship')->where('id', $relation->relationship_id)->first();
-            $relation->type = $relationship_type->slug;
             if($relation->related_member_id){
+                $relation->type = 'user';
                 $relative_member = Member::where('id', $relation->related_member_id)->first();
                 $relation->relative = User::where('id', $relative_member->user_id)->first();
             }else if($relation->related_dependent_id){
+                $relation->type = 'dependent';
                 $relation->relative = MemberDependent::where('id', $relation->related_dependent_id)->first();
             }
         }
