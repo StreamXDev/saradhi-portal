@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Modules\Members\Models\Member;
+use Modules\Members\Models\MemberDependent;
 use Modules\Members\Models\MemberDetail;
 use Modules\Members\Models\MemberEnum;
 use Modules\Members\Models\MemberLocalAddress;
@@ -53,9 +54,10 @@ class MemberTransfer extends BaseController
             $relationship_type = MemberEnum::where('type', 'relationship')->where('id', $relation->relationship_id)->first();
             $relation->type = $relationship_type->slug;
             if($relation->related_member_id){
-                
+                $relative_member = Member::where('id', $relation->related_member_id)->first();
+                $relation->relative = User::where('id', $relative_member->user_id)->first();
             }else if($relation->related_dependent_id){
-
+                $relation->relative = MemberDependent::where('id', $relation->related_dependent_id)->first();
             }
         }
         $member->relations = $relations;
