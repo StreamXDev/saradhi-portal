@@ -9,13 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class MemberTransfer extends BaseController
 {
-    public function getUsers(){
-        $users = User::select('id','name')->get();
-        $data = [
-            'users' => $users
-        ];
-        return $this->sendResponse($data, 'All users.');
-    }
 
     public function getUsersAfterId($id)
     {
