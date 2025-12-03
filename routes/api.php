@@ -46,5 +46,6 @@ Route::group(['middleware' => ['auth:sanctum', 'verified_email', 'is_admin']], f
     Route::controller(MemberTransfer::class)->prefix('transfer')->group(function(){
         Route::get('user/{id}', 'getUser');
         Route::get('users/{id}', 'getUsersAfterId');
+        Route::get('member/{id}', 'getMember');
     });
 });
