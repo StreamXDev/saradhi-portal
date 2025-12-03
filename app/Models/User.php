@@ -44,6 +44,7 @@ class User extends Authenticatable implements MustVerifyEmail
      *
      * @var array<int, string>
      */
+    /*
     protected $hidden = [
         'password',
         'remember_token',
@@ -51,6 +52,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at',
         'updated_at'
     ];
+    */
 
     /**
      * Get the attributes that should be cast.
