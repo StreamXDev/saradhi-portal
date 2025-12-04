@@ -14,6 +14,7 @@ use Modules\Members\Models\MemberLocalAddress;
 use Modules\Members\Models\MemberPermanentAddress;
 use Modules\Members\Models\MemberRelation;
 use Modules\Members\Models\Membership;
+use Modules\Members\Models\MembershipRequest;
 
 class MemberTransfer extends BaseController
 {
@@ -44,6 +45,7 @@ class MemberTransfer extends BaseController
         $memberDetails = MemberDetail::where('user_id', $user->id)->first();
         $localAddress = MemberLocalAddress::where('user_id', $user->id)->first();
         $permanentAddress = MemberPermanentAddress::where('user_id', $user->id)->first();
+        $membership_request = MembershipRequest::where('user_id', $user->id)->get();
         /**
          * if member->id relations
          * if related member id,
@@ -65,6 +67,7 @@ class MemberTransfer extends BaseController
             'user' => $user,
             'member' => $member,
             'membership' => $membership,
+            'membership_request' => $membership_request,
             'member_details' => $memberDetails,
             'local_address' => $localAddress,
             'permanent_address' => $permanentAddress
