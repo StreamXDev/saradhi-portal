@@ -207,6 +207,24 @@ class MemberController extends Controller
         return view('members::admin.member.show', compact('member', 'statuses', 'current_status', 'request_action', 'suggested_mid', 'countries', 'units', 'blood_groups', 'gender', 'district_kerala', 'duplicates', 'committees', 'backTo',  'menuParent'));
     }
 
+    public function resizeImage($id){
+        $member = Member::with(['user', 'details'])->where('user_id' , $id)->first();
+        if($member->user->avatar){
+            $source_image_path = 'https://beta.saradheeyam.com/storage/images/'.$member->user->avatar;
+            $destination_image_path = 'https://beta.saradheeyam.com/storage/images/'.$member->user->avatar;
+            list($width, $height) = getimagesize($source_image_path);
+            $new_width = 200;
+            $new_height = 150;
+            $new_image = imagecreatetruecolor($new_width, $new_height);
+            $source_image = imagecreatefromjpeg($source_image_path);
+            imagecopyresampled($new_image, $source_image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+            imagejpeg($new_image, $destination_image_path, 90);
+            $source_image = null;
+            $new_image = null;
+            return redirect('/admin/members/member/view/'.$id);
+        }
+    }
+
     /**
      * Generate member view pdf
      */
