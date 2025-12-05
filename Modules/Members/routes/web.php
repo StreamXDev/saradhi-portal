@@ -63,7 +63,7 @@ Route::prefix('admin/members')->middleware(['auth:sanctum', 'verified_email', 'i
     Route::controller(MemberController::class)->group(function(){
         Route::get('/', 'index');
         Route::get('/member/view/{id}/{prevPage?}', 'show');
-        Route::get('/member/view/{id}/resize_images', 'resizeImage');
+        Route::get('/member/resize_images/{id}', 'resizeImage');
         Route::get('/member/pdf/{id}', 'exportViewToPDF');
         Route::get('/member/excel/{id}', 'exportViewToExcel');
         Route::get('/member/edit/{id}', 'edit');
