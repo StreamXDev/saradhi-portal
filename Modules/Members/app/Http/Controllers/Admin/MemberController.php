@@ -214,15 +214,67 @@ class MemberController extends Controller
             $destination_image_path = storage_path('app/public/images/'.$member->user->avatar);
             list($width, $height) = getimagesize($source_image_path);
             $new_width = 200;
-            $new_height = 150;
+            $new_height = 200;
             $new_image = imagecreatetruecolor($new_width, $new_height);
             $source_image = imagecreatefromjpeg($source_image_path);
             imagecopyresampled($new_image, $source_image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
             imagejpeg($new_image, $destination_image_path, 90);
             $source_image = null;
             $new_image = null;
-            return redirect('/admin/members/member/view/'.$id)->with('success', 'Image resized');
         }
+        if($member->details->photo_civil_id_front){
+            $source_image_path = storage_path('app/public/images/'.$member->details->photo_civil_id_front);
+            $destination_image_path = storage_path('app/public/images/'.$member->details->photo_civil_id_front);
+            list($width, $height) = getimagesize($source_image_path);
+            $new_width = 400;
+            $new_height = 400;
+            $new_image = imagecreatetruecolor($new_width, $new_height);
+            $source_image = imagecreatefromjpeg($source_image_path);
+            imagecopyresampled($new_image, $source_image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+            imagejpeg($new_image, $destination_image_path, 90);
+            $source_image = null;
+            $new_image = null;
+        }
+        if($member->details->photo_civil_id_back){
+            $source_image_path = storage_path('app/public/images/'.$member->details->photo_civil_id_back);
+            $destination_image_path = storage_path('app/public/images/'.$member->details->photo_civil_id_back);
+            list($width, $height) = getimagesize($source_image_path);
+            $new_width = 400;
+            $new_height = 400;
+            $new_image = imagecreatetruecolor($new_width, $new_height);
+            $source_image = imagecreatefromjpeg($source_image_path);
+            imagecopyresampled($new_image, $source_image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+            imagejpeg($new_image, $destination_image_path, 90);
+            $source_image = null;
+            $new_image = null;
+        }
+        if($member->details->photo_passport_front){
+            $source_image_path = storage_path('app/public/images/'.$member->details->photo_passport_front);
+            $destination_image_path = storage_path('app/public/images/'.$member->details->photo_passport_front);
+            list($width, $height) = getimagesize($source_image_path);
+            $new_width = 400;
+            $new_height = 400;
+            $new_image = imagecreatetruecolor($new_width, $new_height);
+            $source_image = imagecreatefromjpeg($source_image_path);
+            imagecopyresampled($new_image, $source_image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+            imagejpeg($new_image, $destination_image_path, 90);
+            $source_image = null;
+            $new_image = null;
+        }
+        if($member->details->photo_passport_back){
+            $source_image_path = storage_path('app/public/images/'.$member->details->photo_passport_back);
+            $destination_image_path = storage_path('app/public/images/'.$member->details->photo_passport_back);
+            list($width, $height) = getimagesize($source_image_path);
+            $new_width = 400;
+            $new_height = 400;
+            $new_image = imagecreatetruecolor($new_width, $new_height);
+            $source_image = imagecreatefromjpeg($source_image_path);
+            imagecopyresampled($new_image, $source_image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+            imagejpeg($new_image, $destination_image_path, 90);
+            $source_image = null;
+            $new_image = null;
+        }
+        return redirect('/admin/members/member/view/'.$id)->with('success', 'Image resized');
     }
 
     /**
