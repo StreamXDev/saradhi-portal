@@ -210,8 +210,8 @@ class MemberController extends Controller
     public function resizeImage($id){
         $member = Member::with(['user', 'details'])->where('user_id' , $id)->first();
         if($member->user->avatar){
-            $source_image_path = '/storage/images/'.$member->user->avatar;
-            $destination_image_path = '/storage/images/'.$member->user->avatar;
+            $source_image_path = storage_path('/storage/images/'.$member->user->avatar);
+            $destination_image_path = storage_path('/storage/images/'.$member->user->avatar);
             list($width, $height) = getimagesize($source_image_path);
             $new_width = 200;
             $new_height = 150;
