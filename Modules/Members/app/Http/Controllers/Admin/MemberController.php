@@ -221,7 +221,7 @@ class MemberController extends Controller
             imagejpeg($new_image, $destination_image_path, 90);
             $source_image = null;
             $new_image = null;
-            return redirect('/admin/members/member/view/'.$id);
+            return redirect('/admin/members/member/view/'.$id)->with('success', 'Image resized');
         }
     }
 
