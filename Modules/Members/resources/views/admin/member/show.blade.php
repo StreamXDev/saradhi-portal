@@ -580,6 +580,7 @@
             <small>M: {{$member->id}}</small> | 
             <small>MS: {{$member->membership->mid}}</small>
         </div>
+        <a href="/admin/members/member/resize_images/{{$member->user->id}}"><small>Resize Image</small></a>
     </div>
 </div>
 
