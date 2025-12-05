@@ -274,6 +274,7 @@ class MemberController extends Controller
             $source_image = null;
             $new_image = null;
         }
+        cache()->flush();
         return redirect('/admin/members/member/view/'.$id)->with('success', 'Image resized');
     }
 
