@@ -37,9 +37,9 @@ class MemberTransfer extends BaseController
         return $this->sendResponse($data, 'All users.');
     }
 
-    public function getUsersAfterId()
+    public function getUsersAfterId($id)
     {
-        $data = ['u' => 'test'];
+        $data = ['u' => $id];
         return $this->sendResponse($data, 'All users.');
         /*
         $count = $count ?? 5;
