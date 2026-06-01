@@ -30,7 +30,7 @@ class MemberTransfer extends BaseController
 
     public function getUsers($max)
     {
-        $users = User::where('id', '>', $max)->get();
+        $users = User::where('id', '>=', $max)->get();
         $data = [
             'users' => $users
         ];
