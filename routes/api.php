@@ -48,6 +48,9 @@ Route::group(['middleware' => ['auth:sanctum', 'verified_email', 'is_admin']], f
         Route::get('allUsers', 'getUsers');
         Route::get('users/{id}/{?count}', 'getUsersAfterId');
         Route::get('member/{id}', 'getMember');
+        Route::get('greeting', function () {
+    return 'Hello World';
+});
 
         
     });
