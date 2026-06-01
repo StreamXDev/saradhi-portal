@@ -49,8 +49,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified_email', 'is_admin']], f
         Route::get('users/{id}/{?count}', 'getUsersAfterId');
         Route::get('member/{id}', 'getMember');
         Route::get('greeting', function () {
-    return 'Hello World';
-});
+            return response()->json([
+                'name' => 'Abigail',
+                'state' => 'CA',
+            ]);
+        });
 
         
     });
