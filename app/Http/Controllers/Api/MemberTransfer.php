@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Modules\Members\Models\Member;
 use Modules\Members\Models\MemberDependent;
 use Modules\Members\Models\MemberDetail;
@@ -60,17 +61,19 @@ class MemberTransfer extends BaseController
 
         // Reducing avatar image size
         if($user->avatar){
-            $source_image_path = storage_path('app/public/images/'.$user->avatar);
-            $destination_image_path = storage_path('app/public/images/'.$user->avatar);
-            list($width, $height) = getimagesize($source_image_path);
-            $new_width = 300;
-            $new_height = 300;
-            $new_image = imagecreatetruecolor($new_width, $new_height);
-            $source_image = imagecreatefromjpeg($source_image_path);
-            imagecopyresampled($new_image, $source_image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
-            imagejpeg($new_image, $destination_image_path, 90);
-            $source_image = null;
-            $new_image = null;
+            if (Storage::exists('app/public/images/'.$user->avatar)) {
+                $source_image_path = storage_path('app/public/images/'.$user->avatar);
+                $destination_image_path = storage_path('app/public/images/'.$user->avatar);
+                list($width, $height) = getimagesize($source_image_path);
+                $new_width = 300;
+                $new_height = 300;
+                $new_image = imagecreatetruecolor($new_width, $new_height);
+                $source_image = imagecreatefromjpeg($source_image_path);
+                imagecopyresampled($new_image, $source_image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+                imagejpeg($new_image, $destination_image_path, 90);
+                $source_image = null;
+                $new_image = null;
+            }
         }
 
         foreach($relations as $relation){
