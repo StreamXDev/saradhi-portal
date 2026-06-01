@@ -37,7 +37,7 @@ class MemberTransfer extends BaseController
         return $this->sendResponse($data, 'All users.');
     }
 
-    public function getUsersAfterId(int $id, int $count)
+    public function getUsersAfterId($id, $count)
     {
         $count = $count ?? 5;
         $users = User::where('id', '>', $id)->take($count)->get();
