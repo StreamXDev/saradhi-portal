@@ -52,6 +52,13 @@ class MemberTransfer extends BaseController
     {
         $user = User::where('id', $id)->first();
         $member = Member::where('user_id', $user->id)->first();
+        if(!$member){
+            $data = [
+                'user' => $user,
+                'member' => null,
+            ];
+            return $this->sendResponse($data, 'Member.');
+        }
         $membership = Membership::where('user_id', $user->id)->first();
         $memberDetails = MemberDetail::where('user_id', $user->id)->first();
         $localAddress = MemberLocalAddress::where('user_id', $user->id)->first();
