@@ -25,6 +25,9 @@ use Modules\Members\Models\MemberRelation;
 use Modules\Members\Models\Membership;
 use Modules\Members\Models\MembershipRequest;
 use Modules\Members\Models\MemberUnit;
+use Modules\Members\Rules\CivilIdNewApiValidation;
+use Modules\Members\Rules\EmailNewApiValidation;
+use Modules\Members\Services\MemberRegisterService;
 
 class MembersController extends Controller
 {
@@ -34,7 +37,9 @@ class MembersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    function __construct()
+    function __construct(
+        protected MemberRegisterService $memberRegisterService
+    )
     {
         $this->middleware('permission:profile.view', ['only' => ['showProfile']]);
     }
@@ -85,7 +90,6 @@ class MembersController extends Controller
     public function store(Request $request)
     { 
         $user = $this->createMember($request);
-
         return redirect()->route('member.verify_email_otp',['name' => $user->name, 'email' => $user->email]);
     }
 
@@ -99,12 +103,14 @@ class MembersController extends Controller
     {
         $this->validate($request, [
             'name' => 'required|string',
-            'email' => 'required|unique:users,email',
+            'email' => ['required', 'string', 'email', new EmailNewApiValidation],
             'password' => ['required', 'confirmed', Password::min(8)->numbers()->letters()->symbols()],
-            'g-recaptcha-response' => ['required', new ReCaptcha]
+            //'g-recaptcha-response' => ['required', new ReCaptcha]
         ]);
-
+        
         $input = $request->all();
+
+        DB::beginTransaction();
 
         $user = User::create($input);
 
@@ -112,10 +118,16 @@ class MembersController extends Controller
 
         $member ['user_id'] = $user->id;
         $member ['name'] = $user->name;
-        Member::create($member);
+        $member = Member::create($member);
 
         // Sending OTP 
         $this->sendEmailOtp($request);
+
+        $data = compact('user', 'member');
+
+        $this->memberRegisterService->transferInit($data);
+
+        DB::commit();
 
         return $user;
     }
@@ -311,7 +323,7 @@ class MembersController extends Controller
         DB::beginTransaction();
 
         // Adding member details
-        MemberDetail::updateOrCreate(
+        $memberDetails = MemberDetail::updateOrCreate(
             ['user_id' => $user->id],
             [
                 'member_unit_id' => $input['member_unit_id'],
@@ -352,7 +364,7 @@ class MembersController extends Controller
         ]);
 
         // Create membership table entry
-        Membership::create([
+        $membership = Membership::create([
             'user_id' => $user->id,
             'type' => $input['type'],
             'family_in' => isset($input['family_in']) ? $input['family_in'] : ($input['type'] == 'family' ? 'kuwait' : 'india'),
@@ -363,7 +375,7 @@ class MembersController extends Controller
         ]);
 
         // Create contacts table entry
-        MemberLocalAddress::create([
+        $la = MemberLocalAddress::create([
             'user_id' => $user->id,
             'governorate' => $input['governorate'],
             'line_1' => $input['local_address_area'],
@@ -373,7 +385,7 @@ class MembersController extends Controller
         ]);
 
         // Adding introducers details
-        MemberPermanentAddress::create([
+        $pa = MemberPermanentAddress::create([
             'user_id' => $user->id,
             'line_1' => $input['permanent_address_line_1'],
             'district' => $input['permanent_address_district'],
@@ -399,6 +411,15 @@ class MembersController extends Controller
                 'updated_by' => $user->id,
             ]);
         }
+
+        $spouse_user = null;
+        $sMember = null;
+        $sMemberDetails = null;
+        $sMembership = null;
+        $sLa = null;
+        $sPa = null;
+        $memberUnit = null;
+        $introducerUnit = null;
         
         // Adding spouse if membership type is family
         if($input['type'] == 'family'){
@@ -433,7 +454,7 @@ class MembersController extends Controller
             $request->spouse_photo_passport_back->storeAs('public/images', $spouse_passport_back_name);
 
             // Spouse Member details
-            MemberDetail::updateOrCreate(
+            $sMemberDetails = MemberDetail::updateOrCreate(
                 ['user_id' => $spouse_user->id],
                 [
                     'member_unit_id' => $input['member_unit_id'],
@@ -472,7 +493,7 @@ class MembersController extends Controller
             ]);
 
             // Create membership table entry
-            Membership::create([
+            $sMembership = Membership::create([
                 'user_id' => $spouse_user->id,
                 'type' => $input['type'],
                 'family_in' => isset($input['family_in']) ? $input['family_in'] : ($input['type'] == 'family' ? 'kuwait' : 'india'),
@@ -483,7 +504,7 @@ class MembersController extends Controller
             ]);
 
             // Create contacts table entry
-            MemberLocalAddress::create([
+            $sLa = MemberLocalAddress::create([
                 'user_id' => $spouse_user->id,
                 'line_1' => $input['local_address_area'],
                 'building' => $input['local_address_building'],
@@ -492,7 +513,7 @@ class MembersController extends Controller
             ]);
 
             // Adding introducers details
-            MemberPermanentAddress::create([
+            $sPa = MemberPermanentAddress::create([
                 'user_id' => $spouse_user->id,
                 'line_1' => $input['permanent_address_line_1'],
                 'district' => $input['permanent_address_district'],
@@ -531,8 +552,26 @@ class MembersController extends Controller
                 'related_member_id' => $mainMember->id,
                 'relationship_id' => $relation->id,
             ]);
-
+            
         }
+
+        // sending request details if synchronization is active
+        $user = User::where('id', $user->id)->first();
+        $member = Member::where('user_id', $user->id)->first();
+        if($memberDetails){
+            $memberUnit = MemberUnit::where('id', $memberDetails->member_unit_id)->first();
+            $memberUnit = $memberUnit->slug;
+        }
+        if($membership){
+            $introducerUnit = MemberUnit::where('id', $membership->introducer_unit)->first();
+            $introducerUnit = $introducerUnit->slug;
+        }
+        if($spouse_user){
+            $spouse_user = User::where('id', $spouse_user->id)->first();
+            $sMember = Member::where('user_id', $spouse_user->id)->first();
+        }
+        $data = compact('user', 'member', 'memberDetails', 'membership', 'memberUnit', 'la', 'pa', 'introducerUnit', 'spouse_user', 'sMember', 'sMemberDetails', 'sMembership', 'sLa', 'sPa' );
+        $this->memberRegisterService->transferInit($data);
 
         DB::commit();
 
@@ -546,7 +585,7 @@ class MembersController extends Controller
             'phone'             => ['required', Rule::unique(User::class)],
             'whatsapp'          => ['required', 'numeric'],
             'emergency_phone'   => ['required', 'numeric'],
-            'civil_id'          => ['required', 'string'],
+            'civil_id'          => ['required', 'string', new CivilIdNewApiValidation],
             'dob'               => ['required', 'date_format:Y-m-d'],
             'company'           => ['nullable', 'string'],
             'profession'        => ['nullable', 'string'],

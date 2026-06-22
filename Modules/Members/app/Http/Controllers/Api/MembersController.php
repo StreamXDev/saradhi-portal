@@ -517,6 +517,8 @@ class MembersController extends BaseController
                 'statuses' => $statuses,
                 'app_action' => 'pending_approval'
             ];
+
+            
             return $this->sendResponse($response, 'Your document proof successfully and the Membership request sent to verification');
         }catch (\Exception $e) {
             DB::rollback();

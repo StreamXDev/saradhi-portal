@@ -40,6 +40,7 @@ class AuthController extends BaseController
             return $this->sendError('Required fields are empty or incorrect', $validator->errors(), 400);       
         }
         $input = $request->all();
+        
         try{
             $user = User::create($input);
             if(isset($request->type) && $request->type == 'member' && Module::has('Members')){
