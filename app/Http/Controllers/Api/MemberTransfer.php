@@ -29,6 +29,15 @@ class MemberTransfer extends BaseController
         return $this->sendResponse($data, 'User.');
     }
 
+    public function getUserByEmail($email)
+    {
+        $user = User::where('email', $email)->get();
+        $data = [
+            'users' => $user
+        ];
+        return $this->sendResponse($data, 'User.');
+    }
+
     public function getUsers($max)
     {
         $users = User::where('id', '>=', $max)->get();

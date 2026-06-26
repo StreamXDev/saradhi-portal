@@ -101,7 +101,7 @@ class MembersController extends Controller
      */
     private function createMember(Request $request)
     {
-        $this->validate($request, [
+        $validated = $request->validate([
             'name' => 'required|string',
             'email' => ['required', 'string', 'email', new EmailNewApiValidation],
             'password' => ['required', 'confirmed', Password::min(8)->numbers()->letters()->symbols()],
@@ -123,9 +123,8 @@ class MembersController extends Controller
         // Sending OTP 
         $this->sendEmailOtp($request);
 
-        $data = compact('user', 'member');
-
-        $this->memberRegisterService->transferInit($data);
+        // Transferring user to new portal
+        $this->memberRegisterService->transferCreateUser($request);
 
         DB::commit();
 
@@ -280,6 +279,7 @@ class MembersController extends Controller
         return view('members::member.detail', compact('countries', 'units', 'blood_groups', 'gender', 'district_kerala'));
     }
 
+
     /**
      * Store member details
      */
@@ -323,7 +323,7 @@ class MembersController extends Controller
         DB::beginTransaction();
 
         // Adding member details
-        $memberDetails = MemberDetail::updateOrCreate(
+        MemberDetail::updateOrCreate(
             ['user_id' => $user->id],
             [
                 'member_unit_id' => $input['member_unit_id'],
@@ -375,7 +375,7 @@ class MembersController extends Controller
         ]);
 
         // Create contacts table entry
-        $la = MemberLocalAddress::create([
+        MemberLocalAddress::create([
             'user_id' => $user->id,
             'governorate' => $input['governorate'],
             'line_1' => $input['local_address_area'],
@@ -385,7 +385,7 @@ class MembersController extends Controller
         ]);
 
         // Adding introducers details
-        $pa = MemberPermanentAddress::create([
+        MemberPermanentAddress::create([
             'user_id' => $user->id,
             'line_1' => $input['permanent_address_line_1'],
             'district' => $input['permanent_address_district'],
@@ -413,21 +413,26 @@ class MembersController extends Controller
         }
 
         $spouse_user = null;
-        $sMember = null;
-        $sMemberDetails = null;
-        $sMembership = null;
-        $sLa = null;
-        $sPa = null;
-        $memberUnit = null;
-        $introducerUnit = null;
-        
+
         // Adding spouse if membership type is family
         if($input['type'] == 'family'){
             $userInput['name'] = $input['spouse_name'];
             $userInput['email'] = $input['spouse_email'];
             $userInput['password'] = Hash::make(Str::random(10));
+
             $spouse_user = User::create($userInput);
-    
+
+
+            // Updating request information and sending data for migration
+            request()->merge([
+                'name' => $input['spouse_name'],
+                'email' => $input['spouse_email'],
+                'password' => $userInput['password'],
+                'password_confirmation' => $userInput['password'],
+            ]);
+            $this->memberRegisterService->transferCreateUser($request);
+
+            // Assigning role
             $spouse_user->assignRole(['Member']);
     
             $spouse ['user_id'] = $spouse_user->id;
@@ -454,7 +459,7 @@ class MembersController extends Controller
             $request->spouse_photo_passport_back->storeAs('public/images', $spouse_passport_back_name);
 
             // Spouse Member details
-            $sMemberDetails = MemberDetail::updateOrCreate(
+            MemberDetail::updateOrCreate(
                 ['user_id' => $spouse_user->id],
                 [
                     'member_unit_id' => $input['member_unit_id'],
@@ -493,7 +498,7 @@ class MembersController extends Controller
             ]);
 
             // Create membership table entry
-            $sMembership = Membership::create([
+            Membership::create([
                 'user_id' => $spouse_user->id,
                 'type' => $input['type'],
                 'family_in' => isset($input['family_in']) ? $input['family_in'] : ($input['type'] == 'family' ? 'kuwait' : 'india'),
@@ -504,8 +509,9 @@ class MembersController extends Controller
             ]);
 
             // Create contacts table entry
-            $sLa = MemberLocalAddress::create([
+            MemberLocalAddress::create([
                 'user_id' => $spouse_user->id,
+                'governorate' => $input['governorate'],
                 'line_1' => $input['local_address_area'],
                 'building' => $input['local_address_building'],
                 'flat' => $input['local_address_flat'],
@@ -513,7 +519,7 @@ class MembersController extends Controller
             ]);
 
             // Adding introducers details
-            $sPa = MemberPermanentAddress::create([
+            MemberPermanentAddress::create([
                 'user_id' => $spouse_user->id,
                 'line_1' => $input['permanent_address_line_1'],
                 'district' => $input['permanent_address_district'],
@@ -555,23 +561,12 @@ class MembersController extends Controller
             
         }
 
-        // sending request details if synchronization is active
-        $user = User::where('id', $user->id)->first();
-        $member = Member::where('user_id', $user->id)->first();
-        if($memberDetails){
-            $memberUnit = MemberUnit::where('id', $memberDetails->member_unit_id)->first();
-            $memberUnit = $memberUnit->slug;
-        }
-        if($membership){
-            $introducerUnit = MemberUnit::where('id', $membership->introducer_unit)->first();
-            $introducerUnit = $introducerUnit->slug;
-        }
-        if($spouse_user){
-            $spouse_user = User::where('id', $spouse_user->id)->first();
-            $sMember = Member::where('user_id', $spouse_user->id)->first();
-        }
-        $data = compact('user', 'member', 'memberDetails', 'membership', 'memberUnit', 'la', 'pa', 'introducerUnit', 'spouse_user', 'sMember', 'sMemberDetails', 'sMembership', 'sLa', 'sPa' );
-        $this->memberRegisterService->transferInit($data);
+        // Sending membership data to transfer new portal
+        $transferData = [
+            'user' => $user->email,
+            'spouse' => $spouse_user ? $spouse_user->email : null
+        ];
+        $this->memberRegisterService->transferCreateMember($transferData);
 
         DB::commit();
 

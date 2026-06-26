@@ -17,12 +17,17 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Laravel\Socialite\Facades\Socialite;
 use Modules\Members\Models\Member;
+use Modules\Members\Services\MemberRegisterService;
 use Nwidart\Modules\Facades\Module;
 
 class AuthController extends BaseController
 {
 
     use VerifiesEmails;
+
+    public function __construct(
+        protected MemberRegisterService $memberRegisterService 
+    ){}
 
     /**
      * Register api
@@ -68,6 +73,10 @@ class AuthController extends BaseController
                     'phone' => $user->phone,
                 ]
             ];
+
+            // Transferring user to new portal
+            $this->memberRegisterService->transferCreateUser($request);
+
             return $this->sendResponse($data, 'User registered successfully');
         }catch (\Exception $e) {
             return $this->sendError('Something went wrong', $e, 403);

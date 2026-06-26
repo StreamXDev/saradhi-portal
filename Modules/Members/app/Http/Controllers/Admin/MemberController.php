@@ -13,8 +13,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
@@ -1638,5 +1640,42 @@ class MemberController extends Controller
         DB::commit();
 
         return redirect('admin/members')->with('success', 'The user deleted successfully');        
+    }
+
+
+
+    public function createTestMember()
+    {
+        $user = User::where('email', 'safeeraslamc@gmail.com')->fist();
+        if($user){
+            $member = Member::where('user_id', $user->id)->first();
+            $relation = MemberRelation::where('member_id', $member->id)->where('relationship_id', 21)->first();
+            $spouseMember = Member::where('id', $relation->related_member_id)->first();
+            $spouseUser = User::where('id', $spouseMember->user_id)->first();
+
+            $this->deleteTestMember($user, $member);
+            if($spouseMember){
+                $this->deleteTestMember($spouseUser, $spouseMember);
+            }
+        }
+        /*
+        $request = Request::create('/member/register', 'POST', [
+            'name' => 'Safeer Aslam',
+            'email' => 'safeeraslamc@gmail.com',
+            'password' => 'abc@1234',
+            'password_confirmation' => 'abc@1234'
+        ]);
+        $user = Route::dispatch($request);
+        */
+    }
+    private function deleteTestMember($user, $member){
+        MemberRelation::where('member_id', $member->id)->delete();
+        MemberPermanentAddress::where('user_id', $user->id)->delete();
+        MemberLocalAddress::where('user_id', $user->id)->delete();
+        MemberDetail::where('user_id', $user->id)->delete();
+        MembershipRequest::where('user_id', $user->id)->delete();
+        Membership::where('user_id', $user->id)->delete();
+        Member::where('user_id', $user->id)->delete();
+        User::where('id', $user->id)->delete();
     }
 }

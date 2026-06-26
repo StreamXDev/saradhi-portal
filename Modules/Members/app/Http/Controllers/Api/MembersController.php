@@ -22,6 +22,7 @@ use Modules\Members\Models\MemberRelation;
 use Modules\Members\Models\Membership;
 use Modules\Members\Models\MembershipRequest;
 use Modules\Members\Models\MemberUnit;
+use Modules\Members\Services\MemberRegisterService;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 
@@ -33,7 +34,9 @@ class MembersController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    function __construct()
+    function __construct(
+        protected MemberRegisterService $memberRegisterService
+    )
     {
         $this->middleware('permission:profile.view', ['only' => ['showProfile, createDetails']]);
     }
@@ -175,6 +178,7 @@ class MembersController extends BaseController
             
             // adding spouse
             // Adding spouse if membership type is family
+            $spouse_user = null;
             if($input['type'] === 'family'){
                 $userInput['name'] = $input['spouse_name'];
                 $userInput['email'] = $input['spouse_email'];
@@ -263,6 +267,13 @@ class MembersController extends BaseController
                 ]);
             }
             DB::commit();
+
+            // Sending membership data to transfer new portal
+            $transferData = [
+                'user' => $user->email,
+                'spouse' => $spouse_user ? $spouse_user->email : null
+            ];
+            $this->memberRegisterService->transferCreateMember($transferData);
 
             $idQr = false;
             $profileCompleted = false;
