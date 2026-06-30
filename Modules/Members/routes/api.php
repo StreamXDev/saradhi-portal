@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\Members\Http\Controllers\Admin\ApiMembershipController;
 use Modules\Members\Http\Controllers\Api\AddressController;
 use Modules\Members\Http\Controllers\Api\DependentController;
 use Modules\Members\Http\Controllers\Api\MembersController;
@@ -19,6 +20,8 @@ use Modules\Members\Http\Middleware\VerifyProfileStatus;
  * is assigned the "api" middleware group. Enjoy building your API!
  *
 */
+
+
 Route::middleware(['auth:sanctum','verified_email'])->prefix('member')->group(function () {
     Route::controller(MembersController::class)->group(function(){
         Route::get('details', 'createDetails');
@@ -49,4 +52,16 @@ Route::middleware(['auth:sanctum','verified_email'])->prefix('member')->group(fu
     Route::controller(UnitController::class)->prefix('unit')->group(function(){
         Route::post('/change', 'cuRequest');
     });
+});
+
+
+Route::prefix('member/request')->middleware(['auth:sanctum', 'verified_email', 'is_admin'])->group(function() {
+    Route::controller(ApiMembershipController::class)->group(function(){
+        Route::post('/change_status', 'changeStatus');
+        Route::post('/confirm', 'confirmMembership');
+    });
+});
+
+Route::controller(MembersController::class)->group(function(){
+    Route::get('test', 'test');
 });

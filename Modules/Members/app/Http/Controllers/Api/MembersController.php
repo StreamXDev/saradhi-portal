@@ -41,6 +41,17 @@ class MembersController extends BaseController
         $this->middleware('permission:profile.view', ['only' => ['showProfile, createDetails']]);
     }
 
+
+    public function test()
+    {
+        $transferData = [
+            'user' => 'haifa1@gmail.com',
+            'spouse' => null
+        ];
+        $res = $this->memberRegisterService->transferCreateMember($transferData);
+        dd($res);
+    }
+
     /**
      * Send the form for creating a new resource.
      */

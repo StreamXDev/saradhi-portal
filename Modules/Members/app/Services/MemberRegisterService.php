@@ -38,7 +38,7 @@ class MemberRegisterService
             $api = env('NEW_PORTAL_API').'migration/createMember';
             $response = Http::post($api, $data);
             if($response->ok()){
-                return;
+                return $response->json();
             }
         } catch (\Exception $e) {
             return; 

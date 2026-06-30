@@ -17,6 +17,7 @@ use Modules\Members\Models\MemberEnum;
 use Modules\Members\Models\Membership;
 use Modules\Members\Models\MembershipRequest;
 use Modules\Members\Notifications\MembershipApproval;
+use Modules\Members\Services\MemberRequestService;
 
 class MembershipController extends Controller
 {
@@ -25,7 +26,9 @@ class MembershipController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    function __construct()
+    function __construct(
+        protected MemberRequestService $requestService
+    )
     {
         $this->middleware(
             'permission:membership_request.verification.show|membership_request.review.show|membership_request.approval.show|membership_request.confirm', 
@@ -88,9 +91,12 @@ class MembershipController extends Controller
 
     public function changeStatus(Request $request)
     {
+        $input = $request->all();
+        $this->requestService->changeStatus($input);
+        return redirect()->back();
+        /*
         $user = Auth::user();
 
-        $input = $request->all();
         $user_id = $input['user_id'];
         $current_status_id = $input['current_status_id'];
         $active_request = MembershipRequest::where('user_id', $user_id)->where('request_status_id', $current_status_id)->where('checked', 0)->first();
@@ -147,6 +153,8 @@ class MembershipController extends Controller
         }
 
         return redirect()->back();
+        */
+
     }
 
     public function confirmMembershipRequest(Request $request){
@@ -160,8 +168,7 @@ class MembershipController extends Controller
         }
 
         $user_id = $input['user_id'];
-
-        
+        $user = User::find($user_id);
 
         // check active request and it is ready to confirm
         $approved_status = MemberEnum::where('type', 'request_status')->where('slug', 'approved')->first();
@@ -169,9 +176,9 @@ class MembershipController extends Controller
         $active_request = MembershipRequest::where('user_id', $user_id)->where('request_status_id', $approved_status->id)->where('checked', 0)->first();
         
         if($active_request){
+            /*
             $membership = Membership::where('user_id', $user_id)->first();
             $member = Member::where('user_id', $user_id)->first();
-            $user = User::find($user_id);
 
             // Update current request status to checked
             $active_request->checked = 1;
@@ -184,7 +191,6 @@ class MembershipController extends Controller
                 'updated_by' => $admin->id,
                 'remark' => $input['remark']
             ]);
-
             // Updating membership table
             $membership->mid = $input['mid'];
             $membership->start_date = $input['start_date'];
@@ -196,6 +202,8 @@ class MembershipController extends Controller
             // Updating members table
             $member->active = 1;
             $member->save();
+            */
+            $this->requestService->confirmRequest($input);
 
             $messages['hi'] = "Hi {$user->name}";
             $messages['message'] = "Congratulations!. Your membership application has been approved.";
@@ -205,7 +213,6 @@ class MembershipController extends Controller
         }
 
         return Redirect::back()->withErrors(['request' => ['Invalid request']]);
-
     }
 
     protected function validationRules()
