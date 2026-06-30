@@ -42,16 +42,6 @@ class MembersController extends BaseController
     }
 
 
-    public function test()
-    {
-        $transferData = [
-            'user' => 'haifa1@gmail.com',
-            'spouse' => null
-        ];
-        $res = $this->memberRegisterService->transferCreateMember($transferData);
-        dd($res);
-    }
-
     /**
      * Send the form for creating a new resource.
      */

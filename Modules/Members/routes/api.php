@@ -55,13 +55,14 @@ Route::middleware(['auth:sanctum','verified_email'])->prefix('member')->group(fu
 });
 
 
-Route::prefix('member/request')->middleware(['auth:sanctum', 'verified_email', 'is_admin'])->group(function() {
-    Route::controller(ApiMembershipController::class)->group(function(){
+Route::middleware(['auth:sanctum', 'verified_email', 'is_admin'])->group(function() {
+    Route::controller(ApiMembershipController::class)->prefix('member/request')->group(function(){
         Route::post('/change_status', 'changeStatus');
         Route::post('/confirm', 'confirmMembership');
     });
 });
-
-Route::controller(MembersController::class)->group(function(){
-    Route::get('test', 'test');
+Route::controller(ApiMembershipController::class)->prefix('member/request')->group(function(){
+    Route::post('/change_status', 'changeStatus');
+    Route::post('/confirm', 'confirmMembership');
 });
+

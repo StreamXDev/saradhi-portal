@@ -19,10 +19,10 @@ class MemberRequestService
     /**
      * Changing request status 
      * */    
-    public function changeStatus(array $data)
+    public function changeStatus(array $data, $loggedAs = null)
     {
         try {
-            $loggedUser = Auth::user();
+            $loggedUser = $loggedAs ?? Auth::user();
             $active_request = $this->requestRepository->getRequestByIds($data['user_id'], $data['current_status_id']);
             DB::beginTransaction();
             if($active_request){
