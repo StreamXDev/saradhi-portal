@@ -52,5 +52,5 @@ Route::group(['middleware' => ['auth:sanctum', 'verified_email', 'is_admin']], f
     });
 });
 Route::controller(MemberTransfer::class)->prefix('transfer')->group(function(){
-    Route::get('user/email/{email}', 'getUserByEmail');
+    Route::post('user/email', 'getUserByEmail');
 });
