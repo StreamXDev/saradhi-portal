@@ -72,7 +72,7 @@ class MemberTransfer extends BaseController
         $memberDetails = MemberDetail::where('user_id', $user->id)->first();
         $localAddress = MemberLocalAddress::where('user_id', $user->id)->first();
         $permanentAddress = MemberPermanentAddress::where('user_id', $user->id)->first();
-        $membership_request = MembershipRequest::where('user_id', $user->id)->get();
+        $membership_request = MembershipRequest::where('user_id', $user->id)->with('updatedBy')->get();
         $relations = MemberRelation::where('member_id', $member->id)->get();
 
         // Reducing avatar image size

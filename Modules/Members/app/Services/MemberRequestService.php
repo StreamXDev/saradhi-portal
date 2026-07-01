@@ -83,10 +83,10 @@ class MemberRequestService
     /**
      * Confirm request
      */
-    public function confirmRequest(array $data)
+    public function confirmRequest(array $data, $loggedAs = null)
     {
         try {
-            $loggedUser = Auth::user();
+            $loggedUser = $loggedAs ?? Auth::user();
             $user_id = $data['user_id'];
             $approved_status = $this->requestRepository->getStatusEnumBySlug('approved');
             $new_status = $this->requestRepository->getStatusEnumBySlug('confirmed');
