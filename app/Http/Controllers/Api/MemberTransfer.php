@@ -32,11 +32,11 @@ class MemberTransfer extends BaseController
     public function getUserByEmail(Request $request)
     {
         $input = $request->all();
+        return $this->sendResponse($input, 'User details received.');
         $user = User::where('email', $input['email'])->get();
         $data = [
             'users' => $user
         ];
-        return $this->sendResponse($data, 'User.');
     }
 
     public function getUsers($max)
