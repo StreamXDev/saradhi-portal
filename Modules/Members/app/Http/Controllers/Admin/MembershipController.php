@@ -94,125 +94,21 @@ class MembershipController extends Controller
         $input = $request->all();
         $this->requestService->changeStatus($input);
         return redirect()->back();
-        /*
-        $user = Auth::user();
-
-        $user_id = $input['user_id'];
-        $current_status_id = $input['current_status_id'];
-        $active_request = MembershipRequest::where('user_id', $user_id)->where('request_status_id', $current_status_id)->where('checked', 0)->first();
-        if($active_request){
-
-            $current_status = MemberEnum::where('type', 'request_status')->where('id', $current_status_id)->first();
-            $current_status_order = $current_status->order;
-
-            if($request->input('action') == 'revise'){
-                if($current_status->slug == 'rejected'){
-                    $previous_status_id = $active_request->rejected;
-                    MembershipRequest::where('user_id', $user_id)->where('request_status_id', $previous_status_id)->update([
-                        'checked' => 0
-                    ]);
-                }else{
-                    $previous_status_order = $current_status_order - 1;
-                    $previous_status =  MemberEnum::where('type', 'request_status')->where('order',  $previous_status_order)->first();
-                    MembershipRequest::where('user_id', $user_id)->where('request_status_id', $previous_status->id)->update([
-                        'checked' => 0
-                    ]);
-                }
-                $active_request->delete();
-                return redirect()->back();
-            }
-
-            if($request->input('action') == 'reject' && $current_status->slug == 'rejected'){
-                return redirect()->back()->with('error', 'The request already rejected');
-            }
-
-            
-            $next_status_order = $current_status_order + 1;
-            if($current_status->order == 0){ //if current status is rejected
-                $old_status_order = MembershipRequest::where('user_id', $user_id)->where('request_status_id', $current_status->rejected)->first();
-                $next_status_order = $old_status_order + 1;
-            }
-            
-            $active_request->checked = 1;
-            $active_request->save();
-
-            $rejected = null;
-            if($request->input('action') == 'reject'){
-                $new_status = MemberEnum::where('type', 'request_status')->where('order', 0)->first();
-                $rejected = $current_status_id;
-            }else{
-                $new_status = MemberEnum::where('type', 'request_status')->where('order', $next_status_order)->first();
-            }
-            MembershipRequest::create([
-                'user_id' => $user_id,
-                'request_status_id' => $new_status->id,
-                'rejected' => $rejected,
-                'updated_by' => $user->id,
-                'remark' => $input['remark']
-            ]);
-        }
-
-        return redirect()->back();
-        */
-
     }
 
     public function confirmMembershipRequest(Request $request){
-        $admin = Auth::user();
+        
         $input = $request->all();
-
-        $validator = Validator::make($request->all(), ...$this->validationRules());
-
-        if($validator->fails()){
-            return Redirect::back()->withErrors($validator)->withInput()->with('error', 'Some fields are not valid');
-        }
+        $this->requestService->confirmRequest($input);
 
         $user_id = $input['user_id'];
         $user = User::find($user_id);
 
-        // check active request and it is ready to confirm
-        $approved_status = MemberEnum::where('type', 'request_status')->where('slug', 'approved')->first();
-        $new_status = MemberEnum::where('type', 'request_status')->where('slug', 'confirmed')->first();
-        $active_request = MembershipRequest::where('user_id', $user_id)->where('request_status_id', $approved_status->id)->where('checked', 0)->first();
-        
-        if($active_request){
-            /*
-            $membership = Membership::where('user_id', $user_id)->first();
-            $member = Member::where('user_id', $user_id)->first();
+        $messages['hi'] = "Hi {$user->name}";
+        $messages['message'] = "Congratulations!. Your membership application has been approved.";
+        $user->notify(new MembershipApproval($messages));
 
-            // Update current request status to checked
-            $active_request->checked = 1;
-            $active_request->save();
-
-            MembershipRequest::create([
-                'user_id' => $user_id,
-                'request_status_id' => $new_status->id,
-                'checked' => 1,
-                'updated_by' => $admin->id,
-                'remark' => $input['remark']
-            ]);
-            // Updating membership table
-            $membership->mid = $input['mid'];
-            $membership->start_date = $input['start_date'];
-            $membership->updated_date = $input['start_date'];
-            $membership->expiry_date = date('Y-m-d', strtotime('+1 year', strtotime($input['start_date'])));
-            $membership->status = 'active';
-            $membership->save();
-
-            // Updating members table
-            $member->active = 1;
-            $member->save();
-            */
-            $this->requestService->confirmRequest($input);
-
-            $messages['hi'] = "Hi {$user->name}";
-            $messages['message'] = "Congratulations!. Your membership application has been approved.";
-            $user->notify(new MembershipApproval($messages));
-
-            return redirect()->back()->with('success', 'Successfully confirmed the request');
-        }
-
-        return Redirect::back()->withErrors(['request' => ['Invalid request']]);
+        return redirect()->back();
     }
 
     protected function validationRules()

@@ -39,7 +39,17 @@ class ApiMembershipController extends BaseController
      */
     public function confirmMembership(Request $request)
     {
-
+        $input = $request->all();
+        $user = User::where('email', $input['email'])->first();
+        $data = [
+            'user_id' => $user->id,
+            'remark' => $input['remark'],
+            'mid' => $input['mid'],
+            'start_date' => $input['start_date']
+        ];
+        $loggedAs = User::where('email', $input['loggedAs'])->first();
+        $updated = $this->requestService->confirmRequest($data, $loggedAs);
+        return $this->sendResponse($data, $updated['message']);
     }
 }
 /**
