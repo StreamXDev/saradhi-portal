@@ -97,18 +97,20 @@ class MemberRequestService
             }
             $membership = Membership::where('user_id', $user_id)->first();
             $member = Member::where('user_id', $user_id)->first();
+            
 
             // Update current request status to checked
             $active_request->checked = 1;
             $active_request->save();
 
-            $this->requestRepository->createRequestStage([
+            $newStage = $this->requestRepository->createRequestStage([
                 'user_id' => $user_id,
                 'request_status_id' => $new_status->id,
                 'checked' => 1,
                 'updated_by' => $loggedUser->id,
                 'remark' => $data['remark']
             ]);
+
 
             // Updating membership table
             $membership->mid = $data['mid'];
@@ -117,11 +119,12 @@ class MemberRequestService
             $membership->status = 'active';
             $membership->save();
 
+
             // Updating members table
             $member->active = 1;
             $member->save();
-            return ['message' => 'Request has been updated successfully.'];
             DB::commit();
+            return ['message' => 'Request has been updated successfully.'];
         } catch(\Exception $exp) {
             DB::rollBack();
             throw new \Exception($exp->getMessage());

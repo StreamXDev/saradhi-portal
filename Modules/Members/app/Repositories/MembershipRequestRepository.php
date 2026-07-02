@@ -54,7 +54,7 @@ class MembershipRequestRepository
     /**
      * Creating new request stage
      */
-    public function createRequestStage($data)
+    public function createRequestStage(array $data)
     {
         $requestStage = $this->requestModel->create($data);
         return $requestStage;

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Imports\Http\Controllers\ImportsController;
+use Modules\Imports\Http\Controllers\ReceiveMemberController;
 
 /*
  *--------------------------------------------------------------------------
@@ -14,6 +15,10 @@ use Modules\Imports\Http\Controllers\ImportsController;
  *
 */
 
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
+Route::middleware(['auth:sanctum'])->prefix('imports')->group(function () {
     //Route::apiResource('imports', ImportsController::class)->names('imports');
+});
+Route::controller(ReceiveMemberController::class)->prefix('import')->group(function(){
+    Route::post('member', 'receiveNewUserId');
+    Route::get('check/email', 'checkEmailExists');
 });
