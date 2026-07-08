@@ -9,7 +9,7 @@ class MembershipRequestRepository
 {
     public function __construct(
         protected MembershipRequest $requestModel,
-        protected MemberEnum $enum
+        protected MemberEnum $enum,
     ){}
 
     /** 
@@ -50,6 +50,7 @@ class MembershipRequestRepository
         }
         return $req->get();
     }
+
 
     /**
      * Creating new request stage

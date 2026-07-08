@@ -19,6 +19,6 @@ Route::middleware(['auth:sanctum'])->prefix('imports')->group(function () {
     //Route::apiResource('imports', ImportsController::class)->names('imports');
 });
 Route::controller(ReceiveMemberController::class)->prefix('import')->group(function(){
-    Route::post('member', 'receiveNewUserId');
-    Route::get('check/email', 'checkEmailExists');
+    Route::post('user/create', 'createUser');
+    Route::post('member/init', 'initMember');
 });

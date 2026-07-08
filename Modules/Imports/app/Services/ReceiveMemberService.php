@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
+use Modules\Members\Repositories\MembershipRequestRepository;
+use Modules\Members\Repositories\MemberUnitRepository;
 
 class ReceiveMemberService
 {
@@ -15,7 +17,10 @@ class ReceiveMemberService
     private $headers;
     private $thisUser;
 
-    public function __construct(){
+    public function __construct(
+        protected MemberUnitRepository $unitRepository,
+        protected MembershipRequestRepository $requestRepository
+    ){
         $this->api = env('NEW_PORTAL_API').'api/';
         // Generating access token
         if(!session()->has('transfer_token')){
@@ -46,20 +51,131 @@ class ReceiveMemberService
     }
 
 
-    // Fetching User Details
+    // Fetching Member Details from old portal
     public function createMember(array $data)
     {
         $newUserId = $data['user_id'];
-        $newUser = $this->getUserDetails($newUserId);
+        $newUserDetails = $this->getUserDetails($newUserId);
+        if(!$newUserDetails){
+            return; 
+        }
+        $user = User::where('email', $newUserDetails->email)->first();
+        $user->email_verified_at = $newUserDetails->email_verified_at;
+        $user->save();
 
+        $ret = $this->getMemberDetails($newUserId);
+        if(!$ret){
+            return;
+        }
+
+        $memberUnit = $this->unitRepository->findBySlug($ret->unit->code);
+        $introducerUnit = $this->unitRepository->findBySlug($ret->introducer_unit->code);
+
+        $memberData = [
+            'user_id' => $ret->user_id,
+            'type' => $ret->user->details->gender == 'male' ? 'primary' : 'spouse',
+            'name' => $ret->user->name,
+            'mid' => $ret->mid,
+            'gender' => $ret->user->details->gender,
+            'blood_group' => $ret->user->details->blood_group,
+            'active' => $ret->status == 'active' ? 1 : 0,
+        ];
         
-        /**
-         * request user basic details from new portal using the user id
-         * check email exists
-         * if no, create a new user, $user = $this->getUserDetails()
-         * Get user details, member details, membership details, request details using the newUserId,
-         * save all data 
-         */
+        $membershipData = [
+            'mid' => $ret->mid,
+            'user_id' => $ret->user_id,
+            'start_date' => $ret->join_date,
+            'expiry_date' => $ret->subscription->end_date, 
+            'type' => $ret->family_in_kuwait ? 'family' : 'single', 
+            'family_in' => $ret->family_in_kuwait ? 'kuwait': 'india',
+            'status' => $ret->status,
+            'joined_as' => 'new',
+            'introducer_name' => $ret->introducer_name,
+            'introducer_phone' => $ret->introducer_phone,
+            'introducer_phone_code' => $ret->introducer_calling_code,
+            'introducer_mid' => $ret->introducer_mid,
+            'introducer_unit' => $introducerUnit->id,
+        ];
+
+        $memRequests[] = [
+            'user_id' => $ret->user_id,
+            'request_status_id' => 2,
+            'checked' => 1,
+            'updated_by' => $ret->user_id,
+        ];
+        $requests = $ret->request_history;
+        foreach($requests as $req){
+            $updated_by = User::where('email', $req->updated_by->email)->fist();
+            if($req->stage->slug !== 'paid'){
+                $stage = $this->requestRepository->getStatusEnumBySlug($req->stage->slug);
+                $rq = [
+                    'user_id' => $ret->user_id,
+                    'request_status_id' => $stage->id,
+                    'checked' => 1,
+                    'updated_by' => $updated_by ? $updated_by->id : $ret->user_id,
+                ];
+                array_push($memRequests, $rq);
+            }
+            if($req->rejected){
+                $rq = [
+                    'user_id' => $ret->user_id,
+                    'request_status_id' => 1,
+                    'checked' => 1,
+                    'rejected' => $stage->id,
+                    'updated_by' => $updated_by ? $updated_by->id : $ret->user_id,
+                ];
+                array_push($memRequests, $rq);
+            }
+        }
+        $memberDetails = [
+            'user_id' => $req->user_id,
+            'member_unit_id' => $memberUnit->id,
+            'civil_id' => $req->user->details->civil_id,
+            'dob' => $req->user->details->dob,
+            'whatsapp' => $req->user->details->whatsapp,
+            'whatsapp_code' => $req->user->details->whatsapp_calling_code,
+            'emergency_phone' => $req->user->details->emergency_phone,
+            'emergency_phone_code' => $req->user->details->emergency_phone_code,
+            'company' => $req->user->details->company,
+            'profession' => $req->user->details->profession,
+            'company_address' => $req->user->details->company_address,
+            'passport_no' => $req->user->details->passport_no,
+            'passport_expiry' => $req->user->details->passport_expiry,
+            'paci' => $req->user->details->paci,
+            'sndp_branch' => $req->sndp_branch,
+            'sndp_branch_number' =>$req->sndp_branch_number,
+            'sndp_union' => $req->sndp_union,
+            'completed' => 1
+        ];
+        $memberLocalAddress = [
+            'user_id' => $req->user_id,
+            'governorate' => $req->governorate,
+            'line_1' => $req->user->details->la_1,
+            'building' => $req->user->details->la_building,
+            'flat' => $req->user->details->la_flat,
+            'floor' => $req->user->details->la_floor,
+            'country' => $req->user->details->la_country,
+            'region' => $req->user->details->la_region,
+            'district' => $req->user->details->la_city,
+            'city' => $req->user->details->la_city,
+            'zip' => $req->user->details->la_zip,
+        ];
+        $memberPermanentAddress = [
+            'user_id' => $req->user_id,
+            'line_1' => $req->user->details->pa_1,
+            'line_2' => $req->user->details->pa_2,
+            'country' => $req->user->details->pa_country,
+            'region' => $req->user->details->pa_region,
+            'district' => $req->user->details->pa_district,
+            'city' => $req->user->details->pa_city,
+            'zip' => $req->user->details->pa_zip,
+            'contact' => $req->user->details->home_contact
+        ];
+        
+         // Should import photo
+
+         // check the member has relation in the new portal.
+         // find the relation user id in this portal, if found, create relation as it is in new portal.
     }
 
     public function getUserDetails(int $userId)
@@ -73,6 +189,18 @@ class ReceiveMemberService
         } catch (\Exception $e) {
             return $e->getMessage();
         }
-        
+    }
+
+    public function getMemberDetails(int $userId)
+    {
+        try {
+            $response = Http::withHeaders($this->headers)->get($this->api.'migration/get/member', ['user_id' => $userId]);
+            if($response->ok()){
+                $response = $response->json();
+                return $response['data']['member'];
+            }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
 }

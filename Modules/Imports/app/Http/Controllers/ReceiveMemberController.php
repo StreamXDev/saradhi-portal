@@ -6,8 +6,11 @@ use App\Http\Controllers\Api\BaseController;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Modules\Imports\Jobs\ReceiveMemberJob;
 use Modules\Imports\Services\ReceiveMemberService;
+use Nwidart\Modules\Module;
 
 class ReceiveMemberController extends BaseController
 {
@@ -33,9 +36,30 @@ class ReceiveMemberController extends BaseController
     }
 
     /**
-     * Display a listing of the resource.
+     * Creating new user - Getting data from new portal
      */
-    public function receiveNewUserId(Request $request)
+    public function createUser(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required',
+            'password' => 'required|confirmed',
+        ]);
+        if($validator->fails()){
+            return $this->sendError('Required fields are empty or incorrect', $validator->errors(), 400);       
+        }
+        $newUser = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password)
+        ]);
+        return $this->sendResponse($newUser, 'User created successfully.');
+    }
+
+    /**
+     * Starting member data fetch job
+     */
+    public function initMember(Request $request)
     {
         try {
             $data = $request->all();
