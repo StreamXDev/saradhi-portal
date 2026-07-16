@@ -3,14 +3,12 @@
 namespace Modules\Imports\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseController;
-use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Modules\Imports\Jobs\ReceiveMemberJob;
 use Modules\Imports\Services\ReceiveMemberService;
-use Nwidart\Modules\Module;
 
 class ReceiveMemberController extends BaseController
 {
