@@ -67,7 +67,7 @@ class ReceiveMemberController extends BaseController
             return $this->sendResponse($data, 'Request received and queued for processing.');
             
         } catch (\Exception $e) {
-            return $this->sendError('Failed to create member.', $e);
+            return $this->sendError('Failed to create queue.', $e);
         }
     }
 }

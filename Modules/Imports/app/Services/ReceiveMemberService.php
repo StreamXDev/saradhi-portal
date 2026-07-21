@@ -60,8 +60,6 @@ class ReceiveMemberService
     {
         try {
             $newUserId = $data['user_id'];
-            DB::beginTransaction();
-            
             $newUserDetails = $this->getUserDetails($newUserId);
             if(!$newUserDetails){
                 return; 
@@ -70,6 +68,7 @@ class ReceiveMemberService
             if(!$ret){
                 return;
             }
+            DB::beginTransaction();
             $user = User::where('email', $newUserDetails->email)->first();
             $user->email_verified_at = $newUserDetails->email_verified_at;
             $user->avatar = $this->saveFileFromUrl($ret->user_id, $ret->user->avatar, null, 'av');
