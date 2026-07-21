@@ -59,6 +59,7 @@ class ReceiveMemberService
     public function createMember(array $data)
     {
         try {
+            return;
             $newUserId = $data['user_id'];
             $newUserDetails = $this->getUserDetails($newUserId);
             if(!$newUserDetails){
@@ -68,15 +69,16 @@ class ReceiveMemberService
             if(!$ret){
                 return;
             }
-            DB::beginTransaction();
+            
             $user = User::where('email', $newUserDetails->email)->first();
             $user->email_verified_at = $newUserDetails->email_verified_at;
-            $user->avatar = $this->saveFileFromUrl($ret->user_id, $ret->user->avatar, null, 'av');
+            //$user->avatar = $this->saveFileFromUrl($ret->user_id, $ret->user->avatar, null, 'av');
             $user->save();
     
             $memberUnit = $this->unitRepository->findBySlug($ret->unit->code);
             $introducerUnit = $this->unitRepository->findBySlug($ret->introducer_unit->code);
-
+            /*
+            DB::beginTransaction();
             $memberData = [
                 'type' => $ret->user->details->gender == 'male' ? 'primary' : 'spouse',
                 'name' => $ret->user->name,
@@ -194,6 +196,7 @@ class ReceiveMemberService
             $this->memberRepository->updateOrCreatePa($user->id, $memberPermanentAddress);
 
             DB::commit();
+            */
             return;
 
         } catch (\Exception $e) {
