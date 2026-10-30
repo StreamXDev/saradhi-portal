@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Validator;
 use Modules\PushNotification\Models\PnDelivery;
 use Modules\PushNotification\Models\PnDevice;
 use Modules\PushNotification\Models\PnMessage;
+use Firebase\JWT\JWT;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 
 class NotificationController extends Controller
 {
@@ -84,6 +88,7 @@ class NotificationController extends Controller
     /**
      * Send Notification function (private)
     */
+   /*
     private function notify($user=null, $title, $description=null, $notificationId=null, $link=null, $image=null){
         $devices = PnDevice::where('user_id', $user)->get();
         $devicesSent = [];
@@ -94,6 +99,7 @@ class NotificationController extends Controller
         $client->setAuthConfig($credentialsFilePath);
         $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
         $client->refreshTokenWithAssertion();
+        
         $token = $client->getAccessToken();
 
         $access_token = $token['access_token'];
@@ -140,6 +146,85 @@ class NotificationController extends Controller
 
             if ($err) {
                 $devicesSent[]['error'] = $response;
+            }
+        }
+        
+        return $devicesSent;
+    }
+        */
+
+    private function notify($user=null, $title, $description=null, $notificationId=null, $link=null, $image=null) {
+        $devices = PnDevice::where('user_id', $user)->get();
+        
+        // Early exit if no devices found to save API calls
+        if ($devices->isEmpty()) {
+            return [];
+        }
+
+        $projectId = env('FIREBASE_PROJECT_NUMBER'); 
+        $credentialsFilePath = Storage::path('json/service-account.json');
+        $credentials = json_decode(File::get($credentialsFilePath), true);
+
+        // 1. Handle the Server Clock Drift
+        // Adjust this integer based on how far off your server clock is. 
+        // Example: If the token still fails, try changing it to -120 or 60.
+        $offsetSeconds = 120; 
+        $googleTime = time() + $offsetSeconds;
+
+        $payload = [
+            'iss' => $credentials['client_email'],
+            'sub' => $credentials['client_email'],
+            'aud' => 'https://oauth2.googleapis.com/token',
+            'iat' => $googleTime,
+            'exp' => $googleTime + 3600,
+            'scope' => 'https://www.googleapis.com/auth/firebase.messaging'
+        ];
+
+        // 2. Generate and exchange the JWT manually
+        $jwt = JWT::encode($payload, $credentials['private_key'], 'RS256');
+
+        $tokenResponse = Http::asForm()->post('https://oauth2.googleapis.com/token', [
+            'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+            'assertion'  => $jwt,
+        ]);
+
+        if ($tokenResponse->failed()) {
+            \Log::error('FCM OAuth Error: ' . $tokenResponse->body());
+            return ['error' => 'Google Auth failed. Check offset or credentials.'];
+        }
+
+        $access_token = $tokenResponse->json('access_token');
+        $devicesSent = [];
+
+        // 3. Send notifications using Laravel's Http facade instead of raw cURL
+        foreach ($devices as $device) {
+            $data = [
+                "message" => [
+                    "token" => $device->token,
+                    "notification" => [
+                        "title" => $title,
+                        "body" => $description,
+                    ],
+                    "data" => [
+                        "screen" => "notification",
+                        "id" => (string) $notificationId,
+                    ],
+                ]
+            ];
+
+            $fcmResponse = Http::withHeaders([
+                'Authorization' => "Bearer {$access_token}",
+                'Content-Type' => 'application/json',
+            ])->post("https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send", $data);
+
+            if ($fcmResponse->successful()) {
+                $devicesSent[] = $device;
+            } else {
+                Log::error("FCM Send Error for token {$device->token}: " . $fcmResponse->body());
+                $devicesSent[] = [
+                    'device' => $device->token,
+                    'error' => $fcmResponse->json()
+                ];
             }
         }
         
